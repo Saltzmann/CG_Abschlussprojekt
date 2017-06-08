@@ -6,13 +6,14 @@
 
 QT       += core gui opengl
 
+# Link against OpenGL for Qt >= 5.5
 LIBS += -lopengl32
-
 unix: LIBS += -lassimp
 
-win32: LIBS += -L$$PWD/assimp-win-mingw32/code -lassimp
-win32: INCLUDEPATH += $$PWD/assimp-win-mingw32/include
-win32: DEPENDPATH += $$PWD/assimp-win-mingw32/include
+# Windows can't deal with assimp as a system library for some reason
+win32: LIBS += -LC:/Users/donpo/Documents/GitHub/CG_Abschlussprojekt/assimp-win-mingw32/code/ -lassimp
+win32: INCLUDEPATH += C:/Users/donpo/Documents/GitHub/CG_Abschlussprojekt/assimp-win-mingw32/include
+win32: DEPENDPATH += C:/Users/donpo/Documents/GitHub/CG_Abschlussprojekt/assimp-win-mingw32/include
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -33,14 +34,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    openglcustomwidget.cpp \
-    modelloader.cpp
+    modelloader.cpp \
+    customopenglwidget.cpp \
+    camera.cpp \
+    renderableobject.cpp \
+    model.cpp
 
 HEADERS  += mainwindow.h \
-    openglcustomwidget.h \
-    modelloader.h
+    modelloader.h \
+    customopenglwidget.h \
+    camera.h \
+    renderableobject.h \
+    model.h
 
 FORMS    += mainwindow.ui
 
 RESOURCES += \
-    models.qrc
+    shader.qrc

@@ -6,6 +6,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    /*UI SLOT / SIGNAL Connects
+
+    //Connected "Anzeige FPS Counter"
+    QObject::connect(ui->myglwid, SIGNAL(sendFPSValue(int)),
+                     ui->lcdFPSCounter, SLOT(display(int)));
+    //*/
 }
 
 MainWindow::~MainWindow()

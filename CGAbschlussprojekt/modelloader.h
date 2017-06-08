@@ -15,9 +15,14 @@
 #define MODELLOADER_H
 
 #include <GL/gl.h>
+#include "../assimp-win-mingw32/include/assimp/Importer.hpp"
+#include "../assimp-win-mingw32/include/assimp/scene.h"
+#include "../assimp-win-mingw32/include/assimp/postprocess.h"
+/*
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+*/
 
 class ModelLoader
 {
