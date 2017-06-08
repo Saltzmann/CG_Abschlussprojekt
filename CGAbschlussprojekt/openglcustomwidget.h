@@ -15,7 +15,14 @@ protected:
     void    resizeGL(int w, int h);
 
 private:
+    void    createGeometry();
 
+    // Member Variables
+    unsigned int    vboLength;
+    unsigned int    iboLength;
+
+    GLfloat*        vboData;
+    GLuint*         indexData;
 };
 
 #endif // OPENGLCUSTOMWIDGET_H
