@@ -4,16 +4,15 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
 QT       += core gui opengl
 
 LIBS += -lopengl32
 
 unix: LIBS += -lassimp
 
-win32: LIBS += -LD:/Programming/assimp-win-mingw32/code -lassimp
-win32: INCLUDEPATH += D:/Programming/assimp-win-mingw32/include
-win32: DEPENDPATH += D:/Programming/assimp-win-mingw32/include
+win32: LIBS += -L$$PWD/assimp-win-mingw32/code -lassimp
+win32: INCLUDEPATH += $$PWD/assimp-win-mingw32/include
+win32: DEPENDPATH += $$PWD/assimp-win-mingw32/include
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
