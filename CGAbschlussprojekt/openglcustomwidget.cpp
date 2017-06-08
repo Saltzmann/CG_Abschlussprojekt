@@ -40,17 +40,6 @@ void OpenGLCustomWidget::paintGL()
 
 }
 
-// resizeGL()
-// param:   int w - new width of the window
-//          int h - new height of the window
-// return:  void
-// descr.:  Called after resizing the window
-void OpenGLCustomWidget::resizeGL(int w, int h)
-{
-
-}
-
-
 // createGeometry()
 // param:   /
 // return:  void
