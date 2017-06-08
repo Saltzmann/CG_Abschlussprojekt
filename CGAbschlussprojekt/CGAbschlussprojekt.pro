@@ -5,6 +5,14 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += core gui opengl
+LIBS += -lopengl32
+
+unix: LIBS += -lassimp
+
+win32: LIBS += -LD:/Programming/Assimp/lib/x86 -lassimp
+win32: INCLUDEPATH += D:/Programming/Assimp/include
+win32: DEPENDPATH += D:/Programming/Assimp/include
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -24,8 +32,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    openglcustomwidget.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    openglcustomwidget.h
 
 FORMS    += mainwindow.ui
