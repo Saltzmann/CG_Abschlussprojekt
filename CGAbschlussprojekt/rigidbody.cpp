@@ -2,5 +2,5 @@
 
 void RigidBody::move(const float deltaTime)
 {
-    m_position += m_velocity * deltaTime;
+    m_position += (m_gravity + m_velocity) * deltaTime;
 }
