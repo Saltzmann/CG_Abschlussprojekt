@@ -176,13 +176,16 @@ void CustomOpenGLWidget::resetFPSCounter() {
 void CustomOpenGLWidget::_buildGeometry() {
     //_cubeModel = new Model("hardcoded obj-File");
 
-    //QFileInfo fi;
-    //fi.setFile("floor.obj");
+    QFileInfo fi;
+    fi.setFile("floor.obj");
     //if(!fi.exists()) {
-    //    _makeFloor(5);
+    _makeFloor(5);
     //}
-    //qDebug() << "File existiert bereits: " << fi.exists();
-    //_floorModel->loadModelFromFile("floor.obj");
+    //else {
+    //  qDebug() << "floor.obj existiert bereits!";
+    //}
+
+    //_floorModel = new Model("floor.obj");
 
     _sphereModel = new Model("sphere_high.obj");
 }
@@ -209,9 +212,6 @@ void CustomOpenGLWidget::_makeFloor(unsigned short sideLengthInVertices) {
     //[AnzahlFlächen = (sideLength-1)² * 2 (bei Triangles)][v/vt/vn][3 Datensätze bei Triangles]
     unsigned short numberOfFaces = (sideLengthInVertices-1) * (sideLengthInVertices-1) * 2;
     QVector<QVector<QVector<GLint>>> faces(numberOfFaces);
-
-    qDebug() << faces.length();
-    qDebug() << faces[0].length();
 
     //Mit for Schleife füllen erstellen durch Vectoren ist erstmal einfacher
     float horizontalX = 0.f;

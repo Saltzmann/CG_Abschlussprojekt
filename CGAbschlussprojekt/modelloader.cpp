@@ -39,6 +39,7 @@ bool ModelLoader::loadObjectFromFile(const std::string& pFile)
 
     // check if import was successful
     if(!scene) {
+      qDebug() << importer.GetErrorString();
       /* TODO: do something with importer.GetErrorString() */
       return false;
     }

@@ -1,5 +1,6 @@
 #version 440
 
+flat;
 layout(location = 0)uniform mat4 projectionMatrix;
 layout(location = 1)uniform mat4 viewMatrix;
 layout(location = 2)uniform mat4 modelMatrix;

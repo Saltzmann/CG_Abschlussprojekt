@@ -11,13 +11,12 @@ Model::Model(QString const &modelFileName) : _vbo(QOpenGLBuffer::VertexBuffer),
 void Model::_initializeVBOs(QString const &modelFileName) {
     // Lade Modell aus Datei
     ModelLoader model;
+    QDir currentDir;
     //SoonTM nächster Versuch für einen relativen Pfad
-    //QDir* currentDir = new QDir(QDir::current());
-    //qDebug() << "CurrentDir CanonicalPath = " << currentDir->canonicalPath();
-    //std::string relativeFilePath = currentDir->canonicalPath().toStdString() + "/" + modelFileName.toStdString();
-    //bool res = model.loadObjectFromFile(relativeFilePath);
-    //delete currentDir;
-    bool res = model.loadObjectFromFile("C:/Users/Tobias/Documents/GitHub/CG_Abschlussprojekt/CGAbschlussprojekt/sphere_high.obj");
+    qDebug() << "CurrentDir CanonicalPath = " << currentDir.canonicalPath();
+    std::string absolutePath = currentDir.canonicalPath().toStdString() + "/" + modelFileName.toStdString();
+    bool res = model.loadObjectFromFile(absolutePath);
+    //bool res = model.loadObjectFromFile("C:/Users/Tobias/Documents/GitHub/CG_Abschlussprojekt/CGAbschlussprojekt/sphere_high.obj");
 
     _hasTextureCoords = model.hasTextureCoordinates();
     qDebug() << "File: " << modelFileName << " hat Textur-Koordinaten = " << _hasTextureCoords;
@@ -82,6 +81,12 @@ void Model::_fillBuffers(QString const &modelFileName) {
 }
 
 void Model::loadModelFromFile(QString const &modelFileName)  {
+    if(_vbo.isCreated()) {
+        _vbo.destroy();
+    }
+    if(_ibo.isCreated()) {
+        _ibo.destroy();
+    }
     _hasModelLoaded = false;
     _fillBuffers(modelFileName);
 }
@@ -101,7 +106,7 @@ void Model::createModelFileFromArrays(QVector<QVector3D> const &vertexArray,
 
     QTextStream out(&newFile);
 
-    out << "# " << fileName << ".obj" << "\n";
+    //out << "# " << fileName << ".obj" << "\n";
 
     for(QVector3D vert : vertexArray) {
         out << "v " << vert.x() << " " << vert.y() << " " << vert.z() << "\n";
