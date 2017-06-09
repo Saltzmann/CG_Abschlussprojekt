@@ -6,6 +6,10 @@
 #include <QDir>
 //Debug Includes
 #include <QDebug>
+//Datenstrukturen Includes
+#include <QVector>
+#include <QVector2D>
+#include <QVector3D>
 //Geometrie / Vertex / Mesh Includes
 #include <QOpenGLBuffer>
 //externe includes
@@ -38,10 +42,11 @@ public:
     Model(QString const &modelFileName = "");
     //Lade Funktionen
     void loadModelFromFile(QString const &modelFileName);
-    void createModelFromArrays(GLfloat* vertexArray,
-                               GLfloat* normalArray,
-                               GLfloat* texCoordArray,
-                               GLuint* indexArray);
+    static void createModelFileFromArrays(QVector<QVector3D> const &vertexArray,
+                                          QVector<QVector3D> const &normalArray,
+                                          QVector<QVector2D> const &texCoordArray,
+                                          QVector<QVector<QVector<GLint>>> const &indexArray,
+                                          QString const &fileName);
     //Getter die nicht kopieren und auch Manipulation zulassen
     QOpenGLBuffer* getVBOBufferPtr();
     QOpenGLBuffer* getIBOBufferPtr();

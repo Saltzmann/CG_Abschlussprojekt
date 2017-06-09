@@ -11,9 +11,9 @@ LIBS += -lopengl32
 unix: LIBS += -lassimp
 
 # Windows can't deal with assimp as a system library for some reason
-win32: LIBS += -LC:/Users/donpo/Documents/GitHub/CG_Abschlussprojekt/assimp-win-mingw32/code/ -lassimp
-win32: INCLUDEPATH += C:/Users/donpo/Documents/GitHub/CG_Abschlussprojekt/assimp-win-mingw32/include
-win32: DEPENDPATH += C:/Users/donpo/Documents/GitHub/CG_Abschlussprojekt/assimp-win-mingw32/include
+win32: LIBS += -LC:/Users/Tobias/Documents/GitHub/CG2017/assimp-win-mingw32/code/ -lassimp
+win32: INCLUDEPATH += C:/Users/Tobias/Documents/GitHub/CG2017/assimp-win-mingw32/include
+win32: DEPENDPATH += C:/Users/Tobias/Documents/GitHub/CG2017/assimp-win-mingw32/include
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

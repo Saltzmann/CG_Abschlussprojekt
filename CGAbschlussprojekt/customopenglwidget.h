@@ -37,6 +37,7 @@ protected:
     //Models
     Model* _cubeModel;
     Model* _floorModel;
+    Model* _sphereModel;
     //...
 
     //Zu rendernde Objekte
@@ -56,6 +57,7 @@ protected:
     //Hilfsfunktionen
     void _buildGeometry();
     void _createRenderables();
+    void _makeFloor(unsigned short sideLengthInVertices);
 public:
     //Konstruktor
     CustomOpenGLWidget(QWidget *parent);

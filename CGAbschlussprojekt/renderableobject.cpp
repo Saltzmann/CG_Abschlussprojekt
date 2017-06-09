@@ -52,7 +52,7 @@ void RenderableObject::render(QMatrix4x4 ctm,
     int unifProjMatrix = 0;
     int unifViewMatrix = 1;
     int unifModelMatrix = 2;
-    int unifNormMatrix = 3;
+    //int unifNormMatrix = 3;
 
     //Matrix Berechnungen fertig nun shader konfigurieren
     _shader->bind();
@@ -81,11 +81,11 @@ void RenderableObject::render(QMatrix4x4 ctm,
     _shader->setUniformValue(unifProjMatrix, projectionMatrix); //projektionsMatrix (const)
     _shader->setUniformValue(unifViewMatrix, viewMatrix); //viewMatrix ("const")
     _shader->setUniformValue(unifModelMatrix, ctm); //modelMatrix (immer abhängig vom gerade zu rendernden RenderableObject)
-    _shader->setUniformValue(unifNormMatrix,  (viewMatrix * ctm).normalMatrix()); //berechnete Normalenmatrix
+    //_shader->setUniformValue(unifNormMatrix,  (viewMatrix * ctm).normalMatrix()); //berechnete Normalenmatrix
 
     //Haupt-Textur binden und an shader übergeben
-    _mainTexture->bind(0);
-    _shader->setUniformValue("diffuseMap", 0);
+    //_mainTexture->bind(0);
+    //_shader->setUniformValue("diffuseMap", 0);
     //_secondTexture->bind(1);
     //_shader->setUniformValue("bumpMap?!?", 1);
 
@@ -103,7 +103,7 @@ void RenderableObject::render(QMatrix4x4 ctm,
     _shader->release();
 
     // Löse die Textur aus dem OpenGL-Kontext
-    _mainTexture->release();
+    //_mainTexture->release();
     //_secondTexture->release();
 
     //VBO und IBO vom Kontext lösen
