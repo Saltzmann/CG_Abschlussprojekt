@@ -34,11 +34,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainwindow.cpp \
     openglcustomwidget.cpp \
-    modelloader.cpp
+    modelloader.cpp \
+    collider.cpp \
+    collisiondata.cpp \
+    particle.cpp \
+    rigidbody.cpp \
+    physicsengine.cpp
 
 HEADERS  += mainwindow.h \
     openglcustomwidget.h \
-    modelloader.h
+    modelloader.h \
+    collider.h \
+    collisiondata.h \
+    particle.h \
+    rigidbody.h \
+    physicsengine.h
 
 FORMS    += mainwindow.ui
 
