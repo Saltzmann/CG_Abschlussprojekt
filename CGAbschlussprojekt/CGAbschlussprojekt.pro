@@ -37,18 +37,18 @@ SOURCES += main.cpp\
     modelloader.cpp \
     collider.cpp \
     collisiondata.cpp \
-    particle.cpp \
     rigidbody.cpp \
-    physicsengine.cpp
+    physicsengine.cpp \
+    bouncingfluidparticle.cpp
 
 HEADERS  += mainwindow.h \
     openglcustomwidget.h \
     modelloader.h \
     collider.h \
     collisiondata.h \
-    particle.h \
     rigidbody.h \
-    physicsengine.h
+    physicsengine.h \
+    bouncingfluidparticle.h
 
 FORMS    += mainwindow.ui
 
