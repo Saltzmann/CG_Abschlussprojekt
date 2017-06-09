@@ -1,16 +1,18 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
+#include "rigidbody.h"
 #include <QVector3D>
 
-class Particle
+class Particle : public RigidBody
 {
 public:
-    Particle(QVector3D center, QVector3D radius)
-        : m_center(center), m_radius(radius) {}
+    Particle(QVector3D position, QVector3D velocity, QVector3D radius)
+        : RigidBody(position, velocity),
+          m_position(position),
+          m_radius(radius) {}
 
 private:
-    QVector3D   m_center;
     float       m_radius;
 };
 

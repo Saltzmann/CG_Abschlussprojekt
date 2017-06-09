@@ -7,14 +7,13 @@
 class RigidBody
 {
 public:
-    RigidBody(QVector3D startPos, QVector3D velocity, QVector3D gravity)
+    RigidBody(QVector3D startPos, QVector3D velocity)
         : m_position(startPos),
-          m_velocity(velocity),
-          m_gravity(gravity) { }
+          m_velocity(velocity) { }
 
     // Simple getter
-    inline QVector3D getPosition() { return m_position; }
-    inline QVector3D getVelocity() { return m_velocity; }
+    inline QVector3D getPosition() const { return m_position; }
+    inline QVector3D getVelocity() const { return m_velocity; }
 
     // Simple setter
     inline void setPosition(const QVector3D& position) { m_position = position; }
@@ -25,7 +24,6 @@ public:
 private:
     QVector3D   m_position;
     QVector3D   m_velocity;
-    QVector3D   m_gravity;
     Collider*   m_collider;
 };
 

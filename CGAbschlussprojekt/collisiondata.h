@@ -6,10 +6,10 @@ class CollisionData
 {
 public:
     CollisionData(bool collided, float diff)
-        : isCollided(collided), difference(diff) {}
+        : didCollide(collided), difference(diff) {}
 
 private:
-    const bool  isCollided;
+    const bool  didCollide;
     const float difference;
 };
 

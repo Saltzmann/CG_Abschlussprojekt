@@ -8,7 +8,8 @@
 class PhysicsEngine
 {
 public:
-    PhysicsEngine();
+    PhysicsEngine(QVector3D gravity)
+        : m_gravity(gravity) { }
 
     void addRigidBody(const RigidBody& rb);
     void simulate(const float deltaTime);
