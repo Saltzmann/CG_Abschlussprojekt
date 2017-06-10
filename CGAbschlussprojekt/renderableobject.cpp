@@ -25,8 +25,8 @@ RenderableObject::RenderableObject(QMatrix4x4 ctm,
 void RenderableObject::_setMainTexture(QString filename) {
     //(ausgelagerte) Hilfsfunktion zum Setzen der Haupt-Textur
     _mainTexture = new QOpenGLTexture(QImage(":/" + filename).mirrored());
-    _mainTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-    _mainTexture->setMagnificationFilter(QOpenGLTexture::Linear);
+    _mainTexture->setMinificationFilter(QOpenGLTexture::NearestMipMapLinear);
+    _mainTexture->setMagnificationFilter(QOpenGLTexture::Nearest);
     Q_ASSERT(_mainTexture->textureId() != 0); //Würde Fehler bedeuten
     _hasTexture = true;
     qDebug() << "Textur: " << filename << " geladen";
@@ -35,8 +35,8 @@ void RenderableObject::_setMainTexture(QString filename) {
 void RenderableObject::_setSecondTexture(QString filename) {
     //(ausgelagerte) Hilfsfunktion zum Setzen der Zweit-Textur
     _secondTexture = new QOpenGLTexture(QImage(":/" + filename).mirrored());
-    _secondTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-    _secondTexture->setMagnificationFilter(QOpenGLTexture::Linear);
+    _secondTexture->setMinificationFilter(QOpenGLTexture::NearestMipMapLinear);
+    _secondTexture->setMagnificationFilter(QOpenGLTexture::Nearest);
     Q_ASSERT(_secondTexture->textureId() != 0); //Würde Fehler bedeuten
     _hasSecondTexture = true;
     qDebug() << "Textur: " << filename << " geladen";

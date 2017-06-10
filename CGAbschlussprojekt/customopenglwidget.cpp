@@ -104,7 +104,8 @@ void CustomOpenGLWidget::initializeGL() {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     glClearDepth(1.0);
-    glClearColor(0.4f, 0.5f, 1.f, 0.5f); //erstmal schwarz, nachher vllt irgendein Blau zwecks Himmel?
+    glClearColor(0.f, 0.f, 0.f, 1.f); //erstmal schwarz, nachher vllt irgendein Blau zwecks Himmel?
+    //glClearColor(0.5f, 0.6f, 1.f, 1.f); <- himmelblauisch
 
     //shader zu shader-Programmen hinzufügen
     // default shader
@@ -186,7 +187,7 @@ void CustomOpenGLWidget::resetFPSCounter() {
 }
 
 void CustomOpenGLWidget::_buildGeometry() {
-    //_cubeModel = new Model("cube.obj");
+    _cubeModel = new Model("cube.obj");
     _floorModel = new Model("square.obj");
     _sphereModel = new Model("sphere_high.obj");
 }
@@ -194,24 +195,29 @@ void CustomOpenGLWidget::_buildGeometry() {
 void CustomOpenGLWidget::_createRenderables() {
     QMatrix4x4 ctm;
 
-    //RenderableObject* cube = new RenderableObject(_cubeModel,
-    //                                              _defaultShaderProgram);
-    //_myRenderables.push_back(cube);
+    //Cube
+    ctm.setToIdentity();
+    ctm.translate(0.f, 0.5f, 0.f);
+    RenderableObject* cube = new RenderableObject(ctm,
+                                                  _cubeModel,
+                                                  _defaultShaderProgram);
+    _myRenderables.push_back(cube);
 
     //Sphere
-    ctm.setToIdentity();
-    ctm.translate(0.f, 1.f, 0.f);
-    RenderableObject* sphere = new RenderableObject(ctm,
-                                                    _sphereModel,
-                                                    _textureShaderProgram,
-                                                    "moonmap1k.jpg");
-    _myRenderables.push_back(sphere);
+//    ctm.setToIdentity();
+//    ctm.translate(0.f, 1.f, 0.f);
+//    RenderableObject* sphere = new RenderableObject(ctm,
+//                                                    _sphereModel,
+//                                                    _textureShaderProgram,
+//                                                    "moonmap1k.jpg");
+//    _myRenderables.push_back(sphere);
 
     //Floor
     ctm.setToIdentity();
-    ctm.scale(5);
+    ctm.scale(8);
     RenderableObject* floor = new RenderableObject(ctm,
                                                    _floorModel,
-                                                   _defaultShaderProgram);
+                                                   _textureShaderProgram,
+                                                   "floor_texture_2_1024px.bmp");
     _myRenderables.push_back(floor);
 }

@@ -1,6 +1,10 @@
 <RCC>
     <qresource prefix="/">
-        <file>floor_texture.jpg</file>
-        <file>moonmap1k.jpg</file>
+        <file>floor_texture_1_122px.jpg</file>
+        <file>floor_texture_1_244px.jpg</file>
+        <file>floor_texture_2_128px.bmp</file>
+        <file>floor_texture_2_256px.bmp</file>
+        <file>floor_texture_2_512px.bmp</file>
+        <file>floor_texture_2_1024px.bmp</file>
     </qresource>
 </RCC>
