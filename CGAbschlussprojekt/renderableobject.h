@@ -31,18 +31,27 @@ private:
     //QOpenGLTexture* _thirdTexture; ?
     //Abhängige RenderableObjects
     QVector<RenderableObject*> _children;
+    //Temp. Lösung - statische Objekte -> speichert eigene TransformationsMatrix
+    QMatrix4x4 _myCTM;
     //(ausgelagerte) Hilfsfunktionen - hauptsächlich zur Übersichtlichkeit
     void _setMainTexture(QString filename);
     void _setSecondTexture(QString filename);
 public:
     //Konstruktor
-    RenderableObject(Model* model,
+    RenderableObject(QMatrix4x4 ctm,
+                     Model* model,
                      QOpenGLShaderProgram* shader,
                      QString const &mainTextureFileName = "",
                      QString const &secondTextureFileName = "");
-    virtual void render(QMatrix4x4 ctm,
+    //Allgemeine Renderfunktion FUTURE Alternative Calls mit ohne Textur etc?
+    virtual void render(QMatrix4x4 parentCTM,
                         QMatrix4x4 const &viewMatrix,
                         QMatrix4x4 const &projectionMatrix);
+    //Tree-Aufbau-Funktion
+    void addChild(RenderableObject* child);
+    //Info Getter
+    bool hasTexture() const;
+    bool hasSecondTexture() const;
 public slots:
     //void update(); //später wahrscheinlich
 };

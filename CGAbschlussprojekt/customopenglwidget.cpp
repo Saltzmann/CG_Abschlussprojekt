@@ -3,6 +3,7 @@
 CustomOpenGLWidget::CustomOpenGLWidget(QWidget *parent) : QOpenGLWidget(parent){
     //Shader initialisieren
     _defaultShaderProgram = new QOpenGLShaderProgram();
+    _textureShaderProgram = new QOpenGLShaderProgram();
 
     //Keyboard und Mouse Input Einstellungsn
     setFocusPolicy(Qt::StrongFocus);
@@ -97,16 +98,26 @@ void CustomOpenGLWidget::initializeGL() {
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
+    //Zum Debuggen - PolygonModes switch
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
     glClearDepth(1.0f);
-    glClearColor(0.25f, 0.25f, 1.f, 0.5f); //erstmal schwarz, nachher vllt irgendein Blau zwecks Himmel?
+    glClearColor(0.4f, 0.5f, 1.f, 0.5f); //erstmal schwarz, nachher vllt irgendein Blau zwecks Himmel?
 
     //shader zu shader-Programmen hinzufügen
     // default shader
     _defaultShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/default440.vert");
     _defaultShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/default440.frag");
 
+    // texture shader
+    _textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/texture440.vert");
+    _textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/texture440.frag");
+
     //Kompiliere und linke die Shader-Programme
     _defaultShaderProgram->link();
+    _textureShaderProgram->link();
 
     //DebugLogger initialisieren (darf nicht in den Konstruktor, weil dort noch kein OpenGL-Kontext vorhanden ist)
     _debugLogger = new QOpenGLDebugLogger(this);
@@ -155,10 +166,11 @@ void CustomOpenGLWidget::paintGL() {
 }
 
 void CustomOpenGLWidget::onMessageLogged(QOpenGLDebugMessage message) {
-    if(message.type() == QOpenGLDebugMessage::PerformanceType &&
-           message.severity() == QOpenGLDebugMessage::LowSeverity) {
-            return;
-        }
+    //Erkenntnis: Das braucht nur mein Laptop :/
+    //if(message.type() == QOpenGLDebugMessage::PerformanceType &&
+    //       message.severity() == QOpenGLDebugMessage::LowSeverity) {
+    //        return;
+    //}
     qDebug() << message;
 }
 
@@ -174,105 +186,32 @@ void CustomOpenGLWidget::resetFPSCounter() {
 }
 
 void CustomOpenGLWidget::_buildGeometry() {
-    //_cubeModel = new Model("hardcoded obj-File");
-
-    QFileInfo fi;
-    fi.setFile("floor.obj");
-    //if(!fi.exists()) {
-    _makeFloor(5);
-    //}
-    //else {
-    //  qDebug() << "floor.obj existiert bereits!";
-    //}
-
-    //_floorModel = new Model("floor.obj");
-
+    //_cubeModel = new Model("cube.obj");
+    _floorModel = new Model("square.obj");
     _sphereModel = new Model("sphere_high.obj");
 }
 
 void CustomOpenGLWidget::_createRenderables() {
+    QMatrix4x4 ctm;
+
     //RenderableObject* cube = new RenderableObject(_cubeModel,
     //                                              _defaultShaderProgram);
     //_myRenderables.push_back(cube);
 
-    RenderableObject* sphere = new RenderableObject(_sphereModel,
-                                                    _defaultShaderProgram);
+    //Sphere
+    ctm.setToIdentity();
+    ctm.translate(0.f, 1.f, 0.f);
+    RenderableObject* sphere = new RenderableObject(ctm,
+                                                    _sphereModel,
+                                                    _textureShaderProgram,
+                                                    "moonmap1k.jpg");
     _myRenderables.push_back(sphere);
 
-    //RenderableObject* floor = new RenderableObject(_floorModel,
-    //                                               _defaultShaderProgram);
-    //_myRenderables.push_back(floor);
-}
-
-void CustomOpenGLWidget::_makeFloor(unsigned short sideLengthInVertices) {
-    unsigned int totalNumberOfVertices = sideLengthInVertices * sideLengthInVertices;
-    QVector<QVector3D> vertices(totalNumberOfVertices); //sideLength x sideLength Felder
-    QVector<QVector3D> normals(1); //weil Fläche sonst totalNumberOfVertices)
-    QVector<QVector2D> texCoords(totalNumberOfVertices);
-    //[AnzahlFlächen = (sideLength-1)² * 2 (bei Triangles)][v/vt/vn][3 Datensätze bei Triangles]
-    unsigned short numberOfFaces = (sideLengthInVertices-1) * (sideLengthInVertices-1) * 2;
-    QVector<QVector<QVector<GLint>>> faces(numberOfFaces);
-
-    //Mit for Schleife füllen erstellen durch Vectoren ist erstmal einfacher
-    float horizontalX = 0.f;
-    float horizontalZ = 0.f;
-    //Vorgezogen weil nur 1 Wert, da überall gleich bei Fläche
-    normals[0] = QVector3D(0.f, 1.f, 0.f);
-    //QVector3D shift =  QVector3D(-1.f, 0.f, -1.f) * (float(sideLengthInVertices) / 2.f); //"Zentrieren"
-    for(unsigned short i = 0; i < totalNumberOfVertices; i++) {
-        vertices[i] = QVector3D(horizontalX, 0.f, horizontalZ);// - shift;
-        //normals[i] = QVector3D(0.f, 1.f, 0.f); //für kompliziertere Formen hier
-        texCoords[i] = QVector2D(horizontalX, horizontalZ) / float(sideLengthInVertices - 1); //müsste so gehen TextureCoords gehen ja von 0-1
-        horizontalX++;
-        if((int)horizontalX % sideLengthInVertices == 0) {
-            horizontalZ++;
-            horizontalX = 0;
-        }
-    }
-
-    unsigned short numOfEntry = 1;
-    for(int i = 0; i < numberOfFaces; i += 2) {
-
-        if((numOfEntry + 1) % sideLengthInVertices == 0) { //aka wenn am Ende der Zeile
-            numOfEntry++;
-        }
-
-        faces[i].resize(3);
-
-        faces[i][0].resize(3);
-        faces[i][0][0] = numOfEntry;
-        faces[i][0][1] = numOfEntry;
-        faces[i][0][2] = 1;
-
-        faces[i][1].resize(3);
-        faces[i][1][0] = (numOfEntry + sideLengthInVertices);
-        faces[i][1][1] = (numOfEntry + sideLengthInVertices);
-        faces[i][1][2] = 1;
-
-        faces[i][2].resize(3);
-        faces[i][2][0] = (numOfEntry + sideLengthInVertices + 1);
-        faces[i][2][1] = (numOfEntry + sideLengthInVertices + 1);
-        faces[i][2][2] = 1;
-
-        faces[i+1].resize(3);
-
-        faces[i+1][0].resize(3);
-        faces[i+1][0][0] = (numOfEntry + sideLengthInVertices + 1);
-        faces[i+1][0][1] = (numOfEntry + sideLengthInVertices + 1);
-        faces[i+1][0][2] = 1;
-
-        faces[i+1][1].resize(3);
-        faces[i+1][1][0] = (numOfEntry + 1);
-        faces[i+1][1][1] = (numOfEntry + 1);
-        faces[i+1][1][2] = 1;
-
-        faces[i+1][2].resize(3);
-        faces[i+1][2][0] = numOfEntry;
-        faces[i+1][2][1] = numOfEntry;
-        faces[i+1][2][2] = 1;
-
-        numOfEntry++;
-    }
-
-    Model::createModelFileFromArrays(vertices, normals, texCoords, faces, "floor"); //SoonTM TODO
+    //Floor
+    ctm.setToIdentity();
+    ctm.scale(5);
+    RenderableObject* floor = new RenderableObject(ctm,
+                                                   _floorModel,
+                                                   _defaultShaderProgram);
+    _myRenderables.push_back(floor);
 }

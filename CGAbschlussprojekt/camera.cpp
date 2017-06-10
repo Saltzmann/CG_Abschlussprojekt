@@ -3,7 +3,7 @@
 Camera::Camera() : _upVector(0.f, 1.f, 0.f) {
     //Kamera initialisieren
     _speedFactor = INITIAL_SPEED_FACTOR;
-    _viewOffset = QVector3D(0.f, 0.f, INITIAL_CAMERA_OFFSET);
+    _viewOffset = QVector3D(0.f, INITIAL_CAMERA_OFFSET_Y, INITIAL_CAMERA_OFFSET_Z);
     _viewDirection = QVector3D(0.f, 0.f, -1.f);
     _rightVector = QVector3D(1.f, 0.f, 0.f);
     emit isUpdated();
@@ -45,7 +45,7 @@ void Camera::resetViewDirection() {
 }
 
 void Camera::resetToDefault() {
-    _viewOffset = QVector3D(0.f, 0.f, INITIAL_CAMERA_OFFSET);
+    _viewOffset = QVector3D(0.f, INITIAL_CAMERA_OFFSET_Y, INITIAL_CAMERA_OFFSET_Z);
     _viewDirection = QVector3D(0.f, 0.f, -1.f);
     _speedFactor = INITIAL_SPEED_FACTOR;
     emit isUpdated();

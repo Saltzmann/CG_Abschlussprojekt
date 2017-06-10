@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>floor_texture.jpg</file>
+        <file>moonmap1k.jpg</file>
+    </qresource>
+</RCC>

@@ -1,19 +1,25 @@
 #include "renderableobject.h"
 
-RenderableObject::RenderableObject(Model* model,
+RenderableObject::RenderableObject(QMatrix4x4 ctm,
+                                   Model* model,
                                    QOpenGLShaderProgram* shader,
                                    QString const &mainTextureFileName,
                                    QString const &secondTextureFileName) {
     //Parameter übertragen/eintragen
     this->_model = model;
     this->_shader = shader;
+    _hasTexture = false;
+    _hasSecondTexture = false;
 
     if(mainTextureFileName.length() != 0) {
         _setMainTexture(mainTextureFileName);
     }
+
     if(secondTextureFileName.length() != 0) {
         _setSecondTexture(secondTextureFileName);
     }
+
+    _myCTM = ctm;
 }
 
 void RenderableObject::_setMainTexture(QString filename) {
@@ -22,6 +28,8 @@ void RenderableObject::_setMainTexture(QString filename) {
     _mainTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
     _mainTexture->setMagnificationFilter(QOpenGLTexture::Linear);
     Q_ASSERT(_mainTexture->textureId() != 0); //Würde Fehler bedeuten
+    _hasTexture = true;
+    qDebug() << "Textur: " << filename << " geladen";
 }
 
 void RenderableObject::_setSecondTexture(QString filename) {
@@ -30,13 +38,17 @@ void RenderableObject::_setSecondTexture(QString filename) {
     _secondTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
     _secondTexture->setMagnificationFilter(QOpenGLTexture::Linear);
     Q_ASSERT(_secondTexture->textureId() != 0); //Würde Fehler bedeuten
+    _hasSecondTexture = true;
+    qDebug() << "Textur: " << filename << " geladen";
 }
 
-void RenderableObject::render(QMatrix4x4 ctm,
+void RenderableObject::render(QMatrix4x4 parentCTM,
                               QMatrix4x4 const &viewMatrix,
                               QMatrix4x4 const &projectionMatrix) {
 
     //TODO CTM Matrix Transformationen
+    QMatrix4x4 ctm;
+    ctm = parentCTM * _myCTM;
 
     for(RenderableObject* x : _children) {
         x->render(ctm,
@@ -83,11 +95,15 @@ void RenderableObject::render(QMatrix4x4 ctm,
     _shader->setUniformValue(unifModelMatrix, ctm); //modelMatrix (immer abhängig vom gerade zu rendernden RenderableObject)
     //_shader->setUniformValue(unifNormMatrix,  (viewMatrix * ctm).normalMatrix()); //berechnete Normalenmatrix
 
-    //Haupt-Textur binden und an shader übergeben
-    //_mainTexture->bind(0);
-    //_shader->setUniformValue("diffuseMap", 0);
-    //_secondTexture->bind(1);
-    //_shader->setUniformValue("bumpMap?!?", 1);
+    //Haupt-Textur (und Zweit-Textur) binden und an shader übergeben
+    if(_hasTexture) {
+        _mainTexture->bind(0);
+        _shader->setUniformValue("diffuseMap", 0);
+    }
+    if(_hasSecondTexture) {
+        _secondTexture->bind(1);
+        _shader->setUniformValue("bumpMap?!?", 1);
+    }
 
     //Element zeichnen lassen
     glDrawElements(GL_TRIANGLES, _model->iboLength(), GL_UNSIGNED_INT, 0);
@@ -103,10 +119,26 @@ void RenderableObject::render(QMatrix4x4 ctm,
     _shader->release();
 
     // Löse die Textur aus dem OpenGL-Kontext
-    //_mainTexture->release();
-    //_secondTexture->release();
+    if(_hasTexture) {
+        _mainTexture->release();
+    }
+    if(_hasSecondTexture) {
+        _secondTexture->release();
+    }
 
     //VBO und IBO vom Kontext lösen
     _model->getVBOBufferPtr()->release();
     _model->getIBOBufferPtr()->release();
+}
+
+void RenderableObject::addChild(RenderableObject* child) {
+    _children.push_back(child);
+}
+
+bool RenderableObject::hasTexture() const {
+    return _hasTexture;
+}
+
+bool RenderableObject::hasSecondTexture() const {
+    return _hasSecondTexture;
 }

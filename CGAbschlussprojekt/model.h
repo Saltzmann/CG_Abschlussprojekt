@@ -40,13 +40,10 @@ private:
 public:
     //Konstruktor
     Model(QString const &modelFileName = "");
+
     //Lade Funktionen
     void loadModelFromFile(QString const &modelFileName);
-    static void createModelFileFromArrays(QVector<QVector3D> const &vertexArray,
-                                          QVector<QVector3D> const &normalArray,
-                                          QVector<QVector2D> const &texCoordArray,
-                                          QVector<QVector<QVector<GLint>>> const &indexArray,
-                                          QString const &fileName);
+
     //Getter die nicht kopieren und auch Manipulation zulassen
     QOpenGLBuffer* getVBOBufferPtr();
     QOpenGLBuffer* getIBOBufferPtr();

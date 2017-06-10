@@ -45,6 +45,7 @@ protected:
 
     //Shader
     QOpenGLShaderProgram* _defaultShaderProgram;
+    QOpenGLShaderProgram* _textureShaderProgram;
 
     //GUI Hilfsvariablen
     unsigned int _fpsCounter;
@@ -57,7 +58,6 @@ protected:
     //Hilfsfunktionen
     void _buildGeometry();
     void _createRenderables();
-    void _makeFloor(unsigned short sideLengthInVertices);
 public:
     //Konstruktor
     CustomOpenGLWidget(QWidget *parent);

@@ -13,7 +13,7 @@ void Model::_initializeVBOs(QString const &modelFileName) {
     ModelLoader model;
     QDir currentDir;
     //SoonTM nächster Versuch für einen relativen Pfad
-    qDebug() << "CurrentDir CanonicalPath = " << currentDir.canonicalPath();
+    //qDebug() << "CurrentDir CanonicalPath = " << currentDir.canonicalPath();
     std::string absolutePath = currentDir.canonicalPath().toStdString() + "/" + modelFileName.toStdString();
     bool res = model.loadObjectFromFile(absolutePath);
     //bool res = model.loadObjectFromFile("C:/Users/Tobias/Documents/GitHub/CG_Abschlussprojekt/CGAbschlussprojekt/sphere_high.obj");
@@ -31,11 +31,11 @@ void Model::_initializeVBOs(QString const &modelFileName) {
         //Generiere VBO und IBO Data mit vertices, normals, texCoords
         model.genVBO(_vboData);
         model.genIndexArray(_indexData);
-        qDebug() << "Models laden erfolgreich!";
+        qDebug() << "Model laden erfolgreich!";
     }
     else {
         // Modell konnte nicht geladen werden
-        qDebug() << "Models laden fehlgeschlagen!";
+        qDebug() << "Model laden fehlgeschlagen!";
         _hasModelLoaded = false;
         Q_ASSERT(false); //gewollter Programmabbruch
     }
@@ -90,52 +90,6 @@ void Model::loadModelFromFile(QString const &modelFileName)  {
     _hasModelLoaded = false;
     _fillBuffers(modelFileName);
 }
-
-void Model::createModelFileFromArrays(QVector<QVector3D> const &vertexArray,
-                                      QVector<QVector3D> const &normalArray,
-                                      QVector<QVector2D> const &texCoordArray,
-                                      QVector<QVector<QVector<GLint>>> const &indexArray,
-                                      QString const &fileName) {
-
-    QFile newFile(QDir::currentPath() + "/" + fileName + ".obj");
-    //qDebug() << currentDir.currentPath()  + "/" + fileName + ".obj";
-    if(!newFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qDebug() << "Konnte File nicht öffnen";
-        return;
-    }
-
-    QTextStream out(&newFile);
-
-    //out << "# " << fileName << ".obj" << "\n";
-
-    for(QVector3D vert : vertexArray) {
-        out << "v " << vert.x() << " " << vert.y() << " " << vert.z() << "\n";
-    }
-    for(QVector2D texC : texCoordArray) {
-        out << "vt " << texC.x() << " " << texC.y() << "\n";
-    }
-    for(QVector3D norm : normalArray) {
-        out << "vn " << norm.x() << " " << norm.y() << " " << norm.z() << "\n";
-    }
-
-    out << "usemtl Default_Smoothing" << "\n" << "s 1" << "\n";
-
-    for(QVector<QVector<GLint>> facesLine : indexArray) {
-        out << "f " << facesLine[0][0] << "/" <<
-                       facesLine[0][1] << "/" <<
-                       facesLine[0][2] << " " <<
-                       facesLine[1][0] << "/" <<
-                       facesLine[1][1] << "/" <<
-                       facesLine[1][2] << " " <<
-                       facesLine[2][0] << "/" <<
-                       facesLine[2][1] << "/" <<
-                       facesLine[2][2] << "\n";
-    }
-
-    newFile.close();
-    qDebug() << "Neue Datei: " << newFile.fileName() << " erfolgreich erstellt";
-}
-
 
 //Getter die nicht kopieren und auch Manipulation zulassen
 QOpenGLBuffer* Model::getVBOBufferPtr() {

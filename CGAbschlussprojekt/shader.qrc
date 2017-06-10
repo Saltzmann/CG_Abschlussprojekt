@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>default440.frag</file>
         <file>default440.vert</file>
+        <file>texture440.frag</file>
+        <file>texture440.vert</file>
     </qresource>
 </RCC>

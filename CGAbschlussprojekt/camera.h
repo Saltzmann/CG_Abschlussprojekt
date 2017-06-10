@@ -16,7 +16,8 @@
 
 //Define Regler, für schnellen Zugriff ohne im Code zu wühlen
 #define UPDATE_RATE 60
-#define INITIAL_CAMERA_OFFSET 3.0f
+#define INITIAL_CAMERA_OFFSET_Z 5.0f
+#define INITIAL_CAMERA_OFFSET_Y 2.0f
 #define INITIAL_SPEED_FACTOR 0.25
 #define TICKRATE 1000/UPDATE_RATE
 #define CAMERA_TURN_SPEED 1.f/5.f
