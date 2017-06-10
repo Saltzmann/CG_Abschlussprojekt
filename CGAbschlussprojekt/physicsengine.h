@@ -13,6 +13,7 @@ public:
 
     void addRigidBody(const RigidBody& rb);
     void simulate(const float deltaTime);
+    void checkForCollisions();
 
 private:
     QVector<RigidBody> m_rigidBodys;

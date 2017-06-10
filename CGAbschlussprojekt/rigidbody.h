@@ -15,6 +15,8 @@ public:
     inline QVector3D getPosition() const { return m_position; }
     inline QVector3D getVelocity() const { return m_velocity; }
 
+    const  Collider& getCollider() const { return *m_collider; }
+
     // Simple setter
     inline void setPosition(const QVector3D& position) { m_position = position; }
     inline void setVelocity(const QVector3D& velocity) { m_velocity = velocity; }

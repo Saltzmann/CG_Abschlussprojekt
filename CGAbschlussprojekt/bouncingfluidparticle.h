@@ -13,10 +13,15 @@ public:
           m_center(position),
           m_radius(radius) {}
 
+    // Simple getter
+    inline QVector3D getCenter() { return m_center; }
+    inline float getRadius() { return m_radius; }
+
+    // Collision Detection for other Particles
     CollisionData collisionBfp(const BouncingFluidParticle& other);
 
 private:
-    float       m_center;
+    QVector3D   m_center;
     float       m_radius;
 };
 

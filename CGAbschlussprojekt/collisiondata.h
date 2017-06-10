@@ -6,11 +6,14 @@ class CollisionData
 {
 public:
     CollisionData(bool collided, float diff)
-        : didCollide(collided), difference(diff) {}
+        : m_didCollide(collided), m_difference(diff) {}
+
+    inline const bool  didCollide() { return m_didCollide; }
+    inline const float getDifference() { return m_difference; }
 
 private:
-    const bool  didCollide;
-    const float difference;
+    const bool  m_didCollide;
+    const float m_difference;
 };
 
 #endif // COLLISIONDATA_H

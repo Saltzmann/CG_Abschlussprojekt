@@ -1,4 +1,5 @@
 #include "collider.h"
+#include "bouncingfluidparticle.h"
 
 CollisionData Collider::collision(const Collider& other)
 {
@@ -8,10 +9,11 @@ CollisionData Collider::collision(const Collider& other)
         switch(other.getType())
         {
         case TYPE_SPHERE:
-            // add collision response
+            BouncingFluidParticle* bfp = (BouncingFluidParticle*)this;
+            return bfp->collisionBfp((BouncingFluidParticle&)other);
             break;
         case TYPE_AABB:
-            // add collision response
+            exit(-1); // Not implemented yet
             break;
         }
 
@@ -20,10 +22,10 @@ CollisionData Collider::collision(const Collider& other)
         switch(other.getType())
         {
         case TYPE_SPHERE:
-            // add collision response
+            exit(-1); // Not implemented yet
             break;
         case TYPE_AABB:
-            // add collision response
+            exit(-1); // Not implemented yet
             break;
         }
 
