@@ -49,11 +49,11 @@ void Model::_initializeVBOs(QString const &modelFileName) {
     else {
         _vertOffset = 0;
         _normOffset = _vertOffset + 4 * sizeof(GLfloat);
-        _texCoordOffset = -1;
+        _texCoordOffset = 0;
         _stride = 8 * sizeof(GLfloat);
     }
 
-    //Schreibe Daten in Buffer-Objekte
+    //Schreibe Daten in Buffer-Objekte (unsigned int to int implizit ist ok hier)
     _vbo.allocate(_vboData, sizeof(GLfloat) * _vboLength);
     _ibo.allocate(_indexData, sizeof(GLuint) * _iboLength);
 
@@ -106,10 +106,10 @@ GLuint* Model::indexData() {
 }
 
 //Einfache Getter, die nur kopieren
-unsigned int Model::vboLength() const {
+size_t Model::vboLength() const {
     return _vboLength;
 }
-unsigned int Model::iboLength() const {
+size_t Model::iboLength() const {
     return _iboLength;
 }
 unsigned short Model::vertOffset() const {

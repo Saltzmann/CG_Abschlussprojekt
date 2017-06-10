@@ -103,7 +103,7 @@ void CustomOpenGLWidget::initializeGL() {
     //glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    glClearDepth(1.0f);
+    glClearDepth(1.0);
     glClearColor(0.4f, 0.5f, 1.f, 0.5f); //erstmal schwarz, nachher vllt irgendein Blau zwecks Himmel?
 
     //shader zu shader-Programmen hinzufügen
@@ -150,7 +150,7 @@ void CustomOpenGLWidget::paintGL() {
 
     //ProjectionMatrix setzen, bleibt während aller aufrufe der Kinder konstant
     projectionMatrix.setToIdentity();
-    projectionMatrix.perspective(60.0, 16.0/9.0, 0.1, 10000.0);
+    projectionMatrix.perspective(60.0f, 16.0f/9.0f, 0.1f, 10000.0f);
 
     //Alle Render-Wurzel-Elemente ohne Abhängigkeiten starten Render aufruf
     for(RenderableObject* x : _myRenderables) {
@@ -161,7 +161,7 @@ void CustomOpenGLWidget::paintGL() {
 
     //1 Durchlauf = 1 Frameupdate -> FPS zählen zum berechnen
     _fpsCounter++;
-    emit sendFPSValue(_actualFPS);
+    emit sendFPSValue(int(_actualFPS));
     this->update();
 }
 

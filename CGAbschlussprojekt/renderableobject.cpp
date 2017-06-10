@@ -82,7 +82,7 @@ void RenderableObject::render(QMatrix4x4 parentCTM,
     }
 
     // Fülle die Attribute-Buffer mit den korrekten Daten
-    size_t model_stride = _model->stride(); //reduziert von 3 auf 1 Aufruf
+    size_t model_stride = _model->stride(); //reduziert von 3 auf 1 Aufruf (implizit uint in int ist aktzeptabel - kein Werteverlust)
     _shader->setAttributeBuffer(attrVertices, GL_FLOAT, _model->vertOffset(), 4, model_stride); //VertexPositionen
     _shader->setAttributeBuffer(attrNorms, GL_FLOAT, _model->normOffset(), 4, model_stride); //VertexNormalen
     if(_model->hasTextureCoords()) {
@@ -105,7 +105,7 @@ void RenderableObject::render(QMatrix4x4 parentCTM,
         _shader->setUniformValue("bumpMap?!?", 1);
     }
 
-    //Element zeichnen lassen
+    //Element zeichnen lassen (implizit uint in int ist aktzeptabel - kein Werteverlust)
     glDrawElements(GL_TRIANGLES, _model->iboLength(), GL_UNSIGNED_INT, 0);
 
     // Deaktiviere die Verwendung der Attribute-Arrays

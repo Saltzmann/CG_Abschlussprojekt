@@ -23,8 +23,8 @@ private:
     QOpenGLBuffer _ibo;
     GLfloat* _vboData;
     GLuint* _indexData;
-    unsigned int _vboLength;
-    unsigned int _iboLength;
+    size_t _vboLength;
+    size_t _iboLength;
     unsigned short _vertOffset;
     unsigned short _normOffset;
     unsigned short _texCoordOffset;
@@ -51,8 +51,8 @@ public:
     GLuint* indexData();
 
     //Einfache Getter, die nur kopieren
-    unsigned int vboLength() const;
-    unsigned int iboLength() const;
+    size_t vboLength() const;
+    size_t iboLength() const;
     unsigned short vertOffset() const;
     unsigned short normOffset() const;
     unsigned short texCoordOffset() const;
