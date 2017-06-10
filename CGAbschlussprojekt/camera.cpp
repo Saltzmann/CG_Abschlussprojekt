@@ -75,7 +75,7 @@ void Camera::alterSpeed(float modificator) {
 bool Camera::mousePosUpdate(QMouseEvent* event) {
     QVector2D currentMousePosition = QVector2D(event->windowPos());
     QVector2D mouseDelta =  currentMousePosition - _oldMousePosition;
-    if(mouseDelta.length() == 0) {
+    if(mouseDelta.length() == 0.f) {
         return false;
     }
     _oldMousePosition = currentMousePosition;
@@ -84,13 +84,13 @@ bool Camera::mousePosUpdate(QMouseEvent* event) {
 }
 
 bool Camera::mouseWheelUpdate(QWheelEvent* event) {
-    int numDegrees = (event->angleDelta() / 8).y() * -1; // durch 8 weil dann Angabe in Grad (* -1) für speed + nach oben
+    int numDegrees = (event->angleDelta() / 8).y(); // durch 8 weil dann Angabe in Grad (* -1) für speed + nach oben
 
     if (numDegrees != 0) {
        int numSteps = numDegrees / 15; //Jeder Step = 15°
-       //0.1 als Modifikator damit man nicht zu schnell zoomt
+       //0.05 als Modifikator damit man nicht zu schnell zoomt
        //Wert ist auf Touchpad ausgelegt, eventuell TODO für Mausrad anpassen
-       this->alterSpeed((float)numSteps * 0.1);
+       this->alterSpeed(float(numSteps) * 0.05f);
        return true;
     }
     return false;
@@ -98,28 +98,28 @@ bool Camera::mouseWheelUpdate(QWheelEvent* event) {
 
 bool Camera::keyPressUpdate(QKeyEvent* event) {
     switch (event->key()) {
-    case (int)Qt::Key_W: //nach vorne
+    case Qt::Key_W: //nach vorne
         this->moveForward();
         break;
-    case (int)Qt::Key_S: //nach hinten
+    case Qt::Key_S: //nach hinten
         this->moveBackward();
         break;
-    case (int)Qt::Key_D: //nach rechts (strafe)
+    case Qt::Key_D: //nach rechts (strafe)
         this->moveRight();
         break;
-    case (int)Qt::Key_A: //nach links (strafe)
+    case Qt::Key_A: //nach links (strafe)
         this->moveLeft();
         break;
-    case (int)Qt::Key_R: //nach oben (strafe)
+    case Qt::Key_R: //nach oben (strafe)
         this->moveUp();
         break;
-    case (int)Qt::Key_F: //nach unten (strafe)
+    case Qt::Key_F: //nach unten (strafe)
         this->moveDown();
         break;
-    case (int)Qt::Key_N: //Nur Blickrichtung zurücksetzen
+    case Qt::Key_N: //Nur Blickrichtung zurücksetzen
         this->resetViewDirection();
         break;
-    case (int)Qt::Key_B: //Kamera kommplett zurücksetzen
+    case Qt::Key_B: //Kamera kommplett zurücksetzen
         this->resetToDefault();
         break;
     default:
