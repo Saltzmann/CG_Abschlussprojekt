@@ -37,6 +37,7 @@ private:
     QVector3D const _upVector;
     QVector3D _rightVector;
 
+    bool _mouseCaptured; //TODO Taste zum Umschalten einbauen dass man nicht immer AltF4n muss!
     QPoint _windowPos;
     QPoint _midWindowPos;
 public:
