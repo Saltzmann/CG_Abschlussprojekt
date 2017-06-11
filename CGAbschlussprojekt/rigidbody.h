@@ -5,6 +5,9 @@
 #include "rigidbodyconstants.h"
 #include <QVector3D>
 
+// Füge den RigidBody als Membervariable einer Klasse hinzu, um diesem
+//  physikalische Eigenschaften zugänglich zu machen
+
 class RigidBody
 {
 public:
