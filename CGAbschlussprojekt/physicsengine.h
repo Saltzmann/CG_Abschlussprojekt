@@ -5,21 +5,25 @@
 #include "collisionresponse.h"
 #include "rigidbody.h"
 #include <QVector>
+//#include <QTimer>
 
-class PhysicsEngine
+namespace Physics
 {
-public:
-    PhysicsEngine() { }
+    class PhysicsEngine
+    {
+    public:
+        PhysicsEngine() { }
 
-    void addRigidBody(RigidBody& rb);
-    void simulate(float deltaTime);
-    // Reagiere auf checkForCollisions mit m_collisionResponse Methoden
-    void checkForCollisions();
+        void addRigidBody(RigidBody& rb);
+        void simulate(float deltaTime);
+        // Reagiere auf checkForCollisions mit m_collisionResponse Methoden
+        void checkForCollisions();
 
-private:
-    QVector<RigidBody> m_physicsObjects;
-    CollisionDetectionData m_collisionDetectionData;
-    CollisionResponse m_collisionResponse;
-};
+    private:
+        QVector<RigidBody> m_physicsObjects;
+        CollisionDetectionData m_collisionDetectionData;
+        CollisionResponse m_collisionResponse;
+    };
+}
 
 #endif // PHYISCSENGINE_H

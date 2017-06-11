@@ -1,36 +1,39 @@
 #include "physicsengine.h"
 #include "collisiondata.h"
 
-void PhysicsEngine::addRigidBody(RigidBody& rb)
+namespace Physics
 {
-    m_physicsObjects.push_back(rb);
-}
-
-void PhysicsEngine::simulate(float deltaTime)
-{
-    const QVector<RigidBody>::size_type VEC_SIZE = m_physicsObjects.size();
-
-    for (QVector<RigidBody>::size_type i = 0; i < VEC_SIZE; ++i)
+    void PhysicsEngine::addRigidBody(RigidBody& rb)
     {
-        const_cast<RigidBody&>(m_physicsObjects.at(i)).move(deltaTime);
+        m_physicsObjects.push_back(rb);
     }
-}
 
-void PhysicsEngine::checkForCollisions()
-{
-    const QVector<RigidBody>::size_type VEC_SIZE = m_physicsObjects.size();
-
-    for (QVector<RigidBody>::size_type i = 0; i < VEC_SIZE; ++i)
+    void PhysicsEngine::simulate(float deltaTime)
     {
-        for (QVector<RigidBody>::size_type j = i + 1; j < VEC_SIZE; ++j)
-        {
-            CollisionData cd = const_cast<RigidBody&>(m_physicsObjects.at(i)).getCollider()
-                    .intersect(const_cast<RigidBody&>(m_physicsObjects.at(j)).getCollider());
+        const QVector<RigidBody>::size_type VEC_SIZE = m_physicsObjects.size();
 
-            if (cd.didCollide())
-                m_collisionDetectionData.addCollisionPair(
-                            const_cast<RigidBody&>(m_physicsObjects.at(i)),
-                            const_cast<RigidBody&>(m_physicsObjects.at(j)));
+        for (QVector<RigidBody>::size_type i = 0; i < VEC_SIZE; ++i)
+        {
+            const_cast<RigidBody&>(m_physicsObjects.at(i)).move(deltaTime);
+        }
+    }
+
+    void PhysicsEngine::checkForCollisions()
+    {
+        const QVector<RigidBody>::size_type VEC_SIZE = m_physicsObjects.size();
+
+        for (QVector<RigidBody>::size_type i = 0; i < VEC_SIZE; ++i)
+        {
+            for (QVector<RigidBody>::size_type j = i + 1; j < VEC_SIZE; ++j)
+            {
+                CollisionData cd = const_cast<RigidBody&>(m_physicsObjects.at(i)).getCollider()
+                        ->intersect(*(const_cast<RigidBody&>(m_physicsObjects.at(j)).getCollider()));
+
+                if (cd.didCollide())
+                    m_collisionDetectionData.addCollisionPair(
+                                const_cast<RigidBody&>(m_physicsObjects.at(i)).getCollider(),
+                                const_cast<RigidBody&>(m_physicsObjects.at(j)).getCollider());
+            }
         }
     }
 }

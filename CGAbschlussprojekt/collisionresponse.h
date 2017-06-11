@@ -2,16 +2,18 @@
 #define COLLISIONRESPONSE_H
 
 
-class CollisionResponse
+namespace Physics
 {
-public:
-    CollisionResponse();
+    class CollisionResponse
+    {
+    public:
+        CollisionResponse();
 
-    // oder polymorphie benutzen und virtual eigenschaft vergeben
-    static void response();
+        // oder polymorphie benutzen und virtual eigenschaft vergeben
+        static void response();
 
-private:
+    private:
 
-};
-
+    };
+}
 #endif // COLLISIONRESPONSE_H

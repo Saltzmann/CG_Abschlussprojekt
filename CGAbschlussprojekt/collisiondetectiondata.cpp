@@ -1,18 +1,21 @@
 #include "collisiondetectiondata.h"
 
-CollisionDetectionData::~CollisionDetectionData()
+namespace Physics
 {
-    m_collisionDetectionMap.clear();
-}
+    CollisionDetectionData::~CollisionDetectionData()
+    {
+        m_collisionDetectionMap.clear();
+    }
 
-void CollisionDetectionData::addCollisionPair(ICollider* first,
-                                              ICollider* second)
-{
-   m_collisionDetectionMap.insert(first, second);
-}
+    void CollisionDetectionData::addCollisionPair(ICollider* first,
+                                                  ICollider* second)
+    {
+       m_collisionDetectionMap.insert(first, second);
+    }
 
-void CollisionDetectionData::removeCollisionPair(ICollider* first,
-                                                 ICollider* second)
-{
-    m_collisionDetectionMap.remove(first, second);
+    void CollisionDetectionData::removeCollisionPair(ICollider* first,
+                                                     ICollider* second)
+    {
+        m_collisionDetectionMap.remove(first, second);
+    }
 }
