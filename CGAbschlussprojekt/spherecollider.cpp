@@ -26,11 +26,13 @@ CollisionData intersectSphereCollider(const SphereCollider& first, const SphereC
     return CollisionData(false, curDistance - maxDistance);
 }
 
+// TODO: implement Sphere - AABB collision detection
 CollisionData intersectAABBCollider(const SphereCollider& first, const AABBCollider& second)
 {
     throw new std::logic_error("Not implemented yet");
 }
 
+// TODO: implement Sphere - Plane collision detection
 CollisionData intersectPlaneCollider(const SphereCollider& first, const PlaneCollider& second)
 {
     throw new std::logic_error("Not implemented yet");
