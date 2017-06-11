@@ -14,15 +14,24 @@
 //externe includes
 #include <model.h>
 
+//Shader-Code defines
+#define SHADER_DEFAULT 0x0001
+#define SHADER_TEXTURE 0x0002
+#define SHADER_MELT    0x0003
+
+
 class RenderableObject : public QObject {
     Q_OBJECT
 private:
     //Referenzen bilden 'Render-Konfiguration'
     //Geometrie
     Model* _model;
+    bool _modelHasTextureCoords; //für Performanz nur 1x
     //QMatrix4x4 _ctm; //später hier sinnvoll?
     //Optik
+    int _shaderFlag;
     QOpenGLShaderProgram* _shader;
+    QVector4D _baseColor;
     QOpenGLTexture* _mainTexture;
     QOpenGLTexture* _secondTexture;
     //Bool-Flags ob überhaupt Texturen vorhanden sind
@@ -36,15 +45,27 @@ private:
     //(ausgelagerte) Hilfsfunktionen - hauptsächlich zur Übersichtlichkeit
     void _setMainTexture(QString filename);
     void _setSecondTexture(QString filename);
+    //verschiedene Renderfunktionen
+    void _renderWithDefaultShader(QMatrix4x4 const &parentCTM,
+                                  QMatrix4x4 const &viewMatrix,
+                                  QMatrix4x4 const &projectionMatrix);
+    void _renderWithTextureShader(QMatrix4x4 const &parentCTM,
+                                  QMatrix4x4 const &viewMatrix,
+                                  QMatrix4x4 const &projectionMatrix);
+    void _renderWithMeltShader(QMatrix4x4 const &parentCTM,
+                               QMatrix4x4 const &viewMatrix,
+                               QMatrix4x4 const &projectionMatrix);
 public:
     //Konstruktor
     RenderableObject(QMatrix4x4 ctm,
                      Model* model,
+                     int shaderTypeFlag,
                      QOpenGLShaderProgram* shader,
+                     QVector4D const &baseColor,
                      QString const &mainTextureFileName = "",
                      QString const &secondTextureFileName = "");
-    //Allgemeine Renderfunktion FUTURE Alternative Calls mit ohne Textur etc?
-    virtual void render(QMatrix4x4 parentCTM,
+    //Allgemeine Renderfunktion
+    virtual void render(QMatrix4x4 const &parentCTM,
                         QMatrix4x4 const &viewMatrix,
                         QMatrix4x4 const &projectionMatrix);
     //Tree-Aufbau-Funktion
