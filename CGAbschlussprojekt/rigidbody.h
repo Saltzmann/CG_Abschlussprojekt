@@ -42,6 +42,7 @@ private:
     ICollider* m_rbCollider;
 
     QVector3D  m_rbPosition;
+    QVector3D  m_rbOldPosition;
     QVector3D  m_rbVelocity;
     QVector3D  m_rbForce; // = || != velocity? TODO
     float      m_rbMass;
