@@ -11,6 +11,7 @@
 class RigidBody
 {
 public:
+    RigidBody() { }
     RigidBody(ICollider* collider,
               const QVector3D& pos,
               const QVector3D& vel,
@@ -29,9 +30,10 @@ public:
     void clearForce();
 
     // Simple getters
-    inline QVector3D getPosition() const { return m_rbPosition; }
-    inline QVector3D getVelocity() const { return m_rbVelocity; }
-    inline float     getMass() const { return m_rbMass; }
+    inline QVector3D  getPosition() const { return m_rbPosition; }
+    inline QVector3D  getVelocity() const { return m_rbVelocity; }
+    inline float      getMass()     const { return m_rbMass; }
+    inline ICollider& getCollider() const { return *m_rbCollider; }
 
     // Simple setters
     inline void setPosition(const QVector3D& pos) { m_rbPosition = pos; }

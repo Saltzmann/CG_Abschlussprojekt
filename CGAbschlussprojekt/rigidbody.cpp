@@ -1,5 +1,10 @@
 #include "rigidbody.h"
 
+RigidBody::~RigidBody()
+{
+
+}
+
 void RigidBody::move(float deltaTime)
 {
     QVector3D translated = m_rbPosition - m_rbOldPosition;

@@ -9,9 +9,9 @@
 class PhysicsEngine
 {
 public:
-    PhysicsEngine();
+    PhysicsEngine() { }
 
-    void addRigidBody(const RigidBody& rb);
+    void addRigidBody(RigidBody& rb);
     void simulate(float deltaTime);
     // Reagiere auf checkForCollisions mit m_collisionResponse Methoden
     void checkForCollisions();
