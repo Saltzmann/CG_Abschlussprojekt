@@ -3,16 +3,20 @@
 
 //Generelle Includes
 #include <QObject>
+#include <QOpenGLWidget>
 //Debug Includes
 #include <QDebug>
 //Datenstruktur Includes
+#include <QPoint>
 #include <QVector2D>
 #include <QVector3D>
 #include <QMatrix4x4>
 //Mouse / Keyboard Input Includes
+#include <QCursor>
 #include <QKeyEvent>
 #include <QWheelEvent>
 #include <QMouseEvent>
+#include <QMoveEvent>
 
 //Define Regler, für schnellen Zugriff ohne im Code zu wühlen
 #define UPDATE_RATE 60
@@ -25,16 +29,19 @@
 class Camera : public QObject {
     Q_OBJECT
 private:
+    QOpenGLWidget* _parent;
     //Kameraführungs-Variablen
     float _speedFactor;
     QVector3D _viewOffset;
     QVector3D _viewDirection;
     QVector3D const _upVector;
     QVector3D _rightVector;
-    QVector2D _oldMousePosition;
+
+    QPoint _windowPos;
+    QPoint _midWindowPos;
 public:
     //Konstruktor
-    Camera();
+    Camera(QOpenGLWidget* parent);
 
     //Bewegungsfunktionen
     inline void moveForward();
@@ -52,6 +59,7 @@ public:
     bool mousePosUpdate(QMouseEvent* event);
     bool mouseWheelUpdate(QWheelEvent* event);
     bool keyPressUpdate(QKeyEvent* event);
+    bool windowPosUpdate(QMoveEvent* event);
 
     //Return Funktion der Kamera Klasse, die zum Rendern verwendet wird
     void getViewMatrix(QMatrix4x4 &inputMatrix) const;
