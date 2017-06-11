@@ -130,3 +130,25 @@ bool Model::hasTextureCoords() const {
 bool Model::hasModelLoaded() const {
     return _hasModelLoaded;
 }
+
+void Model::printVBOData() {
+    if(_hasModelLoaded) {
+        if(_hasTextureCoords) {
+            qDebug() << "Model mit Textur-Koordinaten";
+        }
+        else {
+            qDebug() << "Model ohne Textur-Koordinaten";
+        }
+        for(unsigned int i = 0; i < _vboLength; i++) {
+            qDebug() << "_vboData[" << i << "] : " << _vboData[i];
+        }
+    }
+}
+
+void Model::printIBOData() {
+    if(_hasModelLoaded) {
+        for(unsigned int i = 0; i < _iboLength; i++) {
+            qDebug() << "_indexData[" << i << "] : " << _indexData[i];
+        }
+    }
+}

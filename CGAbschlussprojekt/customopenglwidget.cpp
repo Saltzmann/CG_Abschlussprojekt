@@ -4,6 +4,8 @@ CustomOpenGLWidget::CustomOpenGLWidget(QWidget *parent) : QOpenGLWidget(parent){
     //Shader initialisieren
     _defaultShaderProgram = new QOpenGLShaderProgram();
     _textureShaderProgram = new QOpenGLShaderProgram();
+    _meltingShaderProgram = new QOpenGLShaderProgram();
+    _normalDrawShaderProgram = new QOpenGLShaderProgram();
 
     //Keyboard und Mouse Input Einstellungsn
     setFocusPolicy(Qt::StrongFocus);
@@ -116,9 +118,20 @@ void CustomOpenGLWidget::initializeGL() {
     _textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/texture440.vert");
     _textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/texture440.frag");
 
+    // melting shader
+    _meltingShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/melt440.vert");
+    _meltingShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/melt440.frag");
+
+    // normal drawing shader
+    _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/normalDraw440.vert");
+    _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/normalDraw440.frag");
+    _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Geometry, ":/normalDraw440.geom");
+
     //Kompiliere und linke die Shader-Programme
     _defaultShaderProgram->link();
     _textureShaderProgram->link();
+    _meltingShaderProgram->link();
+    _normalDrawShaderProgram->link();
 
     //DebugLogger initialisieren (darf nicht in den Konstruktor, weil dort noch kein OpenGL-Kontext vorhanden ist)
     _debugLogger = new QOpenGLDebugLogger(this);
@@ -189,6 +202,8 @@ void CustomOpenGLWidget::resetFPSCounter() {
 void CustomOpenGLWidget::_buildGeometry() {
     _cubeModel = new Model("cube.obj");
     _floorModel = new Model("square.obj");
+    //_floorModel->printVBOData();
+    //_floorModel->printIBOData();
     _sphereModel = new Model("sphere_high.obj");
 }
 
@@ -200,8 +215,9 @@ void CustomOpenGLWidget::_createRenderables() {
     ctm.translate(0.f, 0.5f, 0.f);
     RenderableObject* cube = new RenderableObject(ctm,
                                                   _cubeModel,
-                                                  SHADER_DEFAULT,
-                                                  _defaultShaderProgram,
+                                                  SHADER_MELT,
+                                                  _meltingShaderProgram,
+                                                  _normalDrawShaderProgram,
                                                   QVector4D(0.5f, 0.5f, 1.f, 1.f));
     _myRenderables.push_back(cube);
 
@@ -221,6 +237,7 @@ void CustomOpenGLWidget::_createRenderables() {
                                                    _floorModel,
                                                    SHADER_TEXTURE,
                                                    _textureShaderProgram,
+                                                   nullptr,
                                                    QVector4D(1.f, 0.f, 0.f, 1.f),
                                                    "floor_texture_2_1024px.bmp");
     _myRenderables.push_back(floor);

@@ -45,6 +45,8 @@ protected:
     //Shader
     QOpenGLShaderProgram* _defaultShaderProgram;
     QOpenGLShaderProgram* _textureShaderProgram;
+    QOpenGLShaderProgram* _meltingShaderProgram;
+    QOpenGLShaderProgram* _normalDrawShaderProgram;
 
     //GUI Hilfsvariablen
     unsigned int _fpsCounter;
