@@ -26,7 +26,6 @@
 #include <model.h>
 #include <renderableobject.h>
 
-
 class CustomOpenGLWidget : public QOpenGLWidget,
                            protected QOpenGLFunctions {
     Q_OBJECT

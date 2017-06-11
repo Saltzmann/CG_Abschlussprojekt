@@ -200,7 +200,9 @@ void CustomOpenGLWidget::_createRenderables() {
     ctm.translate(0.f, 0.5f, 0.f);
     RenderableObject* cube = new RenderableObject(ctm,
                                                   _cubeModel,
-                                                  _defaultShaderProgram);
+                                                  SHADER_DEFAULT,
+                                                  _defaultShaderProgram,
+                                                  QVector4D(0.5f, 0.5f, 1.f, 1.f));
     _myRenderables.push_back(cube);
 
     //Sphere
@@ -217,7 +219,9 @@ void CustomOpenGLWidget::_createRenderables() {
     ctm.scale(8);
     RenderableObject* floor = new RenderableObject(ctm,
                                                    _floorModel,
+                                                   SHADER_TEXTURE,
                                                    _textureShaderProgram,
+                                                   QVector4D(1.f, 0.f, 0.f, 1.f),
                                                    "floor_texture_2_1024px.bmp");
     _myRenderables.push_back(floor);
 }
