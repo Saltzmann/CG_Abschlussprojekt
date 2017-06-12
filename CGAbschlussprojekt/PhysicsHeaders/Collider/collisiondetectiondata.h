@@ -1,7 +1,8 @@
 #ifndef COLLISIONDETECTIONDATA_H
 #define COLLISIONDETECTIONDATA_H
 
-#include "icollider.h"
+#include "./PhysicsHeaders/Collider/icollider.h"
+#include "./PhysicsHeaders/Engine/rigidbody.h"
 #include <QMultiMap>
 
 namespace Physics
@@ -12,15 +13,15 @@ namespace Physics
         CollisionDetectionData() {}
         ~CollisionDetectionData();
 
-        void addCollisionPair(ICollider* first, ICollider* second);
-        void removeCollisionPair(ICollider* first, ICollider* second);
+        void addCollisionPair(RigidBody* first, RigidBody* second);
+        void removeCollisionPair(RigidBody* first, RigidBody* second);
 
         // Simple getter
-        inline QMultiMap<ICollider*, ICollider*> getCDMap()
+        inline QMultiMap<RigidBody*, RigidBody*>& getCDMap()
             { return m_collisionDetectionMap; }
 
     private:
-        QMultiMap<ICollider*, ICollider*> m_collisionDetectionMap;
+        QMultiMap<RigidBody*, RigidBody*> m_collisionDetectionMap;
     };
 }
 

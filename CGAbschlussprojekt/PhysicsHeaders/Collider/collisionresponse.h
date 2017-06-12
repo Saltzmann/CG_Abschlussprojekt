@@ -2,18 +2,21 @@
 #define COLLISIONRESPONSE_H
 
 
+#include "collisiondetectiondata.h"
+
 namespace Physics
 {
     class CollisionResponse
     {
     public:
-        CollisionResponse();
+        CollisionResponse(CollisionDetectionData& cdd)
+            : m_CDDataRef(cdd)
+        { }
 
-        // oder polymorphie benutzen und virtual eigenschaft vergeben
-        static void response();
+        void response();
 
     private:
-
+        CollisionDetectionData& m_CDDataRef;
     };
 }
 #endif // COLLISIONRESPONSE_H

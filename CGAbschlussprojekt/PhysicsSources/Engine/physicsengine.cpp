@@ -31,9 +31,17 @@ namespace Physics
 
                 if (cd.didCollide())
                     m_collisionDetectionData.addCollisionPair(
-                                const_cast<RigidBody&>(m_physicsObjects.at(i)).getCollider(),
-                                const_cast<RigidBody&>(m_physicsObjects.at(j)).getCollider());
+                                &const_cast<RigidBody&>(m_physicsObjects.at(i)),
+                                &const_cast<RigidBody&>(m_physicsObjects.at(j)));
             }
         }
     }
+
+    // TODO: think about inserting collision response inside checkForCollisions - Method
+    void PhysicsEngine::handleCollisions()
+    {
+        m_collisionResponse.response();
+    }
 }
+
+

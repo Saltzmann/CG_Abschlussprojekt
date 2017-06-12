@@ -7,14 +7,14 @@ namespace Physics
         m_collisionDetectionMap.clear();
     }
 
-    void CollisionDetectionData::addCollisionPair(ICollider* first,
-                                                  ICollider* second)
+    void CollisionDetectionData::addCollisionPair(RigidBody* first,
+                                                  RigidBody* second)
     {
        m_collisionDetectionMap.insert(first, second);
     }
 
-    void CollisionDetectionData::removeCollisionPair(ICollider* first,
-                                                     ICollider* second)
+    void CollisionDetectionData::removeCollisionPair(RigidBody* first,
+                                                     RigidBody* second)
     {
         m_collisionDetectionMap.remove(first, second);
     }
