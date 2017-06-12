@@ -5,7 +5,8 @@ CustomOpenGLWidget::CustomOpenGLWidget(QWidget *parent) : QOpenGLWidget(parent){
     _defaultShaderProgram = new QOpenGLShaderProgram();
     _textureShaderProgram = new QOpenGLShaderProgram();
 
-    //Keyboard und Mouse Input Einstellungsn
+    //Keyboard und Mouse Input Einstellungen
+    this->setCursor(Qt::BlankCursor);
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
 
@@ -28,7 +29,7 @@ CustomOpenGLWidget::CustomOpenGLWidget(QWidget *parent) : QOpenGLWidget(parent){
     _fpsTimer->start(1000);
 
     //Kamera-Updates empfangen können
-    _myCamera = new Camera();
+    _myCamera = new Camera(this);
     connect(_myCamera, SIGNAL(isUpdated()),
                      this, SLOT(cameraIsUpdated()));
 
@@ -62,6 +63,16 @@ void CustomOpenGLWidget::wheelEvent(QWheelEvent* event) {
     //Weiterleitung MouseWheelEvents
     //Wenn Event verarbeitet -> accept sonst ignore
     if(_myCamera->mouseWheelUpdate(event)) {
+        event->accept();
+        return;
+    }
+    event->ignore();
+}
+
+void CustomOpenGLWidget::moveEvent(QMoveEvent *event) {
+    //Weiterleitung MoveEvent (relevant für MousePos)
+    //Wenn Event verarbeitet -> accept sonst ignore
+    if(_myCamera->windowPosUpdate(event)) {
         event->accept();
         return;
     }
