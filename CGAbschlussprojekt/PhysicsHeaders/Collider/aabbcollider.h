@@ -26,8 +26,8 @@ namespace Physics
         virtual CollisionData intersect(ICollider& other);
 
         // Simple getters
-        inline QVector3D getMinPos() { return m_minPosition; }
-        inline QVector3D getMaxPos() { return m_maxPosition; }
+        inline QVector3D getMinPos() const { return m_minPosition; }
+        inline QVector3D getMaxPos() const { return m_maxPosition; }
 
     private:
         QVector3D m_minPosition;
