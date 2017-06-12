@@ -1,9 +1,9 @@
 #ifndef PHYISCSENGINE_H
 #define PHYISCSENGINE_H
 
-#include "collisiondetectiondata.h"
-#include "collisionresponse.h"
-#include "rigidbody.h"
+#include "./PhysicsHeaders/Collider/collisiondetectiondata.h"
+#include "./PhysicsHeaders/Collider/collisionresponse.h"
+#include "./PhysicsHeaders/Engine/rigidbody.h"
 #include <QVector>
 //#include <QTimer>
 

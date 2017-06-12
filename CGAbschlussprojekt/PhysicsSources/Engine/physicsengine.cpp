@@ -1,5 +1,5 @@
-#include "physicsengine.h"
-#include "collisiondata.h"
+#include "./PhysicsHeaders/Engine/physicsengine.h"
+#include "./PhysicsHeaders/Collider/collisiondata.h"
 
 namespace Physics
 {

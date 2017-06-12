@@ -1,4 +1,4 @@
-#include "planecollider.h"
+#include "./PhysicsHeaders/Collider/planecollider.h"
 
 namespace Physics
 {

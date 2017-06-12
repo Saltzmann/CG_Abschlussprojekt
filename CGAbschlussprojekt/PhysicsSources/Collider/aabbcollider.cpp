@@ -1,4 +1,4 @@
-#include "aabbcollider.h"
+#include "./PhysicsHeaders/Collider/aabbcollider.h"
 
 namespace Physics
 {

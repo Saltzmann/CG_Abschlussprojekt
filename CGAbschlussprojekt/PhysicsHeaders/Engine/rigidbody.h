@@ -1,8 +1,8 @@
 #ifndef RIGIDBODY_H
 #define RIGIDBODY_H
 
-#include "icollider.h"
-#include "rigidbodyconstants.h"
+#include "./PhysicsHeaders/Collider/icollider.h"
+#include "./PhysicsHeaders/Engine/rigidbodyconstants.h"
 #include <QVector3D>
 
 // Füge den RigidBody als Membervariable einer Klasse hinzu, um diesem

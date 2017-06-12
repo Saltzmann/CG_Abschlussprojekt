@@ -1,6 +1,6 @@
-#include "spherecollider.h"
-#include "aabbcollider.h"
-#include "planecollider.h"
+#include "./PhysicsHeaders/Collider/spherecollider.h"
+#include "./PhysicsHeaders/Collider/aabbcollider.h"
+#include "./PhysicsHeaders/Collider/planecollider.h"
 #include <typeinfo>
 
 namespace Physics
