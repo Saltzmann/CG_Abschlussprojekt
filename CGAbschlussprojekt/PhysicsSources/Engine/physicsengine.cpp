@@ -3,14 +3,22 @@
 
 namespace Physics
 {
+    PhysicsEngine* PhysicsEngine::getInstance()
+    {
+        static PhysicsEngine physicsEngine;
+        return physicsEngine;
+    }
+
     void PhysicsEngine::addRigidBody(RigidBody& rb)
     {
         m_physicsObjects.push_back(rb);
     }
 
-    void PhysicsEngine::simulate(float deltaTime)
+    void PhysicsEngine::simulate()
     {
         const QVector<RigidBody>::size_type VEC_SIZE = m_physicsObjects.size();
+
+        float deltaTime = m_timeDelta->getDeltaTime();
 
         for (QVector<RigidBody>::size_type i = 0; i < VEC_SIZE; ++i)
         {

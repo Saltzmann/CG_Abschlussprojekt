@@ -13,14 +13,10 @@ namespace Physics
     class PhysicsEngine
     {
     public:
-        PhysicsEngine* getInstance()
-        {
-            static PhysicsEngine physicsEngine;
-            return &physicsEngine;
-        }
+        PhysicsEngine* getInstance();
 
         void addRigidBody(RigidBody& rb);
-        void simulate(float deltaTime);
+        void simulate();
         // Reagiere auf checkForCollisions mit m_collisionResponse Methoden
         void checkForCollisions();
         void handleCollisions();
