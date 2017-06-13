@@ -4,18 +4,20 @@
 #include "./PhysicsHeaders/Collider/collisiondetectiondata.h"
 #include "./PhysicsHeaders/Collider/collisionresponse.h"
 #include "./PhysicsHeaders/Engine/rigidbody.h"
+#include "timedelta.h"
 #include <QVector>
-// TODO: implement a timer to remove the deltaTime out of the simulate Method
 
+// Singleton Class
 namespace Physics
 {
     class PhysicsEngine
     {
     public:
-        PhysicsEngine()
-            :   m_collisionDetectionData(),
-                m_collisionResponse(this->getCDData())
-        { }
+        PhysicsEngine* getInstance()
+        {
+            static PhysicsEngine physicsEngine;
+            return &physicsEngine;
+        }
 
         void addRigidBody(RigidBody& rb);
         void simulate(float deltaTime);
@@ -27,9 +29,16 @@ namespace Physics
         inline CollisionDetectionData& getCDData() { return m_collisionDetectionData; }
 
     private:
+        PhysicsEngine()
+            :   m_collisionDetectionData(),
+                m_collisionResponse(this->getCDData()),
+                m_timeDelta(TimeDelta::getInstance())
+        { }
+
         QVector<RigidBody>      m_physicsObjects;
         CollisionDetectionData  m_collisionDetectionData;
         CollisionResponse       m_collisionResponse;
+        TimeDelta*              m_timeDelta;
     };
 }
 
