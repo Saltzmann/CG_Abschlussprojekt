@@ -94,6 +94,17 @@ void CustomOpenGLWidget::initializeGL() {
     //gewisse OpenGL Funktionen aktiveren (Funktion von QT
     initializeOpenGLFunctions();
 
+    //DebugLogger initialisieren (darf nicht in den Konstruktor, weil dort noch kein OpenGL-Kontext vorhanden ist)
+    _debugLogger = new QOpenGLDebugLogger(this);
+
+    connect(_debugLogger, SIGNAL(messageLogged(QOpenGLDebugMessage)), this,
+            SLOT(onMessageLogged(QOpenGLDebugMessage)), Qt::DirectConnection);
+
+    if (_debugLogger->initialize()) {
+        _debugLogger->startLogging(QOpenGLDebugLogger::SynchronousLogging);
+        _debugLogger->enableMessages();
+    }
+
     //OpenGL Flags setzen / Funktionen aktivieren
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -124,8 +135,8 @@ void CustomOpenGLWidget::initializeGL() {
 
     // normal drawing shader
     _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/normalDraw440.vert");
-    _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/normalDraw440.frag");
     _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Geometry, ":/normalDraw440.geom");
+    _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/normalDraw440.frag");
 
     //Kompiliere und linke die Shader-Programme
     _defaultShaderProgram->link();
@@ -133,16 +144,10 @@ void CustomOpenGLWidget::initializeGL() {
     _meltingShaderProgram->link();
     _normalDrawShaderProgram->link();
 
-    //DebugLogger initialisieren (darf nicht in den Konstruktor, weil dort noch kein OpenGL-Kontext vorhanden ist)
-    _debugLogger = new QOpenGLDebugLogger(this);
-
-    connect(_debugLogger, SIGNAL(messageLogged(QOpenGLDebugMessage)), this,
-            SLOT(onMessageLogged(QOpenGLDebugMessage)), Qt::DirectConnection);
-
-    if (_debugLogger->initialize()) {
-        _debugLogger->startLogging(QOpenGLDebugLogger::SynchronousLogging);
-        _debugLogger->enableMessages();
-    }
+    qDebug() << "Default Shader log: " << endl << _defaultShaderProgram->log() << endl;
+    qDebug() << "Texture Shader log: " << endl << _textureShaderProgram->log() << endl;
+    qDebug() << "Melting Shader log: " << endl << _meltingShaderProgram->log() << endl;
+    qDebug() << "Normal Shader log: " << endl << _normalDrawShaderProgram->log() << endl;
 
     //hauseigene Geometrie erstellen
     _buildGeometry();
@@ -201,10 +206,12 @@ void CustomOpenGLWidget::resetFPSCounter() {
 
 void CustomOpenGLWidget::_buildGeometry() {
     _cubeModel = new Model("cube.obj");
+
+    //_cubeModel->printVBOData();
+    //_cubeModel->printIBOData();
+
     _floorModel = new Model("square.obj");
-    //_floorModel->printVBOData();
-    //_floorModel->printIBOData();
-    _sphereModel = new Model("sphere_high.obj");
+    //_sphereModel = new Model("sphere_high.obj");
 }
 
 void CustomOpenGLWidget::_createRenderables() {
@@ -216,7 +223,7 @@ void CustomOpenGLWidget::_createRenderables() {
     RenderableObject* cube = new RenderableObject(ctm,
                                                   _cubeModel,
                                                   SHADER_MELT,
-                                                  _meltingShaderProgram,
+                                                  _defaultShaderProgram,
                                                   _normalDrawShaderProgram,
                                                   QVector4D(0.5f, 0.5f, 1.f, 1.f));
     _myRenderables.push_back(cube);
