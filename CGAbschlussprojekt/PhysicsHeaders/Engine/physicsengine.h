@@ -5,8 +5,7 @@
 #include "./PhysicsHeaders/Collider/collisionresponse.h"
 #include "./PhysicsHeaders/Engine/rigidbody.h"
 #include <QVector>
-// TODO: implement QTimer to remove the deltaTime out of the simulate Method
-//#include <QTimer>
+// TODO: implement a timer to remove the deltaTime out of the simulate Method
 
 namespace Physics
 {
@@ -28,9 +27,9 @@ namespace Physics
         inline CollisionDetectionData& getCDData() { return m_collisionDetectionData; }
 
     private:
-        QVector<RigidBody> m_physicsObjects;
-        CollisionDetectionData m_collisionDetectionData;
-        CollisionResponse m_collisionResponse;
+        QVector<RigidBody>      m_physicsObjects;
+        CollisionDetectionData  m_collisionDetectionData;
+        CollisionResponse       m_collisionResponse;
     };
 }
 
