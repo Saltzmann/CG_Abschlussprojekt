@@ -8,7 +8,6 @@ CustomOpenGLWidget::CustomOpenGLWidget(QWidget *parent) : QOpenGLWidget(parent){
     _normalDrawShaderProgram = new QOpenGLShaderProgram();
 
     //Keyboard und Mouse Input Einstellungen
-    this->setCursor(Qt::BlankCursor);
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
 
@@ -34,6 +33,8 @@ CustomOpenGLWidget::CustomOpenGLWidget(QWidget *parent) : QOpenGLWidget(parent){
     _myCamera = new Camera(this);
     connect(_myCamera, SIGNAL(isUpdated()),
                      this, SLOT(cameraIsUpdated()));
+    connect(_myCamera, SIGNAL(mouseCaptured(bool)),
+            this, SLOT(recieveMouseCaptured(bool)));
 
     //Ordner setzen
     QDir currentDir;
@@ -95,6 +96,26 @@ void CustomOpenGLWidget::keyPressEvent(QKeyEvent* event) {
     //Weiterleitung MouseMoveEvents
     //Wenn Event verarbeitet -> accept sonst ignore
    if(_myCamera->keyPressUpdate(event)) {
+       event->accept();
+       return;
+   }
+   event->ignore();
+}
+
+void CustomOpenGLWidget::mousePressEvent(QMouseEvent *event) {
+    //Weiterleitung MousePressEvent
+    //Wenn Event verarbeitet -> accept sonst ignore
+   if(_myCamera->mousePressUpdate(event)) {
+       event->accept();
+       return;
+   }
+   event->ignore();
+}
+
+void CustomOpenGLWidget::mouseReleaseEvent(QMouseEvent *event) {
+    //Weiterleitung MouseReleaseEvent
+    //Wenn Event verarbeitet -> accept sonst ignore
+   if(_myCamera->mouseReleaseUpdate(event)) {
        event->accept();
        return;
    }
@@ -208,6 +229,19 @@ void CustomOpenGLWidget::resetFPSCounter() {
     //FPS Counter jede Sekunde zurücksetzen / Anzeigewert anpassen
     _actualFPS = _fpsCounter;
     _fpsCounter = 0;
+}
+
+void CustomOpenGLWidget::counter1Changed(double value) {
+    //TODO Kaskadierend an RenderableObjects weiterleiten (bei Bedarf)
+}
+
+void CustomOpenGLWidget::counter2Changed(double value) {
+    //TODO Kaskadierend an RenderableObjects weiterleiten (bei Bedarf)
+}
+
+void CustomOpenGLWidget::recieveMouseCaptured(bool captured) {
+    //Einfach nur Signalweiterleitung an GUI
+    emit mouseCaptured(captured);
 }
 
 void CustomOpenGLWidget::_buildGeometry() {

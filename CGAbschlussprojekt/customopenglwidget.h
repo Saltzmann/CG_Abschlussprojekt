@@ -74,6 +74,8 @@ public:
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
     void moveEvent(QMoveEvent *event);
+    void mousePressEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
 public slots:
     //interne Slots
     void onMessageLogged(QOpenGLDebugMessage message);
@@ -81,9 +83,13 @@ public slots:
 
     //GUI Slots
     void resetFPSCounter();
+    void counter1Changed(double value);
+    void counter2Changed(double value);
+    void recieveMouseCaptured(bool captured);
 signals:
     //GUI Signals
     void sendFPSValue(int value);
+    void mouseCaptured(bool captured);
 };
 
 #endif // CUSTOMOPENGLWIDGET_H

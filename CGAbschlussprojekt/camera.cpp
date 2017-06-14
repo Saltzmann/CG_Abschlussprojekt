@@ -5,6 +5,8 @@ Camera::Camera(QOpenGLWidget *parent) : _upVector(0.f, 1.f, 0.f) {
     _parent = parent;
     _windowPos = _parent->pos();
     _midWindowPos = QPoint(_windowPos.x() + _parent->width()/2, _windowPos.y() + _parent->height()/2);
+    _mouseCaptured = false;
+
     //Kamera initialisieren
     _speedFactor = INITIAL_SPEED_FACTOR;
     _viewOffset = QVector3D(0.f, INITIAL_CAMERA_OFFSET_Y, INITIAL_CAMERA_OFFSET_Z);
@@ -76,7 +78,21 @@ void Camera::alterSpeed(float modificator) {
     }
 }
 
+void Camera::freeOrCatchMouse() {
+    if(_mouseCaptured) {
+        _parent->setCursor(Qt::ArrowCursor);
+        _mouseCaptured = false;
+        emit mouseCaptured(false);
+    }
+    else {
+        _parent->setCursor(Qt::BlankCursor);
+        _mouseCaptured = true;
+        emit mouseCaptured(true);
+    }
+}
+
 bool Camera::mousePosUpdate(QMouseEvent* event) {
+    if(!_mouseCaptured) return false;
     QPoint currentMousePosition = event->globalPos();
     QVector2D mouseDelta =  QVector2D(currentMousePosition - _midWindowPos);
     if(mouseDelta.length() == 0.f) {
@@ -111,6 +127,30 @@ bool Camera::windowPosUpdate(QMoveEvent *event) {
     return false;
 }
 
+bool Camera::mousePressUpdate(QMouseEvent *event) {
+    if(_mouseCaptured) return false;
+    if(event->button() == Qt::LeftButton) {
+        _dragStartPos = event->pos();
+        _parent->setCursor(Qt::ClosedHandCursor);
+        return true;
+    }
+    return false;
+}
+
+bool Camera::mouseReleaseUpdate(QMouseEvent *event) {
+    if(_mouseCaptured) return false;
+    if(event->button() == Qt::LeftButton) {
+        QVector2D mouseDelta =  QVector2D(_dragStartPos - event->pos());
+        if(mouseDelta.length() == 0.f) {
+            return false;
+        }
+        _parent->setCursor(Qt::OpenHandCursor);
+        this->turn(mouseDelta);
+        return true;
+    }
+    return false;
+}
+
 bool Camera::keyPressUpdate(QKeyEvent* event) {
     switch (event->key()) {
     case Qt::Key_W: //nach vorne
@@ -136,6 +176,9 @@ bool Camera::keyPressUpdate(QKeyEvent* event) {
         break;
     case Qt::Key_B: //Kamera kommplett zurücksetzen
         this->resetToDefault();
+        break;
+    case Qt::Key_M: //Kamera kommplett zurücksetzen
+        this->freeOrCatchMouse();
         break;
     default:
         return false;

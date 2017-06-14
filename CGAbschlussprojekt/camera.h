@@ -37,7 +37,9 @@ private:
     QVector3D const _upVector;
     QVector3D _rightVector;
 
-    bool _mouseCaptured; //TODO Taste zum Umschalten einbauen dass man nicht immer AltF4n muss!
+    bool _mouseCaptured;
+
+    QPoint _dragStartPos;
     QPoint _windowPos;
     QPoint _midWindowPos;
 public:
@@ -56,17 +58,23 @@ public:
     inline void turn(QVector2D mouseDelta);
     inline void alterSpeed(float modificator);
 
+    //Kontrollfunktionen
+    void freeOrCatchMouse();
+
     //Extern aufgerufene Update Funktionen für die Attribute
     bool mousePosUpdate(QMouseEvent* event);
     bool mouseWheelUpdate(QWheelEvent* event);
     bool keyPressUpdate(QKeyEvent* event);
     bool windowPosUpdate(QMoveEvent* event);
+    bool mousePressUpdate(QMouseEvent *event);
+    bool mouseReleaseUpdate(QMouseEvent *event);
 
     //Return Funktion der Kamera Klasse, die zum Rendern verwendet wird
     void getViewMatrix(QMatrix4x4 &inputMatrix) const;
 signals:
     //Notification für updates des Widgets
     void isUpdated();
+    void mouseCaptured(bool captured);
 };
 
 #endif // CAMERA_H
