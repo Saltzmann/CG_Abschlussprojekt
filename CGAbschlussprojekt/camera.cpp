@@ -1,6 +1,10 @@
 #include "camera.h"
 
-Camera::Camera() : _upVector(0.f, 1.f, 0.f) {
+Camera::Camera(QOpenGLWidget *parent) : _upVector(0.f, 1.f, 0.f) {
+    //Parent und Fensterpositionen initialisieren
+    _parent = parent;
+    _windowPos = _parent->pos();
+    _midWindowPos = QPoint(_windowPos.x() + _parent->width()/2, _windowPos.y() + _parent->height()/2);
     //Kamera initialisieren
     _speedFactor = INITIAL_SPEED_FACTOR;
     _viewOffset = QVector3D(0.f, INITIAL_CAMERA_OFFSET_Y, INITIAL_CAMERA_OFFSET_Z);
@@ -73,13 +77,13 @@ void Camera::alterSpeed(float modificator) {
 }
 
 bool Camera::mousePosUpdate(QMouseEvent* event) {
-    QVector2D currentMousePosition = QVector2D(event->windowPos());
-    QVector2D mouseDelta =  currentMousePosition - _oldMousePosition;
+    QPoint currentMousePosition = event->globalPos();
+    QVector2D mouseDelta =  QVector2D(currentMousePosition - _midWindowPos);
     if(mouseDelta.length() == 0.f) {
         return false;
     }
-    _oldMousePosition = currentMousePosition;
     this->turn(mouseDelta);
+    QCursor::setPos(_midWindowPos);
     return true;
 }
 
@@ -92,6 +96,17 @@ bool Camera::mouseWheelUpdate(QWheelEvent* event) {
        //Wert ist auf Touchpad ausgelegt, eventuell TODO für Mausrad anpassen
        this->alterSpeed(float(numSteps) * 0.05f);
        return true;
+    }
+    return false;
+}
+
+bool Camera::windowPosUpdate(QMoveEvent *event) {
+    //Falls Positionsänderung
+    if(event->oldPos() != _windowPos) {
+        _windowPos = event->pos();
+        //Update midWindowPos
+        _midWindowPos = QPoint(_windowPos.x() + _parent->width()/2, _windowPos.y() + _parent->height()/2);
+        return true;
     }
     return false;
 }

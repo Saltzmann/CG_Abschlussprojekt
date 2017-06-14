@@ -15,6 +15,7 @@
 #include <QKeyEvent>
 #include <QWheelEvent>
 #include <QMouseEvent>
+#include <QMoveEvent>
 //Sim/Time includes
 #include <QTimer>
 //Datenstruktur Includes
@@ -72,6 +73,7 @@ public:
     void keyPressEvent(QKeyEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
+    void moveEvent(QMoveEvent *event);
 public slots:
     //interne Slots
     void onMessageLogged(QOpenGLDebugMessage message);
