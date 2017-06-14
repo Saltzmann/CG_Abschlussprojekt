@@ -223,7 +223,7 @@ void CustomOpenGLWidget::_createRenderables() {
     RenderableObject* cube = new RenderableObject(ctm,
                                                   _cubeModel,
                                                   SHADER_MELT,
-                                                  _defaultShaderProgram,
+                                                  _meltingShaderProgram,
                                                   _normalDrawShaderProgram,
                                                   QVector4D(0.5f, 0.5f, 1.f, 1.f));
     _myRenderables.push_back(cube);

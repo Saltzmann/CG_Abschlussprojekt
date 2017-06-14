@@ -30,13 +30,14 @@ void drawNormals(int index) {
 
     gs_out.normal = gs_in[index].normal;
     gs_out.color = gs_in[index].color;
-    EmitVertex();
+    EmitVertex(); //Standard Vertex
 
-    gl_Position = mvp * (gl_in[index].gl_Position +
+    gl_Position = mvp * (gl_in[index].gl_Position -
                          vec4(gs_in[index].normal * normal_length, 0.0));
     gs_out.normal = gs_in[index].normal;
     gs_out.color = gs_in[index].color;
-    EmitVertex();
+    EmitVertex(); //Normalen-Vertex
+
     EndPrimitive();
 }
 

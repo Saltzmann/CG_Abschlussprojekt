@@ -235,6 +235,9 @@ void RenderableObject::_renderWithMeltShader(QMatrix4x4 const &parentCTM,
                   projectionMatrix);
     }
 
+
+    glDisable(GL_CULL_FACE);
+
     //VBO und IBO an den Kontext binden
     _model->getVBOBufferPtr()->bind();
     _model->getIBOBufferPtr()->bind();
@@ -245,7 +248,7 @@ void RenderableObject::_renderWithMeltShader(QMatrix4x4 const &parentCTM,
     int const unifModelMatrix = 2;
     int const unifBaseColor = 3;
     //int const unifNormMatrix = 4;
-    //int const unifCounter = 5;
+    int const unifCounter = 5;
 
     // - - - - - Start Rendering - - - - -
 
@@ -272,6 +275,7 @@ void RenderableObject::_renderWithMeltShader(QMatrix4x4 const &parentCTM,
     _shader->setUniformValue(unifViewMatrix, viewMatrix); //viewMatrix ("const")
     _shader->setUniformValue(unifModelMatrix, ctm); //modelMatrix (immer abhängig vom gerade zu rendernden RenderableObject)
     _shader->setUniformValue(unifBaseColor, _baseColor);
+    _shader->setUniformValue(unifCounter, _renderingCounter1);
 
     //PolygonMode auf Lines
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -325,8 +329,10 @@ void RenderableObject::_renderWithMeltShader(QMatrix4x4 const &parentCTM,
     _model->getVBOBufferPtr()->release();
     _model->getIBOBufferPtr()->release();
 
+    glEnable(GL_CULL_FACE);
+
     //Counter anpassen
-    _renderingCounter1 += 0.0001f;
+    _renderingCounter1 += 0.0002f;
 }
 
 void RenderableObject::render(QMatrix4x4 const &parentCTM,
