@@ -12,15 +12,13 @@ void Model::_initializeVBOs(QString const &modelFileName) {
     // Lade Modell aus Datei
     ModelLoader model;
     QDir currentDir;
-    //SoonTM nächster Versuch für einen relativen Pfad
-    //qDebug() << "CurrentDir CanonicalPath = " << currentDir.canonicalPath();
     std::string absolutePath = currentDir.canonicalPath().toStdString() + "/" + modelFileName.toStdString();
     bool res = model.loadObjectFromFile(absolutePath);
-    //bool res = model.loadObjectFromFile("C:/Users/Tobias/Documents/GitHub/CG_Abschlussprojekt/CGAbschlussprojekt/sphere_high.obj");
 
     _hasTextureCoords = model.hasTextureCoordinates();
+    qDebug() << endl << " - - - - - Model loading... - - - - -";
     qDebug() << "File: " << modelFileName << " hat Textur-Koordinaten = " << _hasTextureCoords;
-    //Q_ASSERT(model.hasTextureCoordinates()); //wenn einkommentiert MUSS das Model Texturkoordinaten haben (auch wenn später abgefangen)
+
     if (res) { //Wenn erfolgreich, generiere VBO und Index-Array
         // Frage zu erwartende Array-Längen ab
         _vboLength = model.lengthOfVBO();
@@ -31,11 +29,11 @@ void Model::_initializeVBOs(QString const &modelFileName) {
         //Generiere VBO und IBO Data mit vertices, normals, texCoords
         model.genVBO(_vboData);
         model.genIndexArray(_indexData);
-        qDebug() << "Model laden erfolgreich!";
+        qDebug() << "Model laden erfolgreich!" << endl << endl;
     }
     else {
         // Modell konnte nicht geladen werden
-        qDebug() << "Model laden fehlgeschlagen!";
+        qDebug() << "Model laden fehlgeschlagen!" << endl << endl;
         _hasModelLoaded = false;
         Q_ASSERT(false); //gewollter Programmabbruch
     }
@@ -133,11 +131,12 @@ bool Model::hasModelLoaded() const {
 
 void Model::printVBOData() {
     if(_hasModelLoaded) {
+        qDebug() << endl << " - - - - - VBOData - - - - - ";
         if(_hasTextureCoords) {
-            qDebug() << "Model mit Textur-Koordinaten";
+            qDebug() << endl << "Model mit Textur-Koordinaten" << endl;
         }
         else {
-            qDebug() << "Model ohne Textur-Koordinaten";
+            qDebug() << endl << "Model ohne Textur-Koordinaten" << endl;
         }
         for(unsigned int i = 0; i < _vboLength; i++) {
             switch(i % 12) {
@@ -184,6 +183,7 @@ void Model::printVBOData() {
 
 void Model::printIBOData() {
     if(_hasModelLoaded) {
+        qDebug() << endl << " - - - - - IndexData - - - - - " << endl;
         for(unsigned int i = 0; i < _iboLength; i++) {
             qDebug() << "_indexData[" << i << "] : " << _indexData[i];
         }

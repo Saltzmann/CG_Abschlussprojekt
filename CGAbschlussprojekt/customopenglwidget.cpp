@@ -13,12 +13,14 @@ CustomOpenGLWidget::CustomOpenGLWidget(QWidget *parent) : QOpenGLWidget(parent){
 
     //Debug Output Versionsnummer etc.
     QSurfaceFormat fmt = this->format();
+    qDebug() << endl << " - - - - - QSurfaceFormat - Informationen - - - - - ";
     qDebug().nospace() << "OpenGL " << fmt.majorVersion() << "." << fmt.minorVersion();
     qDebug().noquote() << "Profile:" << QMetaEnum::fromType<QSurfaceFormat::OpenGLContextProfile>().valueToKey(fmt.profile());
     qDebug().noquote() << "Options:" << QMetaEnum::fromType<QSurfaceFormat::FormatOption>().valueToKeys(fmt.options());
     qDebug().noquote() << "Renderable Type:" << QMetaEnum::fromType<QSurfaceFormat::RenderableType>().valueToKey(fmt.renderableType());
     qDebug().noquote() << "Swap Behavior:" << QMetaEnum::fromType<QSurfaceFormat::SwapBehavior>().valueToKey(fmt.swapBehavior());
     qDebug() << "Swap Interval:" << fmt.swapInterval();
+    qDebug() << endl;
 
     //GUI Anzeige/Einstell-Werte initialisieren
     _fpsCounter = 0;
@@ -42,7 +44,7 @@ CustomOpenGLWidget::CustomOpenGLWidget(QWidget *parent) : QOpenGLWidget(parent){
     currentDir.cd("CGAbschlussprojekt");
     QDir::setCurrent(currentDir.canonicalPath());
     qDebug() << "Aktuelles Verzeichnis ist jetzt: ";
-    qDebug() << currentDir.canonicalPath();
+    qDebug() << currentDir.canonicalPath() << endl;
 }
 
 CustomOpenGLWidget::~CustomOpenGLWidget() {
@@ -171,10 +173,12 @@ void CustomOpenGLWidget::initializeGL() {
     _textureShaderProgram->link();
     _normalDrawShaderProgram->link();
 
-    qDebug() << "Default Shader log: " << endl << _defaultShaderProgram->log() << endl;
-    qDebug() << "Texture Shader log: " << endl << _textureShaderProgram->log() << endl;
-    qDebug() << "Melting Shader log: " << endl << _meltingShaderProgram->log() << endl;
-    qDebug() << "Normal Shader log: " << endl << _normalDrawShaderProgram->log() << endl;
+    qDebug() << endl << " - - - - - SHADER - COMPILE - INFOS - - - - - ";
+    qDebug() << "Default Shader log: " << endl << _defaultShaderProgram->log();
+    qDebug() << "Texture Shader log: " << endl << _textureShaderProgram->log();
+    qDebug() << "Melting Shader log: " << endl << _meltingShaderProgram->log();
+    qDebug() << "Normal Shader log: " << endl << _normalDrawShaderProgram->log();
+    qDebug() << endl;
 
     //hauseigene Geometrie erstellen
     _buildGeometry();
@@ -217,7 +221,7 @@ void CustomOpenGLWidget::onMessageLogged(QOpenGLDebugMessage message) {
     //       message.severity() == QOpenGLDebugMessage::LowSeverity) {
     //        return;
     //}
-    qDebug() << message;
+    qDebug() << message << endl;
 }
 
 void CustomOpenGLWidget::cameraIsUpdated() {

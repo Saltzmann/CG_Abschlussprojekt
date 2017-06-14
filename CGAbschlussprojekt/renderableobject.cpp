@@ -22,7 +22,7 @@ RenderableObject::RenderableObject(QMatrix4x4 ctm,
 
     if(mainTextureFileName.length() != 0) {
         if(!_modelHasTextureCoords) {
-            qDebug() << "#WARNING# Function: RenderableObject::RenderableObject - Model hat keine TexturCoords aber Textur wird gesetzt!";
+            qDebug() << endl << "#WARNING# Function: RenderableObject::RenderableObject - Model hat keine TexturCoords aber Textur wird gesetzt!" << endl;
         }
         _setMainTexture(mainTextureFileName);
     }
@@ -46,7 +46,7 @@ void RenderableObject::_setMainTexture(QString filename) {
     _mainTexture->setMagnificationFilter(QOpenGLTexture::Nearest);
     Q_ASSERT(_mainTexture->textureId() != 0); //Würde Fehler bedeuten
     _hasTexture = true;
-    qDebug() << "Textur: " << filename << " geladen";
+    qDebug() << endl << "Textur: " << filename << " geladen" << endl << endl;
 }
 
 void RenderableObject::_setSecondTexture(QString filename) {
@@ -56,7 +56,7 @@ void RenderableObject::_setSecondTexture(QString filename) {
     _secondTexture->setMagnificationFilter(QOpenGLTexture::Nearest);
     Q_ASSERT(_secondTexture->textureId() != 0); //Würde Fehler bedeuten
     _hasSecondTexture = true;
-    qDebug() << "Textur: " << filename << " geladen";
+    qDebug() << endl << "Textur: " << filename << " geladen" << endl << endl;
 }
 
 void RenderableObject::_renderWithDefaultShader(QMatrix4x4 const &parentCTM,
@@ -345,7 +345,7 @@ void RenderableObject::render(QMatrix4x4 const &parentCTM,
         _renderWithNormalsShader(parentCTM, viewMatrix, projectionMatrix);
         break;
     default:
-        qDebug() << "#ERROR# Function: RenderableObject:render(..) - ungültige Shader-Flag!";
+        qDebug() << endl << "#ERROR# Function: RenderableObject:render(..) - ungültige Shader-Flag!" << endl;
         throw new std::exception();
     }
 }
