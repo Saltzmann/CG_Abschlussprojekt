@@ -17,7 +17,7 @@
 //Shader-Code defines
 #define SHADER_DEFAULT 0x0001
 #define SHADER_TEXTURE 0x0002
-#define SHADER_MELT    0x0003
+#define SHADER_NORMALS 0x0003
 
 
 class RenderableObject : public QObject {
@@ -63,7 +63,7 @@ private:
     void _renderWithTextureShader(QMatrix4x4 const &parentCTM,
                                   QMatrix4x4 const &viewMatrix,
                                   QMatrix4x4 const &projectionMatrix);
-    void _renderWithMeltShader(QMatrix4x4 const &parentCTM,
+    void _renderWithNormalsShader(QMatrix4x4 const &parentCTM,
                                QMatrix4x4 const &viewMatrix,
                                QMatrix4x4 const &projectionMatrix);
 public:

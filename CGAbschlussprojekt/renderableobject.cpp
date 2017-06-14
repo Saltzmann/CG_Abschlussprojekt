@@ -222,7 +222,7 @@ void RenderableObject::_renderWithTextureShader(QMatrix4x4 const &parentCTM,
     _model->getIBOBufferPtr()->release();
 }
 
-void RenderableObject::_renderWithMeltShader(QMatrix4x4 const &parentCTM,
+void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
                                              QMatrix4x4 const &viewMatrix,
                                              QMatrix4x4 const &projectionMatrix) {
     //TODO CTM Matrix Transformationen
@@ -248,7 +248,7 @@ void RenderableObject::_renderWithMeltShader(QMatrix4x4 const &parentCTM,
     int const unifModelMatrix = 2;
     int const unifBaseColor = 3;
     //int const unifNormMatrix = 4;
-    int const unifCounter = 5;
+    //int const unifCounter = 5;
 
     // - - - - - Start Rendering - - - - -
 
@@ -275,10 +275,9 @@ void RenderableObject::_renderWithMeltShader(QMatrix4x4 const &parentCTM,
     _shader->setUniformValue(unifViewMatrix, viewMatrix); //viewMatrix ("const")
     _shader->setUniformValue(unifModelMatrix, ctm); //modelMatrix (immer abhängig vom gerade zu rendernden RenderableObject)
     _shader->setUniformValue(unifBaseColor, _baseColor);
-    _shader->setUniformValue(unifCounter, _renderingCounter1);
 
     //PolygonMode auf Lines
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     //Element zeichnen lassen mit Shader 1
     glDrawElements(GL_TRIANGLES, _model->iboLength(), GL_UNSIGNED_INT, 0);
@@ -311,7 +310,7 @@ void RenderableObject::_renderWithMeltShader(QMatrix4x4 const &parentCTM,
     //_secondShader->setUniformValue(unifNormMatrix,  (viewMatrix * ctm).normalMatrix()); //berechnete Normalenmatrix
 
     //PolygonMode zurück auf Fill
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     //Element zeichnen lassen mit Shader 1
     glDrawElements(GL_TRIANGLES, _model->iboLength(), GL_UNSIGNED_INT, 0);
@@ -330,9 +329,6 @@ void RenderableObject::_renderWithMeltShader(QMatrix4x4 const &parentCTM,
     _model->getIBOBufferPtr()->release();
 
     glEnable(GL_CULL_FACE);
-
-    //Counter anpassen
-    _renderingCounter1 += 0.0002f;
 }
 
 void RenderableObject::render(QMatrix4x4 const &parentCTM,
@@ -345,8 +341,8 @@ void RenderableObject::render(QMatrix4x4 const &parentCTM,
     case SHADER_TEXTURE:
         _renderWithTextureShader(parentCTM, viewMatrix, projectionMatrix);
         break;
-    case SHADER_MELT:
-        _renderWithMeltShader(parentCTM, viewMatrix, projectionMatrix);
+    case SHADER_NORMALS:
+        _renderWithNormalsShader(parentCTM, viewMatrix, projectionMatrix);
         break;
     default:
         qDebug() << "#ERROR# Function: RenderableObject:render(..) - ungültige Shader-Flag!";

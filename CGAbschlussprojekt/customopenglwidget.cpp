@@ -140,10 +140,6 @@ void CustomOpenGLWidget::initializeGL() {
     _textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/texture440.vert");
     _textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/texture440.frag");
 
-    // melting shader
-    _meltingShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/melt440.vert");
-    _meltingShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/melt440.frag");
-
     // normal drawing shader
     _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/normalDraw440.vert");
     _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Geometry, ":/normalDraw440.geom");
@@ -152,7 +148,6 @@ void CustomOpenGLWidget::initializeGL() {
     //Kompiliere und linke die Shader-Programme
     _defaultShaderProgram->link();
     _textureShaderProgram->link();
-    _meltingShaderProgram->link();
     _normalDrawShaderProgram->link();
 
     qDebug() << "Default Shader log: " << endl << _defaultShaderProgram->log() << endl;
@@ -222,7 +217,7 @@ void CustomOpenGLWidget::_buildGeometry() {
     //_cubeModel->printIBOData();
 
     _floorModel = new Model("square.obj");
-    //_sphereModel = new Model("sphere_high.obj");
+    _sphereModel = new Model("sphere_low.obj");
 }
 
 void CustomOpenGLWidget::_createRenderables() {
@@ -233,20 +228,22 @@ void CustomOpenGLWidget::_createRenderables() {
     ctm.translate(0.f, 0.5f, 0.f);
     RenderableObject* cube = new RenderableObject(ctm,
                                                   _cubeModel,
-                                                  SHADER_MELT,
-                                                  _meltingShaderProgram,
+                                                  SHADER_NORMALS,
+                                                  _defaultShaderProgram,
                                                   _normalDrawShaderProgram,
                                                   QVector4D(0.5f, 0.5f, 1.f, 1.f));
     _myRenderables.push_back(cube);
 
     //Sphere
-//    ctm.setToIdentity();
-//    ctm.translate(0.f, 1.f, 0.f);
-//    RenderableObject* sphere = new RenderableObject(ctm,
-//                                                    _sphereModel,
-//                                                    _textureShaderProgram,
-//                                                    "moonmap1k.jpg");
-//    _myRenderables.push_back(sphere);
+    ctm.setToIdentity();
+    ctm.translate(-5.f, 1.f, -5.f);
+    RenderableObject* sphere = new RenderableObject(ctm,
+                                                    _sphereModel,
+                                                    SHADER_NORMALS,
+                                                    _defaultShaderProgram,
+                                                    _normalDrawShaderProgram,
+                                                    QVector4D(0.5f, 0.5f, 1.f, 1.f));
+    _myRenderables.push_back(sphere);
 
     //Floor
     ctm.setToIdentity();

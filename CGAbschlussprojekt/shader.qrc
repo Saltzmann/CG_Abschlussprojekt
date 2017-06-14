@@ -4,8 +4,6 @@
         <file>default440.vert</file>
         <file>texture440.frag</file>
         <file>texture440.vert</file>
-        <file>melt440.frag</file>
-        <file>melt440.vert</file>
         <file>normalDraw440.frag</file>
         <file>normalDraw440.geom</file>
         <file>normalDraw440.vert</file>
