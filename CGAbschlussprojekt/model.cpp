@@ -130,3 +130,62 @@ bool Model::hasTextureCoords() const {
 bool Model::hasModelLoaded() const {
     return _hasModelLoaded;
 }
+
+void Model::printVBOData() {
+    if(_hasModelLoaded) {
+        if(_hasTextureCoords) {
+            qDebug() << "Model mit Textur-Koordinaten";
+        }
+        else {
+            qDebug() << "Model ohne Textur-Koordinaten";
+        }
+        for(unsigned int i = 0; i < _vboLength; i++) {
+            switch(i % 12) {
+            case  0:
+                qDebug() << "_vboData[" << i << "] : " << "V.x " << _vboData[i];
+                break;
+            case  1:
+                qDebug() << "_vboData[" << i << "] : " << "V.y " << _vboData[i];
+                break;
+            case  2:
+                qDebug() << "_vboData[" << i << "] : " << "V.z " << _vboData[i];
+                break;
+            case  3:
+                qDebug() << "_vboData[" << i << "] : " << "V.w " << _vboData[i];
+                break;
+            case  4:
+                qDebug() << "_vboData[" << i << "] : " << "N.x " << _vboData[i];
+                break;
+            case  5:
+                qDebug() << "_vboData[" << i << "] : " << "N.y " << _vboData[i];
+                break;
+            case  6:
+                qDebug() << "_vboData[" << i << "] : " << "N.z " << _vboData[i];
+                break;
+            case  7:
+                qDebug() << "_vboData[" << i << "] : " << "N.w " << _vboData[i];
+                break;
+            case  8:
+                qDebug() << "_vboData[" << i << "] : " << "T.x " << _vboData[i];
+                break;
+            case  9:
+                qDebug() << "_vboData[" << i << "] : " << "T.y " << _vboData[i];
+                break;
+            case 10:
+                qDebug() << "_vboData[" << i << "] : " << "T.z " << _vboData[i];
+                break;
+            case 11:
+                qDebug() << "_vboData[" << i << "] : " << "T.w " << _vboData[i];
+                break;
+            }
+        }
+    }
+}
+
+void Model::printIBOData() {
+    if(_hasModelLoaded) {
+        for(unsigned int i = 0; i < _iboLength; i++) {
+            qDebug() << "_indexData[" << i << "] : " << _indexData[i];
+        }
+    }
+}

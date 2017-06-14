@@ -59,6 +59,10 @@ public:
     size_t stride() const;
     bool hasTextureCoords() const;
     bool hasModelLoaded() const;
+
+    //Debug-Print-funktionen
+    void printVBOData();
+    void printIBOData();
 };
 
 #endif // MODEL_H

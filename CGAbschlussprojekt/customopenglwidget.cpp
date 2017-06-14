@@ -4,6 +4,8 @@ CustomOpenGLWidget::CustomOpenGLWidget(QWidget *parent) : QOpenGLWidget(parent){
     //Shader initialisieren
     _defaultShaderProgram = new QOpenGLShaderProgram();
     _textureShaderProgram = new QOpenGLShaderProgram();
+    _meltingShaderProgram = new QOpenGLShaderProgram();
+    _normalDrawShaderProgram = new QOpenGLShaderProgram();
 
     //Keyboard und Mouse Input Einstellungen
     this->setCursor(Qt::BlankCursor);
@@ -103,6 +105,17 @@ void CustomOpenGLWidget::initializeGL() {
     //gewisse OpenGL Funktionen aktiveren (Funktion von QT
     initializeOpenGLFunctions();
 
+    //DebugLogger initialisieren (darf nicht in den Konstruktor, weil dort noch kein OpenGL-Kontext vorhanden ist)
+    _debugLogger = new QOpenGLDebugLogger(this);
+
+    connect(_debugLogger, SIGNAL(messageLogged(QOpenGLDebugMessage)), this,
+            SLOT(onMessageLogged(QOpenGLDebugMessage)), Qt::DirectConnection);
+
+    if (_debugLogger->initialize()) {
+        _debugLogger->startLogging(QOpenGLDebugLogger::SynchronousLogging);
+        _debugLogger->enableMessages();
+    }
+
     //OpenGL Flags setzen / Funktionen aktivieren
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -127,20 +140,20 @@ void CustomOpenGLWidget::initializeGL() {
     _textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/texture440.vert");
     _textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/texture440.frag");
 
+    // normal drawing shader
+    _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/normalDraw440.vert");
+    _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Geometry, ":/normalDraw440.geom");
+    _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/normalDraw440.frag");
+
     //Kompiliere und linke die Shader-Programme
     _defaultShaderProgram->link();
     _textureShaderProgram->link();
+    _normalDrawShaderProgram->link();
 
-    //DebugLogger initialisieren (darf nicht in den Konstruktor, weil dort noch kein OpenGL-Kontext vorhanden ist)
-    _debugLogger = new QOpenGLDebugLogger(this);
-
-    connect(_debugLogger, SIGNAL(messageLogged(QOpenGLDebugMessage)), this,
-            SLOT(onMessageLogged(QOpenGLDebugMessage)), Qt::DirectConnection);
-
-    if (_debugLogger->initialize()) {
-        _debugLogger->startLogging(QOpenGLDebugLogger::SynchronousLogging);
-        _debugLogger->enableMessages();
-    }
+    qDebug() << "Default Shader log: " << endl << _defaultShaderProgram->log() << endl;
+    qDebug() << "Texture Shader log: " << endl << _textureShaderProgram->log() << endl;
+    qDebug() << "Melting Shader log: " << endl << _meltingShaderProgram->log() << endl;
+    qDebug() << "Normal Shader log: " << endl << _normalDrawShaderProgram->log() << endl;
 
     //hauseigene Geometrie erstellen
     _buildGeometry();
@@ -199,8 +212,12 @@ void CustomOpenGLWidget::resetFPSCounter() {
 
 void CustomOpenGLWidget::_buildGeometry() {
     _cubeModel = new Model("cube.obj");
+
+    //_cubeModel->printVBOData();
+    //_cubeModel->printIBOData();
+
     _floorModel = new Model("square.obj");
-    _sphereModel = new Model("sphere_high.obj");
+    _sphereModel = new Model("sphere_low.obj");
 }
 
 void CustomOpenGLWidget::_createRenderables() {
@@ -211,19 +228,22 @@ void CustomOpenGLWidget::_createRenderables() {
     ctm.translate(0.f, 0.5f, 0.f);
     RenderableObject* cube = new RenderableObject(ctm,
                                                   _cubeModel,
-                                                  SHADER_DEFAULT,
+                                                  SHADER_NORMALS,
                                                   _defaultShaderProgram,
+                                                  _normalDrawShaderProgram,
                                                   QVector4D(0.5f, 0.5f, 1.f, 1.f));
     _myRenderables.push_back(cube);
 
     //Sphere
-//    ctm.setToIdentity();
-//    ctm.translate(0.f, 1.f, 0.f);
-//    RenderableObject* sphere = new RenderableObject(ctm,
-//                                                    _sphereModel,
-//                                                    _textureShaderProgram,
-//                                                    "moonmap1k.jpg");
-//    _myRenderables.push_back(sphere);
+    ctm.setToIdentity();
+    ctm.translate(-5.f, 1.f, -5.f);
+    RenderableObject* sphere = new RenderableObject(ctm,
+                                                    _sphereModel,
+                                                    SHADER_NORMALS,
+                                                    _defaultShaderProgram,
+                                                    _normalDrawShaderProgram,
+                                                    QVector4D(0.5f, 0.5f, 1.f, 1.f));
+    _myRenderables.push_back(sphere);
 
     //Floor
     ctm.setToIdentity();
@@ -232,6 +252,7 @@ void CustomOpenGLWidget::_createRenderables() {
                                                    _floorModel,
                                                    SHADER_TEXTURE,
                                                    _textureShaderProgram,
+                                                   nullptr,
                                                    QVector4D(1.f, 0.f, 0.f, 1.f),
                                                    "floor_texture_2_1024px.bmp");
     _myRenderables.push_back(floor);
