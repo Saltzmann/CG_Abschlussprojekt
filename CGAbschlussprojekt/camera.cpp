@@ -104,6 +104,7 @@ bool Camera::mousePosUpdate(QMouseEvent* event) {
 }
 
 bool Camera::mouseWheelUpdate(QWheelEvent* event) {
+    //WheelTurn
     int numDegrees = (event->angleDelta() / 8).y(); // durch 8 weil dann Angabe in Grad (* -1) für speed + nach oben
 
     if (numDegrees != 0) {
@@ -128,6 +129,12 @@ bool Camera::windowPosUpdate(QMoveEvent *event) {
 }
 
 bool Camera::mousePressUpdate(QMouseEvent *event) {
+    //WheelClick
+    if(event->button() == Qt::MiddleButton) {
+        this->freeOrCatchMouse();
+        return true;
+    }
+    //Drag and Drop
     if(_mouseCaptured) return false;
     if(event->button() == Qt::LeftButton) {
         _dragStartPos = event->pos();
