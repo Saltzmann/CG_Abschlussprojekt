@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QWidget>
 #include <QOpenGLWidget>
+#include <QOpenGLContext>
 //Compatibility includes
 #include <QOpenGLFunctions>
 //Debug Includes
@@ -31,6 +32,9 @@ class CustomOpenGLWidget : public QOpenGLWidget,
                            protected QOpenGLFunctions {
     Q_OBJECT
 protected:
+    //OpenGL Context
+    QOpenGLContext* _context;
+
     //Kamera
     Camera* _myCamera;
 
