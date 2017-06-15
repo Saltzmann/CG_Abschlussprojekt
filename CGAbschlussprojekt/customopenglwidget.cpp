@@ -1,6 +1,11 @@
 #include "customopenglwidget.h"
 
 CustomOpenGLWidget::CustomOpenGLWidget(QWidget *parent) : QOpenGLWidget(parent){
+    //Context erstellen
+    _context = new QOpenGLContext();
+    _context->create();
+    Q_ASSERT(_context->isValid());
+
     //Shader initialisieren
     _defaultShaderProgram = new QOpenGLShaderProgram();
     _textureShaderProgram = new QOpenGLShaderProgram();
@@ -143,7 +148,6 @@ void CustomOpenGLWidget::initializeGL() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glDepthFunc(GL_LEQUAL);
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
     //Zum Debuggen - PolygonModes switch
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

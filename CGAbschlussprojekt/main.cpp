@@ -6,21 +6,22 @@
 int main(int argc, char *argv[])
 {
     QSurfaceFormat format;
-    format.setVersion(4, 4); //allgemein kompatible OpenGL Version
-    //format.setProfile(QSurfaceFormat::CoreProfile);
-    //format.setProfile(QSurfaceFormat::StereoBuffers); //wenn das double buffering aktiviert wäre das gut - erst einkommentieren wenn Rest funktioniert
-    format.setProfile(QSurfaceFormat::CompatibilityProfile); // müssen wir testen
-    format.setOption(QSurfaceFormat::DeprecatedFunctions); // ob wir dies brauchen
+    format.setVersion(4, 4); //allgemein für uns kompatible OpenGL Version
+    //format.setProfile(QSurfaceFormat::CoreProfile); //geht nicht weil qt vbos etc nicht richtig initialisiert für 4.4
+    format.setProfile(QSurfaceFormat::CompatibilityProfile);
+    format.setRenderableType(QSurfaceFormat::OpenGL);
+    //format.setSwapBehavior(QSurfaceFormat::SingleBuffer);
+    format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+    //format.setSwapBehavior(QSurfaceFormat::TripleBuffer);
+    format.setSwapInterval(0); //"V-Sync" off
+    //format.setSwapInterval(1); //"V-Sync" on
     format.setOption(QSurfaceFormat::DebugContext);
+    format.setOption(QSurfaceFormat::ResetNotification); //Infos über GL Context
     QSurfaceFormat::setDefaultFormat(format);
 
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-
-    //Setzt Working-Directory auf .exe Ordner
-    //TODO richtige Aufrufstelle?
-    //QDir::setCurrent(QCoreApplication::applicationDirPath());
 
     return a.exec();
 }

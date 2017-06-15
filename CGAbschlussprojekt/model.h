@@ -4,6 +4,7 @@
 //Generelle Includes
 #include <QObject>
 #include <QDir>
+#include <QOpenGLFunctions> //falls später core profile
 //Debug Includes
 #include <QDebug>
 //Datenstrukturen Includes
