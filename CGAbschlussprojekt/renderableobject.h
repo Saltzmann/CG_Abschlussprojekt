@@ -3,6 +3,7 @@
 
 //Generelle Includes
 #include <QObject>
+#include <QOpenGLExtraFunctions>
 //Debug Includes
 #include <QDebug>
 //Datenstruktur Includes
@@ -20,7 +21,7 @@
 #define SHADER_NORMALS 0x0003
 
 
-class RenderableObject : public QObject {
+class RenderableObject : public QObject, public QOpenGLExtraFunctions {
     Q_OBJECT
 private:
     //Referenzen bilden 'Render-Konfiguration'

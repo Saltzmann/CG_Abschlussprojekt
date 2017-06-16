@@ -259,7 +259,7 @@ void CustomOpenGLWidget::_buildGeometry() {
     //_cubeModel->printIBOData();
 
     _floorModel = new Model("square.obj");
-    _sphereModel = new Model("sphere_low.obj");
+    _sphereModel = new Model("low_poly_sphere.obj");
 }
 
 void CustomOpenGLWidget::_createRenderables() {

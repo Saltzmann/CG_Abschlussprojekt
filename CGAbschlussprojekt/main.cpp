@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
     //format.setSwapBehavior(QSurfaceFormat::TripleBuffer);
     format.setSwapInterval(0); //"V-Sync" off
-    //format.setSwapInterval(1); //"V-Sync" on
+    //format.setSwapInterval(1); //"V-Sync" on (damit auch sync mit monitor-frequenz?)
     format.setOption(QSurfaceFormat::DebugContext);
     format.setOption(QSurfaceFormat::ResetNotification); //Infos über GL Context
     QSurfaceFormat::setDefaultFormat(format);

@@ -1,14 +1,14 @@
 #include "model.h"
 
-Model::Model(QString const &modelFileName) : _vbo(QOpenGLBuffer::VertexBuffer),
-                                             _ibo(QOpenGLBuffer::IndexBuffer) {
+Model::Model(QString const &modelFileName) {
+    initializeOpenGLFunctions();
     //Initiales Model aus Datei laden
     if(modelFileName.length() != 0) {
         loadModelFromFile(modelFileName);
     }
 }
 
-void Model::_initializeVBOs(QString const &modelFileName) {
+void Model::_initializeModelData(QString const &modelFileName) {
     // Lade Modell aus Datei
     ModelLoader model;
     QDir currentDir;
@@ -51,50 +51,43 @@ void Model::_initializeVBOs(QString const &modelFileName) {
         _stride = 8 * sizeof(GLfloat);
     }
 
-    //Schreibe Daten in Buffer-Objekte (unsigned int to int implizit ist ok hier)
-    _vbo.allocate(_vboData, sizeof(GLfloat) * _vboLength);
-    _ibo.allocate(_indexData, sizeof(GLuint) * _iboLength);
-
     //Laden als erfolgreich markieren
     _hasModelLoaded = true;
 }
 
-void Model::_fillBuffers(QString const &modelFileName) {
+void Model::_setUpBuffers(QString const &modelFileName) {
     //VBO und IBO zum ersten mal erstellen und für die Datenspeicherung
     //an den aktuellen Kontext binden
 
-    _vbo.create();
-    _ibo.create();
+    glGenBuffers(1, &_vboHandle);
+    glGenBuffers(1, &_iboHandle);
 
-    _vbo.bind();
-    _ibo.bind();
+    glBindBuffer(GL_ARRAY_BUFFER, _vboHandle);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _iboHandle);
 
-    _vbo.setUsagePattern(QOpenGLBuffer::StaticDraw); //TODO zu ändern später bei uns
-    _ibo.setUsagePattern(QOpenGLBuffer::StaticDraw); //static draw optimiert für keine Änderungen an VBO dynamic für Veränderungen
+    _initializeModelData(modelFileName);
 
-    _initializeVBOs(modelFileName);
+    //Model muss nun geladen sein
+    if(!_hasModelLoaded) throw new std::exception();
 
-    _vbo.release();
-    _ibo.release();
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * _vboLength, _vboData, GL_STATIC_DRAW); //NOTE Static draw später vermutliche ändern
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * _iboLength, _indexData, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void Model::loadModelFromFile(QString const &modelFileName)  {
-    if(_vbo.isCreated()) {
-        _vbo.destroy();
-    }
-    if(_ibo.isCreated()) {
-        _ibo.destroy();
-    }
     _hasModelLoaded = false;
-    _fillBuffers(modelFileName);
+    _setUpBuffers(modelFileName);
 }
 
 //Getter die nicht kopieren und auch Manipulation zulassen
-QOpenGLBuffer* Model::getVBOBufferPtr() {
-    return &_vbo;
+GLuint Model::vboHandle() const {
+    return _vboHandle;
 }
-QOpenGLBuffer* Model::getIBOBufferPtr() {
-    return &_ibo;
+GLuint Model::iboHandle() const {
+    return _iboHandle;
 }
 GLfloat* Model::vboData() {
     return _vboData;

@@ -8,6 +8,9 @@ RenderableObject::RenderableObject(QMatrix4x4 ctm,
                                    QVector4D const &baseColor,
                                    QString const &mainTextureFileName,
                                    QString const &secondTextureFileName) {
+    //Muss
+    initializeOpenGLFunctions();
+
     //Parameter übertragen/eintragen
     this->_model = model;
     _modelHasTextureCoords = (model->hasTextureCoords()) ? true : false;
@@ -73,8 +76,8 @@ void RenderableObject::_renderWithDefaultShader(QMatrix4x4 const &parentCTM,
     }
 
     //VBO und IBO an den Kontext binden
-    _model->getVBOBufferPtr()->bind();
-    _model->getIBOBufferPtr()->bind();
+    glBindBuffer(GL_ARRAY_BUFFER, _model->vboHandle());
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _model->iboHandle());
 
     //Matrix Locations für den Shader
     int unifProjMatrix = 0;
@@ -122,8 +125,8 @@ void RenderableObject::_renderWithDefaultShader(QMatrix4x4 const &parentCTM,
     _shader->release();
 
     //VBO und IBO vom Kontext lösen
-    _model->getVBOBufferPtr()->release();
-    _model->getIBOBufferPtr()->release();
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void RenderableObject::_renderWithTextureShader(QMatrix4x4 const &parentCTM,
@@ -140,8 +143,8 @@ void RenderableObject::_renderWithTextureShader(QMatrix4x4 const &parentCTM,
     }
 
     //VBO und IBO an den Kontext binden
-    _model->getVBOBufferPtr()->bind();
-    _model->getIBOBufferPtr()->bind();
+    glBindBuffer(GL_ARRAY_BUFFER, _model->vboHandle());
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _model->iboHandle());
 
     //Matrix Locations für den Shader
     int unifProjMatrix = 0;
@@ -218,8 +221,8 @@ void RenderableObject::_renderWithTextureShader(QMatrix4x4 const &parentCTM,
     */
 
     //VBO und IBO vom Kontext lösen
-    _model->getVBOBufferPtr()->release();
-    _model->getIBOBufferPtr()->release();
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
@@ -239,8 +242,8 @@ void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
     glDisable(GL_CULL_FACE);
 
     //VBO und IBO an den Kontext binden
-    _model->getVBOBufferPtr()->bind();
-    _model->getIBOBufferPtr()->bind();
+    glBindBuffer(GL_ARRAY_BUFFER, _model->vboHandle());
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _model->iboHandle());
 
     //Matrix Locations für den Shader
     int const unifProjMatrix = 0;
@@ -325,8 +328,8 @@ void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
     // - - - - - Rendern fertig - - - - -
 
     //VBO und IBO vom Kontext lösen
-    _model->getVBOBufferPtr()->release();
-    _model->getIBOBufferPtr()->release();
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     glEnable(GL_CULL_FACE);
 }

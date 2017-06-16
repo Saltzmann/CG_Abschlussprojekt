@@ -4,7 +4,7 @@
 //Generelle Includes
 #include <QObject>
 #include <QDir>
-#include <QOpenGLFunctions> //falls später core profile
+#include <QOpenGLExtraFunctions>
 //Debug Includes
 #include <QDebug>
 //Datenstrukturen Includes
@@ -12,16 +12,14 @@
 #include <QVector2D>
 #include <QVector3D>
 //Geometrie / Vertex / Mesh Includes
-#include <QOpenGLBuffer>
+//#include <QOpenGLBuffer>
 //externe includes
 #include <modelloader.h>
 
-class Model : public QObject {
+class Model : public QObject, public QOpenGLExtraFunctions {
     Q_OBJECT
 private:
-    //Model und Buffer-Object bezogene Daten
-    QOpenGLBuffer _vbo;
-    QOpenGLBuffer _ibo;
+    //Model und Buffer-Object bezogene Date
     GLfloat* _vboData;
     GLuint* _indexData;
     size_t _vboLength;
@@ -30,14 +28,18 @@ private:
     unsigned short _normOffset;
     unsigned short _texCoordOffset;
     size_t _stride;
+
+    GLuint _vboHandle;
+    GLuint _iboHandle;
+
     bool _hasTextureCoords;
 
     //Bool-Flag ob Model-Laden erfolgreich war
     bool _hasModelLoaded;
 
     //(ausgelagerte) Hilfsfunktionen - hauptsächlich zur Übersichtlichkeit
-    void _initializeVBOs(QString const &modelFileName);
-    void _fillBuffers(QString const &modelFileName);
+    void _initializeModelData(QString const &modelFileName);
+    void _setUpBuffers(QString const &modelFileName);
 public:
     //Konstruktor
     Model(QString const &modelFileName = "");
@@ -46,12 +48,12 @@ public:
     void loadModelFromFile(QString const &modelFileName);
 
     //Getter die nicht kopieren und auch Manipulation zulassen
-    QOpenGLBuffer* getVBOBufferPtr();
-    QOpenGLBuffer* getIBOBufferPtr();
     GLfloat* vboData();
     GLuint* indexData();
 
     //Einfache Getter, die nur kopieren
+    GLuint vboHandle() const;
+    GLuint iboHandle() const;
     size_t vboLength() const;
     size_t iboLength() const;
     unsigned short vertOffset() const;
