@@ -19,16 +19,33 @@ void Model::_initializeModelData(QString const &modelFileName) {
     qDebug() << endl << " - - - - - Model loading... - - - - -";
     qDebug() << "File: " << modelFileName << " hat Textur-Koordinaten = " << _hasTextureCoords;
 
-    if (res) { //Wenn erfolgreich, generiere VBO und Index-Array
-        // Frage zu erwartende Array-Längen ab
-        _vboLength = model.lengthOfVBO();
-        _iboLength = model.lengthOfIndexArray();
-        // Initialisiere VBO und Index-Array
-        _vboData = new GLfloat[_vboLength];
-        _indexData = new GLuint[_iboLength];
-        //Generiere VBO und IBO Data mit vertices, normals, texCoords
-        model.genVBO(_vboData);
-        model.genIndexArray(_indexData);
+    if (res) { 
+        model.genSOA(_vertices, _normals, _texCoords, _indices);
+
+        //Vertex Buffer aufsetzen
+        glBindBuffer(GL_ARRAY_BUFFER, _Buffers[VERTEX_BUFFER]);
+
+        glBufferData(GL_ARRAY_BUFFER, sizeof(_vertices[0]) * _vertices.size(), &_vertices[0], GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(VERTEX_BUFFER, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+
+        //"Normals" Buffer aufsetzen
+        glBindBuffer(GL_ARRAY_BUFFER, _Buffers[NORMAL_BUFFER]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(_normals[0]) * _normals.size(), &_normals[0], GL_STATIC_DRAW);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(NORMAL_BUFFER, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+        //"Texture-Coordinate" Buffer aufsetzen
+        glBindBuffer(GL_ARRAY_BUFFER, _Buffers[TEXCOORD_BUFFER]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(_texCoords[0]) * _texCoords.size(), &_texCoords[0], GL_STATIC_DRAW);
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(TEXCOORD_BUFFER, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+        //"Index" Buffer aufsetzen
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _Buffers[INDEX_BUFFER]);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(_indices[0]) * _indices.size(), &_indices[0], GL_STATIC_DRAW);
+
         qDebug() << "Model laden erfolgreich!" << endl << endl;
     }
     else {
@@ -36,53 +53,57 @@ void Model::_initializeModelData(QString const &modelFileName) {
         qDebug() << "Model laden fehlgeschlagen!" << endl << endl;
         _hasModelLoaded = false;
         Q_ASSERT(false); //gewollter Programmabbruch
-    }
-    //Versatz und Schrittweiten-Anpassung mit und ohne Texturkoordinaten
-    if(_hasTextureCoords) {
-        _vertOffset = 0;
-        _normOffset = _vertOffset + 4 * sizeof(GLfloat);
-        _texCoordOffset = _vertOffset + 8 * sizeof(GLfloat);
-        _stride = 12 * sizeof(GLfloat);
-    }
-    else {
-        _vertOffset = 0;
-        _normOffset = _vertOffset + 4 * sizeof(GLfloat);
-        _texCoordOffset = 0;
-        _stride = 8 * sizeof(GLfloat);
-    }
+    }   
 
     //Laden als erfolgreich markieren
     _hasModelLoaded = true;
 }
 
 void Model::_setUpBuffers(QString const &modelFileName) {
-    //VBO und IBO zum ersten mal erstellen und für die Datenspeicherung
-    //an den aktuellen Kontext binden
-
-    glGenBuffers(1, &_vboHandle);
-    glGenBuffers(1, &_iboHandle);
-
-    glBindBuffer(GL_ARRAY_BUFFER, _vboHandle);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _iboHandle);
+    //Generiere VAO
+    glGenVertexArrays(1, &_VAO);
+    //Binde VAO
+    glBindVertexArray(_VAO);
+    
+    //"unter-Buffer" erstellen
+    glGenBuffers(NUMBER_OF_BUFFERS, _Buffers);
 
     _initializeModelData(modelFileName);
 
     //Model muss nun geladen sein
     if(!_hasModelLoaded) throw new std::exception();
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * _vboLength, _vboData, GL_STATIC_DRAW); //NOTE Static draw später vermutliche ändern
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * _iboLength, _indexData, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    //Löse VAO
+    glBindVertexArray(0);
 }
 
 void Model::loadModelFromFile(QString const &modelFileName)  {
+    //Model als nicht mehr geladen markieren
     _hasModelLoaded = false;
+
+    //Löscht VAO nicht gebundene Buffer
+    glDeleteVertexArrays(1, &_VAO);
+    //Gebundene Buffer löschen
+    glDeleteBuffers(4, _Buffers);
+
+    //alte Daten komplett rausschmeißen, falls noch vorhanden
+    _vertices.clear();
+    _vertices.resize(0);
+    _normals.clear();
+    _normals.resize(0);
+    _texCoords.clear();
+    _texCoords.resize(0);
+    _indices.clear();
+    _indices.resize(0);
+
+    //Neue Daten laden
     _setUpBuffers(modelFileName);
 }
 
 //Getter die nicht kopieren und auch Manipulation zulassen
+GLuint Model::vaoHandle() const {
+    return _VAO;
+}
 GLuint Model::vboHandle() const {
     return _vboHandle;
 }
@@ -97,6 +118,9 @@ GLuint* Model::indexData() {
 }
 
 //Einfache Getter, die nur kopieren
+int Model::numIndices() const {
+    return _indices.length();
+}
 size_t Model::vboLength() const {
     return _vboLength;
 }

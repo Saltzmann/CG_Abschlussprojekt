@@ -16,10 +16,25 @@
 //externe includes
 #include <modelloader.h>
 
+//custom defines
+#define NUMBER_OF_BUFFERS 4
+#define VERTEX_BUFFER 0
+#define NORMAL_BUFFER 1
+#define TEXCOORD_BUFFER 2
+#define INDEX_BUFFER 3
+
 class Model : public QObject, public QOpenGLExtraFunctions {
     Q_OBJECT
 private:
     //Model und Buffer-Object bezogene Date
+    GLuint _VAO; //Vertex Array Object
+    GLuint _Buffers[4];
+
+    QVector<QVector3D> _vertices;
+    QVector<QVector3D> _normals;
+    QVector<QVector2D> _texCoords;
+    QVector<GLuint>    _indices;
+
     GLfloat* _vboData;
     GLuint* _indexData;
     size_t _vboLength;
@@ -52,6 +67,9 @@ public:
     GLuint* indexData();
 
     //Einfache Getter, die nur kopieren
+    GLuint vaoHandle() const;
+    int numIndices() const;
+
     GLuint vboHandle() const;
     GLuint iboHandle() const;
     size_t vboLength() const;

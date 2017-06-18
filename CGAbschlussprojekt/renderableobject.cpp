@@ -75,9 +75,8 @@ void RenderableObject::_renderWithDefaultShader(QMatrix4x4 const &parentCTM,
                   projectionMatrix);
     }
 
-    //VBO und IBO an den Kontext binden
-    glBindBuffer(GL_ARRAY_BUFFER, _model->vboHandle());
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _model->iboHandle());
+    //VAO binden
+    glBindVertexArray(_model->vaoHandle());
 
     //Matrix Locations für den Shader
     int unifProjMatrix = 0;
@@ -112,7 +111,7 @@ void RenderableObject::_renderWithDefaultShader(QMatrix4x4 const &parentCTM,
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     //Element zeichnen lassen (implizit uint in int ist aktzeptabel - kein Werteverlust)
-    glDrawElements(GL_TRIANGLES, _model->iboLength(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, _model->numIndices(), GL_UNSIGNED_INT, 0);
 
     //PolygonMode auf default setzen
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -124,9 +123,8 @@ void RenderableObject::_renderWithDefaultShader(QMatrix4x4 const &parentCTM,
     //Shader lösen
     _shader->release();
 
-    //VBO und IBO vom Kontext lösen
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    //VAO lösen
+    glBindVertexArray(0);
 }
 
 void RenderableObject::_renderWithTextureShader(QMatrix4x4 const &parentCTM,
@@ -142,9 +140,8 @@ void RenderableObject::_renderWithTextureShader(QMatrix4x4 const &parentCTM,
                   projectionMatrix);
     }
 
-    //VBO und IBO an den Kontext binden
-    glBindBuffer(GL_ARRAY_BUFFER, _model->vboHandle());
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _model->iboHandle());
+    //VAO binden
+    glBindVertexArray(_model->vaoHandle());
 
     //Matrix Locations für den Shader
     int unifProjMatrix = 0;
@@ -195,7 +192,7 @@ void RenderableObject::_renderWithTextureShader(QMatrix4x4 const &parentCTM,
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     //Element zeichnen lassen (implizit uint in int ist aktzeptabel - kein Werteverlust)
-    glDrawElements(GL_TRIANGLES, _model->iboLength(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, _model->numIndices(), GL_UNSIGNED_INT, 0);
 
     //PolygonMode auf default setzen
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -220,9 +217,8 @@ void RenderableObject::_renderWithTextureShader(QMatrix4x4 const &parentCTM,
     }
     */
 
-    //VBO und IBO vom Kontext lösen
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    //VAO lösen
+    glBindVertexArray(0);
 }
 
 void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
@@ -241,9 +237,8 @@ void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
 
     glDisable(GL_CULL_FACE);
 
-    //VBO und IBO an den Kontext binden
-    glBindBuffer(GL_ARRAY_BUFFER, _model->vboHandle());
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _model->iboHandle());
+    //VAO binden
+    glBindVertexArray(_model->vaoHandle());
 
     //Matrix Locations für den Shader
     int const unifProjMatrix = 0;
@@ -283,7 +278,7 @@ void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     //Element zeichnen lassen mit Shader 1
-    glDrawElements(GL_TRIANGLES, _model->iboLength(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, _model->numIndices(), GL_UNSIGNED_INT, 0);
 
     // Deaktiviere die Verwendung der Attribute-Arrays
     _shader->disableAttributeArray(attrVertices);
@@ -327,9 +322,8 @@ void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
 
     // - - - - - Rendern fertig - - - - -
 
-    //VBO und IBO vom Kontext lösen
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    //VAO lösen
+    glBindVertexArray(0);
 
     glEnable(GL_CULL_FACE);
 }
