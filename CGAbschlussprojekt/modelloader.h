@@ -21,6 +21,9 @@
 #include <assimp/postprocess.h>
 
 #include <qdebug.h>
+#include <QVector>
+#include <QVector2D>
+#include <QVector3D>
 
 class ModelLoader
 {
@@ -30,6 +33,7 @@ public:
 
     bool loadObjectFromFile(const std::string& pFile);
 
+    //KAI'S FUNKTIONEN
     // Generates a VBO with v1.x, v1.y, v1.z, v1.w, v2.x, ...
     void genSimpleVBO(GLfloat* vbo, unsigned int meshId = 0) const;
 
@@ -45,6 +49,13 @@ public:
     unsigned int lengthOfSimpleVBO(unsigned int meshId = 0) const;
     unsigned int lengthOfVBO(unsigned int meshId = 0, bool normals = true, bool texcoords = true) const;
     unsigned int lengthOfIndexArray(unsigned int meshId = 0) const;
+
+    //ZUSÄTZLICHE SOA FUNKTIONEN
+    void genSOA(QVector<QVector3D> &vertVec,
+                QVector<QVector3D> &normVec,
+                QVector<QVector2D> &texCVec,
+                QVector<GLuint>  &indexVec,
+                unsigned int     meshID = 0);
 
     // Returns whether the model has texture coordinates
     bool hasTextureCoordinates(unsigned int meshId = 0);

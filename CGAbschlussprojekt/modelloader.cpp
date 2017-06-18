@@ -28,7 +28,7 @@ ModelLoader::~ModelLoader()
 
 bool ModelLoader::loadObjectFromFile(const std::string& pFile)
 {
-    /* TODO: this is some weak error handling */
+    /* TOD_O: this is some weak error handling */
     if (_hasScene) {
         return false;
     }
@@ -40,7 +40,6 @@ bool ModelLoader::loadObjectFromFile(const std::string& pFile)
     // check if import was successful
     if(!scene) {
       qDebug() << importer.GetErrorString();
-      /* TODO: do something with importer.GetErrorString() */
       return false;
     }
 
@@ -60,6 +59,7 @@ bool ModelLoader::hasScene()
     return _hasScene;
 }
 
+//KAI'S FUNKTIONEN
 void ModelLoader::genSimpleVBO(GLfloat* vbo, unsigned int meshId) const
 {
     if (!_hasScene) {
@@ -107,7 +107,7 @@ void ModelLoader::genVBO(GLfloat* vbo, unsigned int meshId, bool normals, bool t
         }
 
         if (texcoords) {
-            /* TODO: auto-selects first UV(W) channel */
+            /* TOD_O: auto-selects first UV(W) channel */
             vbo[i*stride+n++] = (scene->mMeshes[meshId]->mTextureCoords[0])[i].x;
             vbo[i*stride+n++] = (scene->mMeshes[meshId]->mTextureCoords[0])[i].y;
             vbo[i*stride+n++] = (scene->mMeshes[meshId]->mTextureCoords[0])[i].z;
@@ -158,9 +158,54 @@ unsigned int ModelLoader::lengthOfIndexArray(unsigned int meshId) const
     return scene->mMeshes[meshId]->mNumFaces * scene->mMeshes[meshId]->mFaces[0].mNumIndices;
 }
 
+//ZUSÄTZLICHE SOA FUNKTIONEN
+void ModelLoader::genSOA(QVector<QVector3D> &vertVec,
+                         QVector<QVector3D> &normVec,
+                         QVector<QVector2D> &texCVec,
+                         QVector<GLuint>  &indexVec,
+                         unsigned int     meshID) {
+
+    if (!_hasScene) return;
+
+    if(!scene->mMeshes[meshID]) return;
+
+    aiMesh* myMesh  = scene->mMeshes[meshID];
+
+    vertVec.reserve(myMesh->mNumVertices);
+    normVec.reserve(myMesh->mNumVertices);
+    texCVec.reserve(myMesh->mNumVertices);
+    indexVec.reserve(myMesh->mNumFaces * 3);
+
+    //vert norm und tex Vec füllen
+    for (unsigned int i = 0; i < myMesh->mNumVertices; i++) {
+        //std::cout << "read vertex number " << i << std::endl;
+
+        vertVec.push_back(QVector3D(myMesh->mVertices[i].x,
+                                    myMesh->mVertices[i].y,
+                                    myMesh->mVertices[i].z));
+
+
+        normVec.push_back(QVector3D(myMesh->mNormals[i].x,
+                                    myMesh->mNormals[i].y,
+                                    myMesh->mNormals[i].z));
+
+        texCVec.push_back(QVector2D((myMesh->mTextureCoords[0])[i].x,
+                                    (myMesh->mTextureCoords[0])[i].y));
+    }
+
+    //IndexVec füllen (GL_TRIANGLES)
+    for (unsigned int i = 0 ; i < myMesh->mNumFaces ; i++) {
+        const aiFace& Face = myMesh->mFaces[i];
+        assert(Face.mNumIndices == 3);
+        indexVec.push_back(Face.mIndices[0]);
+        indexVec.push_back(Face.mIndices[1]);
+        indexVec.push_back(Face.mIndices[2]);
+    }
+}
+
 bool ModelLoader::hasTextureCoordinates(unsigned int meshId)
 {
-    /* TODO: assumes first UV(W) channel */
+    /* TOD_O: assumes first UV(W) channel */
     return scene->mMeshes[meshId]->HasTextureCoords(0);
 }
 
