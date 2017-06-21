@@ -30,15 +30,15 @@ private:
     GLuint _VAO; //Vertex Array Object
     GLuint _Buffers[4];
 
-    QVector<QVector3D> _vertices;
-    QVector<QVector3D> _normals;
-    QVector<QVector2D> _texCoords;
-    QVector<GLuint>    _indices;
+    GLfloat* _vertices;
+    GLfloat* _normals;
+    GLfloat* _texCoords;
+    GLuint*  _indices;
 
     GLfloat* _vboData;
-    GLuint* _indexData;
-    size_t _vboLength;
-    size_t _iboLength;
+    GLuint*  _indexData;
+    size_t   _vboLength;
+    size_t   _iboLength;
     unsigned short _vertOffset;
     unsigned short _normOffset;
     unsigned short _texCoordOffset;

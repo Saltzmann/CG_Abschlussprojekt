@@ -159,48 +159,54 @@ unsigned int ModelLoader::lengthOfIndexArray(unsigned int meshId) const
 }
 
 //ZUSÄTZLICHE SOA FUNKTIONEN
-void ModelLoader::genSOA(QVector<QVector3D> &vertVec,
-                         QVector<QVector3D> &normVec,
-                         QVector<QVector2D> &texCVec,
-                         QVector<GLuint>  &indexVec,
-                         unsigned int     meshID) {
+size_t* ModelLoader::genSOA(GLfloat* vertArray,
+                            GLfloat* normArray,
+                            GLfloat* texCArray,
+                            GLuint*  indexArray,
+                            unsigned int meshID = 0) {
 
-    if (!_hasScene) return;
+    if (!_hasScene) return nullptr;
 
-    if(!scene->mMeshes[meshID]) return;
+    if(!scene->mMeshes[meshID]) return nullptr;
 
     aiMesh* myMesh  = scene->mMeshes[meshID];
 
-    vertVec.reserve(myMesh->mNumVertices);
-    normVec.reserve(myMesh->mNumVertices);
-    texCVec.reserve(myMesh->mNumVertices);
-    indexVec.reserve(myMesh->mNumFaces * 3);
+    vertArraySize  = myMesh->mNumVertices * 3;
+    normArraySize  = myMesh->mNumVertices * 3;
+    texCArraySize  = myMesh->mNumVertices * 2;
+    indexArraySize = myMesh->mNumFaces * 3;
+
+    vertArray = new GLfloat[vertArraySize];
+    normArray = new GLfloat[normArraySize];
+    texCArray = new GLfloat[texCArraySize;
+    indexArray = new GLuint[indexArraySize];
 
     //vert norm und tex Vec füllen
     for (unsigned int i = 0; i < myMesh->mNumVertices; i++) {
         //std::cout << "read vertex number " << i << std::endl;
 
-        vertVec.push_back(QVector3D(myMesh->mVertices[i].x,
-                                    myMesh->mVertices[i].y,
-                                    myMesh->mVertices[i].z));
+        vertArray[i+0] = myMesh->mVertices[i].x;
+        vertArray[i+1] = myMesh->mVertices[i].y;
+        vertArray[i+2] = myMesh->mVertices[i].z;
 
+        normArray[i+0] = myMesh->mNormals[i].x;
+        normArray[i+1] = myMesh->mNormals[i].y;
+        normArray[i+2] = myMesh->mNormals[i].z;
 
-        normVec.push_back(QVector3D(myMesh->mNormals[i].x,
-                                    myMesh->mNormals[i].y,
-                                    myMesh->mNormals[i].z));
-
-        texCVec.push_back(QVector2D((myMesh->mTextureCoords[0])[i].x,
-                                    (myMesh->mTextureCoords[0])[i].y));
+        texCArray[i+0] = (myMesh->mTextureCoords[0])[i].x;
+        texCArray[i+1] = (myMesh->mTextureCoords[0])[i].y;
     }
 
     //IndexVec füllen (GL_TRIANGLES)
     for (unsigned int i = 0 ; i < myMesh->mNumFaces ; i++) {
         const aiFace& Face = myMesh->mFaces[i];
         assert(Face.mNumIndices == 3);
-        indexVec.push_back(Face.mIndices[0]);
-        indexVec.push_back(Face.mIndices[1]);
-        indexVec.push_back(Face.mIndices[2]);
+        indexArray[i+0] = Face.mIndices[0];
+        indexArray[i+1] = Face.mIndices[1];
+        indexArray[i+2] = Face.mIndices[2];
     }
+    size_t* result = new size_t[] {vertArraySize, normArraySize, texCArraySize, indexArraySize };
+    return result;
 }
 
 bool ModelLoader::hasTextureCoordinates(unsigned int meshId)

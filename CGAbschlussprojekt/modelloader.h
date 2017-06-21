@@ -51,11 +51,11 @@ public:
     unsigned int lengthOfIndexArray(unsigned int meshId = 0) const;
 
     //ZUSÄTZLICHE SOA FUNKTIONEN
-    void genSOA(QVector<QVector3D> &vertVec,
-                QVector<QVector3D> &normVec,
-                QVector<QVector2D> &texCVec,
-                QVector<GLuint>  &indexVec,
-                unsigned int     meshID = 0);
+    size_t* genSOA(GLfloat* vertArray,
+                   GLfloat* normArray,
+                   GLfloat* texCArray,
+                   GLuint*  indexArray,
+                   unsigned int meshID = 0);
 
     // Returns whether the model has texture coordinates
     bool hasTextureCoordinates(unsigned int meshId = 0);

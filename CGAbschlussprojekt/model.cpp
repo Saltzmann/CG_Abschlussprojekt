@@ -20,31 +20,34 @@ void Model::_initializeModelData(QString const &modelFileName) {
     qDebug() << "File: " << modelFileName << " hat Textur-Koordinaten = " << _hasTextureCoords;
 
     if (res) { 
-        model.genSOA(_vertices, _normals, _texCoords, _indices);
+        unsigned int* sizes = nullptr; //sizes = [vertArraySize, normArraySize, texCArraySize, indexArraySize] (4)
+        sizes = model.genSOA(_vertices, _normals, _texCoords, _indices); //"leere" pointer rein -> arrays raus
+
+        if(sizes == nullptr) throw new std::exception;
 
         //Vertex Buffer aufsetzen
         glBindBuffer(GL_ARRAY_BUFFER, _Buffers[VERTEX_BUFFER]);
 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(_vertices[0]) * _vertices.size(), &_vertices[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(_vertices[0]) * sizes[0], _vertices, GL_STATIC_DRAW);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(VERTEX_BUFFER, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 
         //"Normals" Buffer aufsetzen
         glBindBuffer(GL_ARRAY_BUFFER, _Buffers[NORMAL_BUFFER]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(_normals[0]) * _normals.size(), &_normals[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(_normals[0]) * sizes[1], _normals, GL_STATIC_DRAW);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(NORMAL_BUFFER, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
         //"Texture-Coordinate" Buffer aufsetzen
         glBindBuffer(GL_ARRAY_BUFFER, _Buffers[TEXCOORD_BUFFER]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(_texCoords[0]) * _texCoords.size(), &_texCoords[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(_texCoords[0]) * sizes[2], _texCoords, GL_STATIC_DRAW);
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(TEXCOORD_BUFFER, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
         //"Index" Buffer aufsetzen
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _Buffers[INDEX_BUFFER]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(_indices[0]) * _indices.size(), &_indices[0], GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(_indices[0]) * sizes[3], _indices, GL_STATIC_DRAW);
 
         qDebug() << "Model laden erfolgreich!" << endl << endl;
     }
@@ -87,14 +90,14 @@ void Model::loadModelFromFile(QString const &modelFileName)  {
     glDeleteBuffers(4, _Buffers);
 
     //alte Daten komplett rausschmeißen, falls noch vorhanden
-    _vertices.clear();
-    _vertices.resize(0);
-    _normals.clear();
-    _normals.resize(0);
-    _texCoords.clear();
-    _texCoords.resize(0);
-    _indices.clear();
-    _indices.resize(0);
+    delete[] _vertices;
+    _vertices = nullptr;
+    delete[] _normals;
+    _normals = nullptr;
+    delete[] _texCoords;
+    _texCoords = nullptr;
+    delete[] _indices;
+    _indices = nullptr;
 
     //Neue Daten laden
     _setUpBuffers(modelFileName);
