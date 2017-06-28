@@ -163,7 +163,7 @@ size_t* ModelLoader::genSOA(GLfloat* vertArray,
                             GLfloat* normArray,
                             GLfloat* texCArray,
                             GLuint*  indexArray,
-                            unsigned int meshID = 0) {
+                            unsigned int meshID) {
 
     if (!_hasScene) return nullptr;
 
@@ -171,14 +171,14 @@ size_t* ModelLoader::genSOA(GLfloat* vertArray,
 
     aiMesh* myMesh  = scene->mMeshes[meshID];
 
-    vertArraySize  = myMesh->mNumVertices * 3;
-    normArraySize  = myMesh->mNumVertices * 3;
-    texCArraySize  = myMesh->mNumVertices * 2;
-    indexArraySize = myMesh->mNumFaces * 3;
+    size_t vertArraySize  = myMesh->mNumVertices * 3;
+    size_t normArraySize  = myMesh->mNumVertices * 3;
+    size_t texCArraySize  = myMesh->mNumVertices * 2;
+    size_t indexArraySize = myMesh->mNumFaces * 3;
 
     vertArray = new GLfloat[vertArraySize];
     normArray = new GLfloat[normArraySize];
-    texCArray = new GLfloat[texCArraySize;
+    texCArray = new GLfloat[texCArraySize];
     indexArray = new GLuint[indexArraySize];
 
     //vert norm und tex Vec füllen
@@ -205,7 +205,12 @@ size_t* ModelLoader::genSOA(GLfloat* vertArray,
         indexArray[i+1] = Face.mIndices[1];
         indexArray[i+2] = Face.mIndices[2];
     }
-    size_t* result = new size_t[] {vertArraySize, normArraySize, texCArraySize, indexArraySize };
+    size_t* result = new size_t[4];
+    result[0] = vertArraySize;
+    result[1] = normArraySize;
+    result[2] = texCArraySize;
+    result[3] = indexArraySize;
+
     return result;
 }
 

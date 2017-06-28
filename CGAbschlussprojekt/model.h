@@ -35,17 +35,20 @@ private:
     GLfloat* _texCoords;
     GLuint*  _indices;
 
-    GLfloat* _vboData;
-    GLuint*  _indexData;
-    size_t   _vboLength;
-    size_t   _iboLength;
-    unsigned short _vertOffset;
-    unsigned short _normOffset;
-    unsigned short _texCoordOffset;
-    size_t _stride;
+    size_t _numIndices;
 
-    GLuint _vboHandle;
-    GLuint _iboHandle;
+    //old
+    //GLfloat* _vboData;
+    //GLuint*  _indexData;
+    //size_t   _vboLength;
+    //size_t   _iboLength;
+    //unsigned short _vertOffset;
+    //unsigned short _normOffset;
+    //unsigned short _texCoordOffset;
+    //size_t _stride;
+
+    //GLuint _vboHandle;
+    //GLuint _iboHandle;
 
     bool _hasTextureCoords;
 
@@ -63,27 +66,27 @@ public:
     void loadModelFromFile(QString const &modelFileName);
 
     //Getter die nicht kopieren und auch Manipulation zulassen
-    GLfloat* vboData();
-    GLuint* indexData();
+    //GLfloat* vboData();
+    //GLuint* indexData();
 
     //Einfache Getter, die nur kopieren
     GLuint vaoHandle() const;
-    int numIndices() const;
+    size_t numIndices() const;
 
-    GLuint vboHandle() const;
-    GLuint iboHandle() const;
-    size_t vboLength() const;
-    size_t iboLength() const;
-    unsigned short vertOffset() const;
-    unsigned short normOffset() const;
-    unsigned short texCoordOffset() const;
-    size_t stride() const;
+    //GLuint vboHandle() const;
+    //GLuint iboHandle() const;
+    //size_t vboLength() const;
+    //size_t iboLength() const;
+    //unsigned short vertOffset() const;
+    //unsigned short normOffset() const;
+    //unsigned short texCoordOffset() const;
+    //size_t stride() const;
     bool hasTextureCoords() const;
     bool hasModelLoaded() const;
 
     //Debug-Print-funktionen
-    void printVBOData();
-    void printIBOData();
+    //void printVBOData();
+    //void printIBOData();
 };
 
 #endif // MODEL_H

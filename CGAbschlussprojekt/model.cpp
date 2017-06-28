@@ -25,29 +25,30 @@ void Model::_initializeModelData(QString const &modelFileName) {
 
         if(sizes == nullptr) throw new std::exception;
 
+        _numIndices = sizes[3];
         //Vertex Buffer aufsetzen
         glBindBuffer(GL_ARRAY_BUFFER, _Buffers[VERTEX_BUFFER]);
 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(_vertices[0]) * sizes[0], _vertices, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(_vertices[0]) * sizes[VERTEX_BUFFER], _vertices, GL_STATIC_DRAW);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(VERTEX_BUFFER, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 
         //"Normals" Buffer aufsetzen
         glBindBuffer(GL_ARRAY_BUFFER, _Buffers[NORMAL_BUFFER]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(_normals[0]) * sizes[1], _normals, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(_normals[0]) * sizes[NORMAL_BUFFER], _normals, GL_STATIC_DRAW);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(NORMAL_BUFFER, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
         //"Texture-Coordinate" Buffer aufsetzen
         glBindBuffer(GL_ARRAY_BUFFER, _Buffers[TEXCOORD_BUFFER]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(_texCoords[0]) * sizes[2], _texCoords, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(_texCoords[0]) * sizes[TEXCOORD_BUFFER], _texCoords, GL_STATIC_DRAW);
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(TEXCOORD_BUFFER, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
         //"Index" Buffer aufsetzen
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _Buffers[INDEX_BUFFER]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(_indices[0]) * sizes[3], _indices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(_indices[0]) * sizes[INDEX_BUFFER], _indices, GL_STATIC_DRAW);
 
         qDebug() << "Model laden erfolgreich!" << endl << endl;
     }
@@ -99,6 +100,8 @@ void Model::loadModelFromFile(QString const &modelFileName)  {
     delete[] _indices;
     _indices = nullptr;
 
+    _numIndices = 0;
+
     //Neue Daten laden
     _setUpBuffers(modelFileName);
 }
@@ -107,6 +110,7 @@ void Model::loadModelFromFile(QString const &modelFileName)  {
 GLuint Model::vaoHandle() const {
     return _VAO;
 }
+/*
 GLuint Model::vboHandle() const {
     return _vboHandle;
 }
@@ -119,11 +123,12 @@ GLfloat* Model::vboData() {
 GLuint* Model::indexData() {
     return _indexData;
 }
-
+*/
 //Einfache Getter, die nur kopieren
-int Model::numIndices() const {
-    return _indices.length();
+size_t Model::numIndices() const {
+    return _numIndices;
 }
+/*
 size_t Model::vboLength() const {
     return _vboLength;
 }
@@ -142,13 +147,14 @@ unsigned short Model::texCoordOffset() const {
 size_t Model::stride() const {
     return _stride;
 }
+*/
 bool Model::hasTextureCoords() const {
     return _hasTextureCoords;
 }
 bool Model::hasModelLoaded() const {
     return _hasModelLoaded;
 }
-
+/*
 void Model::printVBOData() {
     if(_hasModelLoaded) {
         qDebug() << endl << " - - - - - VBOData - - - - - ";
@@ -209,3 +215,4 @@ void Model::printIBOData() {
         }
     }
 }
+*/

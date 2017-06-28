@@ -96,9 +96,8 @@ void RenderableObject::_renderWithDefaultShader(QMatrix4x4 const &parentCTM,
     _shader->enableAttributeArray(attrNorms);
 
     // Fülle die Attribute-Buffer mit den korrekten Daten
-    size_t model_stride = _model->stride(); //reduziert von 3 auf 1 Aufruf (implizit uint in int ist aktzeptabel - kein Werteverlust)
-    _shader->setAttributeBuffer(attrVertices, GL_FLOAT, _model->vertOffset(), 4, model_stride); //VertexPositionen
-    _shader->setAttributeBuffer(attrNorms, GL_FLOAT, _model->normOffset(), 4, model_stride); //VertexNormalen
+    _shader->setAttributeBuffer(attrVertices, GL_FLOAT, 0, 3, 3); //VertexPositionen
+    _shader->setAttributeBuffer(attrNorms, GL_FLOAT, 0, 3, 3); //VertexNormalen
 
     //Uniforms an den Shader übergeben
     _shader->setUniformValue(unifProjMatrix, projectionMatrix); //projektionsMatrix (const)
@@ -164,11 +163,10 @@ void RenderableObject::_renderWithTextureShader(QMatrix4x4 const &parentCTM,
     }
 
     // Fülle die Attribute-Buffer mit den korrekten Daten
-    size_t model_stride = _model->stride(); //reduziert von 3 auf 1 Aufruf (implizit uint in int ist aktzeptabel - kein Werteverlust)
-    _shader->setAttributeBuffer(attrVertices, GL_FLOAT, _model->vertOffset(), 4, model_stride); //VertexPositionen
-    _shader->setAttributeBuffer(attrNorms, GL_FLOAT, _model->normOffset(), 4, model_stride); //VertexNormalen
+    _shader->setAttributeBuffer(attrVertices, GL_FLOAT, 0, 3, 3); //VertexPositionen
+    _shader->setAttributeBuffer(attrNorms, GL_FLOAT, 0, 3, 3); //VertexNormalen
     if(_modelHasTextureCoords) {
-        _shader->setAttributeBuffer(attrTexCoords, GL_FLOAT, _model->texCoordOffset(), 4, model_stride); //TexturCoordinaten
+        _shader->setAttributeBuffer(attrTexCoords, GL_FLOAT, 0, 2, 2); //TexturCoordinaten
     }
 
     //Uniforms an den Shader übergeben
@@ -264,9 +262,8 @@ void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
     _shader->enableAttributeArray(attrNorms);
 
     // Fülle die Attribute-Buffer mit den korrekten Daten
-    size_t model_stride = _model->stride(); //reduziert von 3 auf 1 Aufruf (implizit uint in int ist aktzeptabel - kein Werteverlust)
-    _shader->setAttributeBuffer(attrVertices, GL_FLOAT, _model->vertOffset(), 4, model_stride); //VertexPositionen
-    _shader->setAttributeBuffer(attrNorms, GL_FLOAT, _model->normOffset(), 4, model_stride); //VertexNormalen
+    _shader->setAttributeBuffer(attrVertices, GL_FLOAT, 0, 3, 3); //VertexPositionen
+    _shader->setAttributeBuffer(attrNorms, GL_FLOAT, 0, 3, 3); //VertexNormalen
 
     //Uniforms an den Shader übergeben
     _shader->setUniformValue(unifProjMatrix, projectionMatrix); //projektionsMatrix (const)
@@ -297,8 +294,8 @@ void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
     _secondShader->enableAttributeArray(attrNorms);
 
     // Fülle die Attribute-Buffer mit den korrekten Daten
-    _secondShader->setAttributeBuffer(attrVertices, GL_FLOAT, _model->vertOffset(), 4, model_stride); //VertexPositionen
-    _secondShader->setAttributeBuffer(attrNorms, GL_FLOAT, _model->normOffset(), 4, model_stride); //VertexNormalen
+    _secondShader->setAttributeBuffer(attrVertices, GL_FLOAT, 0, 3, 3); //VertexPositionen
+    _secondShader->setAttributeBuffer(attrNorms, GL_FLOAT, 0, 3, 3); //VertexNormalen
 
     //Uniforms an den Shader übergeben
     _secondShader->setUniformValue(unifProjMatrix, projectionMatrix);
@@ -311,7 +308,7 @@ void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     //Element zeichnen lassen mit Shader 1
-    glDrawElements(GL_TRIANGLES, _model->iboLength(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, _model->numIndices(), GL_UNSIGNED_INT, 0);
 
     // Deaktiviere die Verwendung der Attribute-Arrays
     _secondShader->disableAttributeArray(attrVertices);
