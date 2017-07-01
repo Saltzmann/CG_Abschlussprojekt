@@ -39,9 +39,8 @@ protected:
     Camera* _myCamera;
 
     //Models
-    Model* _cubeModel;
-    Model* _floorModel;
-    Model* _sphereModel;
+    Model* _planeModel;
+    Model* _backgroundModel;
     //...
 
     //Zu rendernde Objekte
@@ -50,7 +49,6 @@ protected:
     //Shader
     QOpenGLShaderProgram* _defaultShaderProgram;
     QOpenGLShaderProgram* _textureShaderProgram;
-    QOpenGLShaderProgram* _meltingShaderProgram;
     QOpenGLShaderProgram* _normalDrawShaderProgram;
 
     //GUI Hilfsvariablen
