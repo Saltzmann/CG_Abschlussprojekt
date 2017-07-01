@@ -1,10 +1,27 @@
 <RCC>
     <qresource prefix="/">
-        <file>floor_texture_1_122px.jpg</file>
-        <file>floor_texture_1_244px.jpg</file>
-        <file>floor_texture_2_128px.bmp</file>
-        <file>floor_texture_2_256px.bmp</file>
-        <file>floor_texture_2_512px.bmp</file>
-        <file>floor_texture_2_1024px.bmp</file>
+        <file>textures/drops/drop-alpha.png</file>
+        <file>textures/drops/drop-color.png</file>
+        <file>textures/drops/drop-shine.png</file>
+        <file>textures/drops/drop-shine2.png</file>
+        <file>textures/generic/floor_texture_1_122px.jpg</file>
+        <file>textures/generic/floor_texture_1_244px.jpg</file>
+        <file>textures/generic/floor_texture_2_1024px.bmp</file>
+        <file>textures/generic/floor_texture_2_128px.bmp</file>
+        <file>textures/generic/floor_texture_2_256px.bmp</file>
+        <file>textures/generic/floor_texture_2_512px.bmp</file>
+        <file>textures/water/texture-bg.png</file>
+        <file>textures/water/texture-fg.png</file>
+        <file>textures/weather/texture-drizzle-bg.png</file>
+        <file>textures/weather/texture-drizzle-fg.png</file>
+        <file>textures/weather/texture-fallout-bg.png</file>
+        <file>textures/weather/texture-fallout-fg.png</file>
+        <file>textures/weather/texture-rain-bg.png</file>
+        <file>textures/weather/texture-rain-fg.png</file>
+        <file>textures/weather/texture-storm-lightning-bg.png</file>
+        <file>textures/weather/texture-storm-lightning-fg.png</file>
+        <file>textures/weather/texture-sun-bg.png</file>
+        <file>textures/weather/texture-sun-fg.png</file>
+        <file>textures/city.jpg</file>
     </qresource>
 </RCC>

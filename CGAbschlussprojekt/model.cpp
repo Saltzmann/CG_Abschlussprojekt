@@ -12,7 +12,7 @@ void Model::_initializeModelData(QString const &modelFileName) {
     // Lade Modell aus Datei
     ModelLoader model;
     QDir currentDir;
-    std::string absolutePath = currentDir.canonicalPath().toStdString() + "/" + modelFileName.toStdString();
+    std::string absolutePath = currentDir.canonicalPath().toStdString() + "/models/" + modelFileName.toStdString();
     bool res = model.loadObjectFromFile(absolutePath);
 
     _hasTextureCoords = model.hasTextureCoordinates();

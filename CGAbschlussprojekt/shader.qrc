@@ -1,11 +1,11 @@
 <RCC>
     <qresource prefix="/">
-        <file>default440.frag</file>
-        <file>default440.vert</file>
-        <file>texture440.frag</file>
-        <file>texture440.vert</file>
-        <file>normalDraw440.frag</file>
-        <file>normalDraw440.geom</file>
-        <file>normalDraw440.vert</file>
+        <file>shader/default440.frag</file>
+        <file>shader/default440.vert</file>
+        <file>shader/normalDraw440.frag</file>
+        <file>shader/normalDraw440.geom</file>
+        <file>shader/normalDraw440.vert</file>
+        <file>shader/texture440.frag</file>
+        <file>shader/texture440.vert</file>
     </qresource>
 </RCC>

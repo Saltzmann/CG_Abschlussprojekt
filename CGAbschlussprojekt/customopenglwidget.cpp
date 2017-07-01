@@ -163,17 +163,17 @@ void CustomOpenGLWidget::initializeGL() {
 
     //shader zu shader-Programmen hinzufügen
     // default shader
-    _defaultShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/default440.vert");
-    _defaultShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/default440.frag");
+    _defaultShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shader/default440.vert");
+    _defaultShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shader/default440.frag");
 
     // texture shader
-    _textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/texture440.vert");
-    _textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/texture440.frag");
+    _textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shader/texture440.vert");
+    _textureShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shader/texture440.frag");
 
     // normal drawing shader
-    _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/normalDraw440.vert");
-    _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Geometry, ":/normalDraw440.geom");
-    _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/normalDraw440.frag");
+    _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shader/normalDraw440.vert");
+    _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Geometry, ":/shader/normalDraw440.geom");
+    _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shader/normalDraw440.frag");
 
     //Kompiliere und linke die Shader-Programme
     _defaultShaderProgram->link();
@@ -270,6 +270,6 @@ void CustomOpenGLWidget::_createRenderables() {
                                                    _textureShaderProgram,
                                                    nullptr,
                                                    QVector4D(1.f, 0.f, 0.f, 1.f),
-                                                   "floor_texture_2_1024px.bmp");
+                                                   "generic/floor_texture_2_1024px.bmp");
     _myRenderables.push_back(floor);
 }
