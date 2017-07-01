@@ -70,7 +70,7 @@ void Model::_setUpBuffers(QString const &modelFileName) {
     //Model muss nun geladen sein
     if(!_hasModelLoaded) throw new std::exception();
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * _vboLength, _vboData, GL_STATIC_DRAW); //NOTE Static draw später vermutliche ändern
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * _vboLength, _vboData, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * _iboLength, _indexData, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);

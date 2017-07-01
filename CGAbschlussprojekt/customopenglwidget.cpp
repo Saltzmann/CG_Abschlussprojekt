@@ -9,7 +9,6 @@ CustomOpenGLWidget::CustomOpenGLWidget(QWidget *parent) : QOpenGLWidget(parent){
     //Shader initialisieren
     _defaultShaderProgram = new QOpenGLShaderProgram();
     _textureShaderProgram = new QOpenGLShaderProgram();
-    _meltingShaderProgram = new QOpenGLShaderProgram();
     _normalDrawShaderProgram = new QOpenGLShaderProgram();
 
     //Keyboard und Mouse Input Einstellungen
@@ -43,6 +42,10 @@ CustomOpenGLWidget::CustomOpenGLWidget(QWidget *parent) : QOpenGLWidget(parent){
     connect(_myCamera, SIGNAL(mouseCaptured(bool)),
             this, SLOT(recieveMouseCaptured(bool)));
 
+    //Zufallszahlengenerator seeden
+    QTime timeObj;
+    qsrand(timeObj.msecsSinceStartOfDay());
+
     //Ordner setzen
     QDir currentDir;
     currentDir.cd("..");
@@ -57,8 +60,8 @@ CustomOpenGLWidget::~CustomOpenGLWidget() {
         delete x;
     }
     delete _myCamera;
-    delete _cubeModel;
-    delete _floorModel;
+    delete _planeModel;
+    //delete _backgroundModel;
     delete _defaultShaderProgram;
     delete _fpsTimer;
     delete _debugLogger;
@@ -180,7 +183,6 @@ void CustomOpenGLWidget::initializeGL() {
     qDebug() << endl << " - - - - - SHADER - COMPILE - INFOS - - - - - ";
     qDebug() << "Default Shader log: " << endl << _defaultShaderProgram->log();
     qDebug() << "Texture Shader log: " << endl << _textureShaderProgram->log();
-    qDebug() << "Melting Shader log: " << endl << _meltingShaderProgram->log();
     qDebug() << "Normal Shader log: " << endl << _normalDrawShaderProgram->log();
     qDebug() << endl;
 
@@ -252,46 +254,18 @@ void CustomOpenGLWidget::recieveMouseCaptured(bool captured) {
     emit mouseCaptured(captured);
 }
 
-void CustomOpenGLWidget::_buildGeometry() {
-    _cubeModel = new Model("cube.obj");
-
-    //_cubeModel->printVBOData();
-    //_cubeModel->printIBOData();
-
-    _floorModel = new Model("square.obj");
-    _sphereModel = new Model("low_poly_sphere.obj");
+void CustomOpenGLWidget::_buildGeometry() {   
+    _planeModel = new Model("square.obj");
 }
 
 void CustomOpenGLWidget::_createRenderables() {
     QMatrix4x4 ctm;
 
-    //Cube
+    //Plane
     ctm.setToIdentity();
-    ctm.translate(0.f, 0.5f, 0.f);
-    RenderableObject* cube = new RenderableObject(ctm,
-                                                  _cubeModel,
-                                                  SHADER_NORMALS,
-                                                  _defaultShaderProgram,
-                                                  _normalDrawShaderProgram,
-                                                  QVector4D(0.5f, 0.5f, 1.f, 1.f));
-    _myRenderables.push_back(cube);
-
-    //Sphere
-    ctm.setToIdentity();
-    ctm.translate(-5.f, 1.f, -5.f);
-    RenderableObject* sphere = new RenderableObject(ctm,
-                                                    _sphereModel,
-                                                    SHADER_NORMALS,
-                                                    _defaultShaderProgram,
-                                                    _normalDrawShaderProgram,
-                                                    QVector4D(0.5f, 0.5f, 1.f, 1.f));
-    _myRenderables.push_back(sphere);
-
-    //Floor
-    ctm.setToIdentity();
-    ctm.scale(8);
+    ctm.rotate(90.f, 1.f, 0.f, 0.f);
     RenderableObject* floor = new RenderableObject(ctm,
-                                                   _floorModel,
+                                                   _planeModel,
                                                    SHADER_TEXTURE,
                                                    _textureShaderProgram,
                                                    nullptr,

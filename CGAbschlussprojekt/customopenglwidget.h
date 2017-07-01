@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QOpenGLWidget>
 #include <QOpenGLContext>
+#include <QtGlobal>
 //Compatibility includes
 #include <QOpenGLFunctions>
 //Debug Includes
@@ -19,6 +20,7 @@
 #include <QMoveEvent>
 //Sim/Time includes
 #include <QTimer>
+#include <QTime>
 //Datenstruktur Includes
 #include <QVector>
 //Shader Includes
@@ -39,9 +41,8 @@ protected:
     Camera* _myCamera;
 
     //Models
-    Model* _cubeModel;
-    Model* _floorModel;
-    Model* _sphereModel;
+    Model* _planeModel;
+    Model* _backgroundModel;
     //...
 
     //Zu rendernde Objekte
@@ -50,7 +51,6 @@ protected:
     //Shader
     QOpenGLShaderProgram* _defaultShaderProgram;
     QOpenGLShaderProgram* _textureShaderProgram;
-    QOpenGLShaderProgram* _meltingShaderProgram;
     QOpenGLShaderProgram* _normalDrawShaderProgram;
 
     //GUI Hilfsvariablen

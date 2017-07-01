@@ -110,7 +110,6 @@ bool Camera::mouseWheelUpdate(QWheelEvent* event) {
     if (numDegrees != 0) {
        int numSteps = numDegrees / 15; //Jeder Step = 15°
        //0.05 als Modifikator damit man nicht zu schnell zoomt
-       //Wert ist auf Touchpad ausgelegt, eventuell TODO für Mausrad anpassen
        this->alterSpeed(float(numSteps) * 0.05f);
        return true;
     }

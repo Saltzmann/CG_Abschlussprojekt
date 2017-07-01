@@ -28,7 +28,7 @@ ModelLoader::~ModelLoader()
 
 bool ModelLoader::loadObjectFromFile(const std::string& pFile)
 {
-    /* TODO: this is some weak error handling */
+    /* TO.DO: this is some weak error handling */
     if (_hasScene) {
         return false;
     }
@@ -40,7 +40,6 @@ bool ModelLoader::loadObjectFromFile(const std::string& pFile)
     // check if import was successful
     if(!scene) {
       qDebug() << importer.GetErrorString();
-      /* TODO: do something with importer.GetErrorString() */
       return false;
     }
 
@@ -107,7 +106,7 @@ void ModelLoader::genVBO(GLfloat* vbo, unsigned int meshId, bool normals, bool t
         }
 
         if (texcoords) {
-            /* TODO: auto-selects first UV(W) channel */
+            /* TO.DO: auto-selects first UV(W) channel */
             vbo[i*stride+n++] = (scene->mMeshes[meshId]->mTextureCoords[0])[i].x;
             vbo[i*stride+n++] = (scene->mMeshes[meshId]->mTextureCoords[0])[i].y;
             vbo[i*stride+n++] = (scene->mMeshes[meshId]->mTextureCoords[0])[i].z;
@@ -160,7 +159,7 @@ unsigned int ModelLoader::lengthOfIndexArray(unsigned int meshId) const
 
 bool ModelLoader::hasTextureCoordinates(unsigned int meshId)
 {
-    /* TODO: assumes first UV(W) channel */
+    /* TO.DO: assumes first UV(W) channel */
     return scene->mMeshes[meshId]->HasTextureCoords(0);
 }
 
