@@ -37,7 +37,6 @@ private:
     QVector4D _baseColor;
     QOpenGLTexture* _mainTexture;
     QOpenGLTexture* _secondTexture;
-    //QOpenGLTexture* _thirdTexture; ?
 
     //Rendering Counter
     float _renderingCounter1;
@@ -46,6 +45,7 @@ private:
     //Bool-Flags ob überhaupt Texturen vorhanden sind
     bool _hasTexture;
     bool _hasSecondTexture;    
+    //bool _hasThirdTexture;
 
     //Abhängige RenderableObjects
     QVector<RenderableObject*> _children;
@@ -65,8 +65,8 @@ private:
                                   QMatrix4x4 const &viewMatrix,
                                   QMatrix4x4 const &projectionMatrix);
     void _renderWithNormalsShader(QMatrix4x4 const &parentCTM,
-                               QMatrix4x4 const &viewMatrix,
-                               QMatrix4x4 const &projectionMatrix);
+                                  QMatrix4x4 const &viewMatrix,
+                                  QMatrix4x4 const &projectionMatrix);
 public:
     //Konstruktor
     RenderableObject(QMatrix4x4 ctm,
@@ -89,6 +89,7 @@ public:
     //Info Getter
     bool hasTexture() const;
     bool hasSecondTexture() const;
+    bool hasThirdTexture() const;
 public slots:
     //void update(); //später wahrscheinlich / vielleicht
 };

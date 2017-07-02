@@ -42,10 +42,6 @@ CustomOpenGLWidget::CustomOpenGLWidget(QWidget *parent) : QOpenGLWidget(parent){
     connect(_myCamera, SIGNAL(mouseCaptured(bool)),
             this, SLOT(recieveMouseCaptured(bool)));
 
-    //Zufallszahlengenerator seeden
-    QTime timeObj;
-    qsrand(timeObj.msecsSinceStartOfDay());
-
     //Ordner setzen
     QDir currentDir;
     currentDir.cd("..");
@@ -148,6 +144,12 @@ void CustomOpenGLWidget::initializeGL() {
     }
 
     //OpenGL Flags setzen / Funktionen aktivieren
+    //glEnable(GL_POINT_SMOOTH);
+    //glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_POLYGON_SMOOTH);
+    //glEnable(GL_BLEND);
+    //glBlendFunc()
+    //glBlendEquation()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glDepthFunc(GL_LEQUAL);
@@ -263,12 +265,13 @@ void CustomOpenGLWidget::_createRenderables() {
 
     //Plane
     ctm.setToIdentity();
-    RenderableObject* floor = new RenderableObject(ctm,
-                                                   _planeModel,
-                                                   SHADER_TEXTURE,
-                                                   _textureShaderProgram,
-                                                   nullptr,
-                                                   QVector4D(1.f, 0.f, 0.f, 1.f),
-                                                   "generic/floor_texture_2_1024px.bmp");
-    _myRenderables.push_back(floor);
+    RenderableObject* background = new RenderableObject(ctm,
+                                                        _planeModel,
+                                                        SHADER_TEXTURE,
+                                                        _textureShaderProgram,
+                                                        nullptr,
+                                                        QVector4D(1.f, 0.f, 0.f, 1.f),
+                                                        "background/old_street_800x450.png",
+                                                        "water/texture-bg.png");
+    _myRenderables.push_back(background);
 }

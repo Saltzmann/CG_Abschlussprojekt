@@ -8,6 +8,7 @@ RenderableObject::RenderableObject(QMatrix4x4 ctm,
                                    QVector4D const &baseColor,
                                    QString const &mainTextureFileName,
                                    QString const &secondTextureFileName) {
+                                   //QString const &thirdTextureFileName) {
     //Muss
     initializeOpenGLFunctions();
 
@@ -18,6 +19,7 @@ RenderableObject::RenderableObject(QMatrix4x4 ctm,
     this->_shader = shader;
     _hasTexture = false;
     _hasSecondTexture = false;
+    //_hasThirdTexture = false;
 
     if(secondShader != nullptr) {
         _secondShader = secondShader;
@@ -45,21 +47,21 @@ RenderableObject::RenderableObject(QMatrix4x4 ctm,
 void RenderableObject::_setMainTexture(QString filename) {
     //(ausgelagerte) Hilfsfunktion zum Setzen der Haupt-Textur
     _mainTexture = new QOpenGLTexture(QImage(":/textures/" + filename).mirrored());
-    _mainTexture->setMinificationFilter(QOpenGLTexture::NearestMipMapLinear);
-    _mainTexture->setMagnificationFilter(QOpenGLTexture::Nearest);
+    _mainTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    _mainTexture->setMagnificationFilter(QOpenGLTexture::Linear);
     Q_ASSERT(_mainTexture->textureId() != 0); //Würde Fehler bedeuten
     _hasTexture = true;
-    qDebug() << endl << "Textur: " << filename << " geladen" << endl << endl;
+    qDebug() << endl << "1. Textur: " << filename << " geladen" << endl << endl;
 }
 
 void RenderableObject::_setSecondTexture(QString filename) {
     //(ausgelagerte) Hilfsfunktion zum Setzen der Zweit-Textur
     _secondTexture = new QOpenGLTexture(QImage(":/textures/" + filename).mirrored());
-    _secondTexture->setMinificationFilter(QOpenGLTexture::NearestMipMapLinear);
-    _secondTexture->setMagnificationFilter(QOpenGLTexture::Nearest);
+    _secondTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    _secondTexture->setMagnificationFilter(QOpenGLTexture::Linear);
     Q_ASSERT(_secondTexture->textureId() != 0); //Würde Fehler bedeuten
     _hasSecondTexture = true;
-    qDebug() << endl << "Textur: " << filename << " geladen" << endl << endl;
+    qDebug() << endl << "2. Textur: " << filename << " geladen" << endl << endl;
 }
 
 void RenderableObject::_renderWithDefaultShader(QMatrix4x4 const &parentCTM,
@@ -184,12 +186,10 @@ void RenderableObject::_renderWithTextureShader(QMatrix4x4 const &parentCTM,
     _mainTexture->bind(0);
     _shader->setUniformValue("diffuseMap", 0);
 
-    /* atm nicht implementiert im shader
     if(_hasSecondTexture) {
         _secondTexture->bind(1);
-        _shader->setUniformValue("bumpMap?!?", 1);
+        _shader->setUniformValue("blendMap", 1);
     }
-    */
 
     //PolygonMode einstellen
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -214,11 +214,9 @@ void RenderableObject::_renderWithTextureShader(QMatrix4x4 const &parentCTM,
     if(_hasTexture) {
         _mainTexture->release();
     }
-    /* atm nicht implementiert im shader
     if(_hasSecondTexture) {
         _secondTexture->release();
     }
-    */
 
     //VBO und IBO vom Kontext lösen
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -226,8 +224,8 @@ void RenderableObject::_renderWithTextureShader(QMatrix4x4 const &parentCTM,
 }
 
 void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
-                                             QMatrix4x4 const &viewMatrix,
-                                             QMatrix4x4 const &projectionMatrix) {
+                                                QMatrix4x4 const &viewMatrix,
+                                                QMatrix4x4 const &projectionMatrix) {
     //TODO CTM Matrix Transformationen
     QMatrix4x4 ctm;
     ctm = parentCTM * _myCTM;

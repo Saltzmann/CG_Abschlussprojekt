@@ -6,7 +6,6 @@
 #include <QWidget>
 #include <QOpenGLWidget>
 #include <QOpenGLContext>
-#include <QtGlobal>
 //Compatibility includes
 #include <QOpenGLFunctions>
 //Debug Includes
@@ -20,7 +19,6 @@
 #include <QMoveEvent>
 //Sim/Time includes
 #include <QTimer>
-#include <QTime>
 //Datenstruktur Includes
 #include <QVector>
 //Shader Includes
