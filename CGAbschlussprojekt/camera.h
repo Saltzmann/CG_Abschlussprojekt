@@ -20,11 +20,11 @@
 
 //Define Regler, für schnellen Zugriff ohne im Code zu wühlen
 #define UPDATE_RATE 60
-#define INITIAL_CAMERA_OFFSET_Z 2.0f
+#define INITIAL_CAMERA_OFFSET_Z 500.0f
 #define INITIAL_CAMERA_OFFSET_Y 0.f
-#define INITIAL_SPEED_FACTOR 0.05f
+#define INITIAL_SPEED_FACTOR 5.00f //default 0.05
 #define TICKRATE 1000/UPDATE_RATE
-#define CAMERA_TURN_SPEED 1.f/5.f
+#define CAMERA_TURN_SPEED 1.f/100.f //default 1/5
 
 class Camera : public QObject {
     Q_OBJECT

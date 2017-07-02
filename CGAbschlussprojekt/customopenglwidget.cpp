@@ -255,7 +255,7 @@ void CustomOpenGLWidget::recieveMouseCaptured(bool captured) {
 }
 
 void CustomOpenGLWidget::_buildGeometry() {   
-    _planeModel = new Model("square.obj");
+    _planeModel = new Model("16to9_rectangle_vertical_tris.obj");
 }
 
 void CustomOpenGLWidget::_createRenderables() {
@@ -263,7 +263,6 @@ void CustomOpenGLWidget::_createRenderables() {
 
     //Plane
     ctm.setToIdentity();
-    ctm.rotate(90.f, 1.f, 0.f, 0.f);
     RenderableObject* floor = new RenderableObject(ctm,
                                                    _planeModel,
                                                    SHADER_TEXTURE,
