@@ -111,13 +111,13 @@ void RenderableObject::_renderWithDefaultShader(QMatrix4x4 const &parentCTM,
 
 
     //PolygonMode einstellen
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     //Element zeichnen lassen (implizit uint in int ist aktzeptabel - kein Werteverlust)
     glDrawElements(GL_TRIANGLES, _model->iboLength(), GL_UNSIGNED_INT, 0);
 
     //PolygonMode auf default setzen
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     // Deaktiviere die Verwendung der Attribute-Arrays
     _shader->disableAttributeArray(attrVertices);

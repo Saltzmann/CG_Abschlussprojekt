@@ -7,13 +7,15 @@
 #include <QtGlobal>
 #include <QTime>
 #include <QPair>
+#include <QObject>
 
 #include "drop.h"
 #include "renderableobject.h"
 
 
 class Raindrops : public RenderableObject {
-public:
+    Q_OBJECT
+private:
     /*
     //Default Options
     //Große
@@ -61,21 +63,25 @@ public:
     //Options
     unsigned short const _minR = 10; //10
     unsigned short const _maxR = 40; //40
+    unsigned short const _dropletsMinR = 3;
+    unsigned short const _dropletsMaxR = 7;
     float const _trailScaleRangeSmall = 0.2f; //0.2
     float const _trailScaleRangeBig = 0.5f; //0.5
 
     // A T T R I B U T E
     //Erweiterung von RenderableObject
-    QOpenGLTexture* _refractionBackground;
-    QOpenGLTexture* _refractionFront;
+    //QOpenGLTexture* _refractionBackground;
+    //QOpenGLTexture* _refractionFront;
 
-    QHash<QString, unsigned char> _dropsSmall; //[width][height] => [width*height]
+    unsigned int testCounter = 0;
+
+    QHash<unsigned int, unsigned char> _dropsSmall; //[width][height] => [width*height]
     QHash<unsigned int, Drop> _dropsBig;
 
     size_t _maxNumberDroplets;
     size_t _glassWidth;
     size_t _glassHeight;
-    float _dropletsCleaningRadiusMultiplier; //0.43
+    float const _dropletsCleaningRadiusMultiplier = 0.43; //0.43
 
     //Methoden
     void _spawnDroplet();
@@ -116,7 +122,9 @@ public:
     void updateDroplets();
     void updateDrops();
     */
-
+public slots:
+    //void update();
+signals:
 };
 
 #endif // RAINDROPS_H

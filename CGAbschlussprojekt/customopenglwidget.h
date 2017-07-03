@@ -27,6 +27,7 @@
 #include <camera.h>
 #include <model.h>
 #include <renderableobject.h>
+#include <raindrops.h>
 
 class CustomOpenGLWidget : public QOpenGLWidget,
                            protected QOpenGLFunctions {
@@ -40,7 +41,8 @@ protected:
 
     //Models
     Model* _planeModel;
-    Model* _backgroundModel;
+    Model* _dropsModel;
+    //Model* _testModel;
     //...
 
     //Zu rendernde Objekte

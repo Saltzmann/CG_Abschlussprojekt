@@ -258,10 +258,25 @@ void CustomOpenGLWidget::recieveMouseCaptured(bool captured) {
 
 void CustomOpenGLWidget::_buildGeometry() {   
     _planeModel = new Model("16to9_rectangle_vertical_tris.obj");
+    _dropsModel = new Model("square_vertical_tris.obj");
+    //_testModel = new Model("square_vertical_tris.obj");
 }
 
 void CustomOpenGLWidget::_createRenderables() {
     QMatrix4x4 ctm;
+
+    /*
+    ctm.setToIdentity();
+    ctm.scale(200);
+    ctm.scale(1, 1.5f);
+    RenderableObject* test = new RenderableObject(ctm,
+                                                  _testModel,
+                                                  SHADER_DEFAULT,
+                                                  _defaultShaderProgram,
+                                                  nullptr,
+                                                  QVector4D(1.f, 0.f, 0.f, 1.f));
+    _myRenderables.push_back(test);
+    */
 
     //Plane
     ctm.setToIdentity();
@@ -274,4 +289,14 @@ void CustomOpenGLWidget::_createRenderables() {
                                                         "background/old_street_800x450.png",
                                                         "water/texture-bg.png");
     _myRenderables.push_back(background);
+
+    //Minininimal nach vorne schieben und auf 1600x900 Bild anpassen
+    ctm.translate(-800.f, -450.f, 0.5f);
+    RenderableObject* foreground = new Raindrops(ctm,
+                                                 _dropsModel,
+                                                 SHADER_TEXTURE,
+                                                 _defaultShaderProgram,
+                                                 nullptr,
+                                                 QVector4D(1.f, 0.f, 0.f, 1.f));
+    _myRenderables.push_back(foreground);
 }

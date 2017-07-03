@@ -23,7 +23,7 @@
 
 class RenderableObject : public QObject, public QOpenGLExtraFunctions {
     Q_OBJECT
-private:
+protected:
     //Referenzen bilden 'Render-Konfiguration'
     //Geometrie
     Model* _model;
