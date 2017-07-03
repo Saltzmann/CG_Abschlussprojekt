@@ -62,7 +62,7 @@ private:
     */
     //Options
     unsigned short const _minR = 10; //10
-    unsigned short const _maxR = 40; //40
+    unsigned short const _maxR = 30; //40
     unsigned short const _dropletsMinR = 3;
     unsigned short const _dropletsMaxR = 7;
     float const _trailScaleRangeSmall = 0.2f; //0.2
@@ -79,6 +79,7 @@ private:
     QHash<unsigned int, Drop> _dropsBig;
 
     size_t _maxNumberDroplets;
+    size_t _maxNumberDrops;
     size_t _glassWidth;
     size_t _glassHeight;
     float const _dropletsCleaningRadiusMultiplier = 0.43; //0.43

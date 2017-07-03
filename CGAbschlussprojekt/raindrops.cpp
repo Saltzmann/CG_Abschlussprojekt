@@ -21,7 +21,8 @@ Raindrops::Raindrops(QMatrix4x4 ctm,
     //Optionen setzen
     _glassWidth = 1600;
     _glassHeight = 900;
-    _maxNumberDroplets = 15000;
+    _maxNumberDroplets = 10000;
+    _maxNumberDrops = 250;
 
     _dropsSmall.reserve(_maxNumberDroplets);
 
@@ -59,9 +60,7 @@ void RenderableObject::_setSecondTexture(QString filename) {
 }
 */
 void Raindrops::_spawnDroplet() {
-    if(_dropsSmall.size() >= _maxNumberDroplets) {
-        return;
-    }
+    if(_dropsSmall.size() >= _maxNumberDroplets) return;
     //50px Rand
     unsigned int lookUp;
     do {
@@ -92,12 +91,14 @@ void Raindrops::_deleteDroplets(QPoint location, unsigned char const &radius) {
 }
 
 void Raindrops::_spawnDrop(Drop* parent) {
+    if(_dropsBig.size() >= _maxNumberDrops) return;
     //TODO Radius, Momentum,
     unsigned short xPos, yPos, radius;
     //Wenn kein Parent (==nullptr) dann komplett neuer Tropfen
     if(parent == nullptr) {
-        xPos = 50 + qrand() % (_glassWidth - 100);
-        yPos = 50 + qrand() % (_glassHeight - 100);
+        //75px Rand
+        xPos = 75 + qrand() % (_glassWidth - 150);
+        yPos = 75 + qrand() % (_glassHeight - 150);
         radius = _minR + (qrand() % (_maxR - _minR));
     }
     else { //Ansonsten Werte abhängig von Parent
@@ -196,11 +197,21 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
     _shader->setUniformValue(unifViewMatrix, viewMatrix); //viewMatrix ("const")
     _shader->setUniformValue(unifColor, _baseColor);
 
+    for(Drop d : _dropsBig.values()) {
+        ctm.translate(d.posX, d.posY, 0);
+        ctm.scale(d.radius);
+        ctm.scale(1.0f, 1.5f);
+        _shader->setUniformValue(unifModelMatrix, ctm); //modelMatrix (immer abhängig vom gerade zu rendernden RenderableObject)
+        glDrawElements(GL_TRIANGLES, _model->iboLength(), GL_UNSIGNED_INT, 0);
+        ctm = combindedCTM; //zurücksetzen
+    }
+
     for(unsigned int locationHash : _dropsSmall.uniqueKeys()) {
         unsigned short xPos = _retrieveXValueFromHash(locationHash);
         unsigned short yPos = _retrieveYValueFromHash(locationHash);
         ctm.translate(xPos, yPos, 0);
         ctm.scale(_dropsSmall.value(locationHash));
+        ctm.scale(1.0f, 1.5f);
         _shader->setUniformValue(unifModelMatrix, ctm); //modelMatrix (immer abhängig vom gerade zu rendernden RenderableObject)
         glDrawElements(GL_TRIANGLES, _model->iboLength(), GL_UNSIGNED_INT, 0);
         ctm = combindedCTM; //zurücksetzen
@@ -231,13 +242,15 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
     //}
 
     //VBO und IBO vom Kontext lösen
-   glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     //Einstellungen zurücksetzen
     glDisable(GL_BLEND);
     glDepthMask(GL_TRUE);
 
-    //_spawnDroplet();
+    _spawnDrop();
     //testCounter++;
 }
+
+
