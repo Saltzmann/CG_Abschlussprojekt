@@ -6,6 +6,7 @@
 #include <QPoint>
 #include <QtGlobal>
 #include <QTime>
+#include <QTimer>
 #include <QPair>
 #include <QObject>
 
@@ -84,12 +85,15 @@ private:
     size_t _glassHeight;
     float const _dropletsCleaningRadiusMultiplier = 0.43; //0.43
 
+    //Update Timer
+    QTimer* _updateTimer;
+
     //Methoden
     void _spawnDroplet();
     void _deleteDroplets(QPoint location, unsigned char const &radius);
 
     void _spawnDrop(Drop* parent = nullptr);
-    void _updateDrops();
+    inline void _updateDrops();
     
     //Helper
     inline unsigned int _createUintPosHash(unsigned short const &xPos,
@@ -124,7 +128,7 @@ public:
     void updateDrops();
     */
 public slots:
-    //void update();
+    void update();
 signals:
 };
 

@@ -22,13 +22,16 @@ Raindrops::Raindrops(QMatrix4x4 ctm,
     _glassWidth = 1600;
     _glassHeight = 900;
     _maxNumberDroplets = 10000;
-    _maxNumberDrops = 250;
+    //_maxNumberDroplets = 0;
+    _maxNumberDrops = 100;
+    //_maxNumberDrops = 1;
 
     _dropsSmall.reserve(_maxNumberDroplets);
+    _dropsBig.reserve(_maxNumberDrops);
 
-    for(int i = 0; i < _maxNumberDroplets; i++) {
-        _spawnDroplet();
-    }
+    //for(int i = 0; i < _maxNumberDroplets; i++) {
+    //    _spawnDroplet();
+    //}
 
     //Zufallszahlengenerator seeden
     QTime timeObj;
@@ -36,6 +39,11 @@ Raindrops::Raindrops(QMatrix4x4 ctm,
     int msecs = timeObj.msecsSinceStartOfDay();
     //qDebug() << "Zeit seit Beginn des Tages in Millisekunden: " << msecs << " (für random seeding)";
     qsrand(msecs);
+
+    _updateTimer = new QTimer(this);
+    connect(_updateTimer, SIGNAL(timeout()),
+            this, SLOT(update()));
+    _updateTimer->start(1000/60); //Rendern ausgelegt für 60 fps -> daher 60hz updatefrequenz
 }
 
 /*
@@ -112,6 +120,16 @@ void Raindrops::_spawnDrop(Drop* parent) {
     Drop newDrop = Drop(xPos, yPos, radius, parent);
     unsigned int hashValue = _createUintPosHash(xPos,yPos);
     _dropsBig.insert(hashValue, newDrop);
+}
+
+void Raindrops::_updateDrops() {
+    for(unsigned int locationHash : _dropsBig.uniqueKeys()) {
+        Drop d = _dropsBig.take(locationHash);
+        d.update();
+        if(!d.killed) {
+            _dropsBig.insert(_createUintPosHash(d.posX,d.posY), d);
+        }
+    }
 }
 
 unsigned int Raindrops::_createUintPosHash(unsigned short const &xPos, unsigned short const &yPos) {
@@ -198,6 +216,7 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
     _shader->setUniformValue(unifColor, _baseColor);
 
     for(Drop d : _dropsBig.values()) {
+        //qDebug() << "XPOS: " << d.posX << " YPOS: " << d.posY << " SHRINK: " << d.shrinkage;
         ctm.translate(d.posX, d.posY, 0);
         ctm.scale(d.radius);
         ctm.scale(1.0f, 1.5f);
@@ -250,7 +269,13 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
     glDepthMask(GL_TRUE);
 
     _spawnDrop();
+    _spawnDroplet();
     //testCounter++;
+}
+
+void Raindrops::update() {
+    //qDebug() << "Update called";
+    _updateDrops();
 }
 
 
