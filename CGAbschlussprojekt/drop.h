@@ -8,22 +8,24 @@
 
 class Drop {
 public:
-    float _posX;
-    float _posY;
-    float _radius;
-    float _spreadX;
-    float _spreadY;
-    float _momentum;
-    float _momentumX;
-    float _lastSpawn;
-    float _nextSpawn;
-    Drop* _parent;
-    bool  _isNew;
-    bool  _killed;
-    float _shrink;
-
+    unsigned short posX;
+    unsigned short posY;
+    unsigned short radius;
+    //unsigned short spreadX;
+    //unsigned short spreadY;
+    unsigned short momentum;
+    //unsigned short momentumX;
+    //float lastSpawn;
+    float ticksToNextSpawn;
+    Drop* parent;
+    bool  isNew;
+    bool  killed;
+    float shrink;
 public:
-    Drop();
+    Drop(unsigned short const &xPos,
+         unsigned short const &yPos,
+         unsigned short const &radius,
+         Drop* parent);
 };
 
 #endif // DROP_H

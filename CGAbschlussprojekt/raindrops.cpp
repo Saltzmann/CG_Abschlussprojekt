@@ -62,6 +62,45 @@ void Raindrops::_deleteDroplets(QPoint location, unsigned char const &radius) {
     }
 }
 
+void Raindrops::_spawnDrop(Drop* parent) {
+    //TODO Radius, Momentum,
+    unsigned short xPos, yPos, radius;
+    //Wenn kein Parent (==nullptr) dann komplett neuer Tropfen
+    if(parent == nullptr) {
+        xPos = qrand() % _glassWidth;
+        yPos = qrand() % _glassHeight;
+        radius = _minR + (qrand() % (_maxR - _minR));
+    }
+    else { //Ansonsten Werte abhängig von Parent
+        xPos = parent->posX + (qrand() % parent->radius/2);
+        yPos = parent->posY + (qrand() % parent->radius/2) + parent->momentum;
+        //gibt Wert zwischen oberer und unter Grenze aus mit 3 Nachkommastellen bei 0.x 2 bei x.0 usw
+        radius = parent->radius *
+                (_trailScaleRangeSmall + float(qrand() %
+                int((_trailScaleRangeBig - _trailScaleRangeSmall)*1000)) / 1000.f);
+    }
+    Drop newDrop = Drop(xPos, yPos, radius, parent);
+    unsigned int hashValue = _createUintPosHash(xPos,yPos);
+    _dropsBig[hashValue] = newDrop;
+}
+
+unsigned int Raindrops::_createUintPosHash(unsigned short const &xPos, unsigned short const &yPos) {
+    //Aufbau: XXXX0YYYY
+    unsigned int hash = yPos;
+    hash *= (xPos * 100000); //
+    return hash;
+}
+
+unsigned short Raindrops::_retrieveXValueFromHash(unsigned int const &hash) {
+    //elemeniert irrelevante Stellen
+    return hash / 100000;
+}
+
+unsigned short Raindrops::_retrieveYValueFromHash(unsigned int const &hash) {
+    //liest letzten 4 Stellen aus
+    return hash % 10000;
+}
+
 void Raindrops::render(QMatrix4x4 const &parentCTM,
                        QMatrix4x4 const &viewMatrix,
                        QMatrix4x4 const &projectionMatrix) {

@@ -6,9 +6,11 @@
 #include <QPoint>
 #include <QtGlobal>
 #include <QTime>
+#include <QPair>
 
 #include "drop.h"
 #include "renderableobject.h"
+
 
 class Raindrops : public RenderableObject {
 public:
@@ -56,9 +58,20 @@ public:
     float _textureCleaningIterations; //:0,
     float _lastRender; //:null,
     */
-    //Attribute
-    //QHash<QPoint, Droplet> _dropsSmall;
+    //Options
+    unsigned short const _minR = 10; //10
+    unsigned short const _maxR = 40; //40
+    float const _trailScaleRangeSmall = 0.2f; //0.2
+    float const _trailScaleRangeBig = 0.5f; //0.5
+
+    // A T T R I B U T E
+    //Erweiterung von RenderableObject
+    QOpenGLTexture* _refractionBackground;
+    QOpenGLTexture* _refractionFront;
+
     QHash<QString, unsigned char> _dropsSmall; //[width][height] => [width*height]
+    QHash<unsigned int, Drop> _dropsBig;
+
     size_t _maxNumberDroplets;
     size_t _glassWidth;
     size_t _glassHeight;
@@ -67,6 +80,16 @@ public:
     //Methoden
     void _spawnDroplet();
     void _deleteDroplets(QPoint location, unsigned char const &radius);
+
+    void _spawnDrop(Drop* parent = nullptr);
+    void _updateDrops();
+    
+    //Helper
+    inline unsigned int _createUintPosHash(unsigned short const &xPos,
+                                           unsigned short const &yPos);
+    inline unsigned short _retrieveXValueFromHash(unsigned int const &hash);
+    inline unsigned short _retrieveYValueFromHash(unsigned int const &hash);
+
 public:
     Raindrops(QMatrix4x4 ctm,
               Model* model,
