@@ -6,6 +6,7 @@
 //Debug Includes
 #include <QtGlobal>
 #include <QDebug>
+#include <QVector2D>
 
 #define DROP_SHRINK_FACTOR 0.999f
 #define DROP_SPEED_FACTOR 0.001f
@@ -19,6 +20,8 @@ public:
     unsigned short lastTrailPosX;
     unsigned short trailSpreadX;
     unsigned short trailSize;
+    unsigned int numberOfUpdates;
+    unsigned int numberOfMovedPixels;
     //unsigned short spreadY;
     float momentum;
     //unsigned short momentumX;
@@ -42,7 +45,7 @@ public:
 
     void update();
     Drop produceTrail();
-    //void combine(Drop &other);
+    Drop combineWith(Drop const &other);
 };
 
 #endif // DROP_H

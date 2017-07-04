@@ -10,6 +10,7 @@
 #include <QPair>
 #include <QObject>
 #include <QList>
+#include <QVector2D>
 
 #include "drop.h"
 #include "renderableobject.h"
@@ -67,6 +68,7 @@ private:
     unsigned short const _maxR = 30; //40
     unsigned short const _dropletsMinR = 3;
     unsigned short const _dropletsMaxR = 7;
+    unsigned short const _dropCombindedMaxRadius = 70;
     float const _dropletsCleaningRadiusMultiplier = 0.8f; //0.43
 
     // A T T R I B U T E

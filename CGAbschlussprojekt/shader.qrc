@@ -7,5 +7,7 @@
         <file>shader/normalDraw440.vert</file>
         <file>shader/texture440.frag</file>
         <file>shader/texture440.vert</file>
+        <file>shader/drop440.vert</file>
+        <file>shader/drop440.frag</file>
     </qresource>
 </RCC>

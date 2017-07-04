@@ -91,14 +91,13 @@ void Raindrops::_deleteDroplets(unsigned short const &locationX,
     unsigned short cleaningRadius = round(float(radius) * _dropletsCleaningRadiusMultiplier);
     //löschen im Kreis (0.5f damit richtig aufgerundet wird)
 
-    for(unsigned short xPos = locationX - cleaningRadius; xPos < locationX + cleaningRadius; xPos++) {
-
-        for(unsigned short yPos = locationY + cleaningRadius; yPos > locationY - cleaningRadius; yPos--) {
+    for(unsigned short xCheckPos = locationX - cleaningRadius; xCheckPos < locationX + cleaningRadius; xCheckPos++) {
+        for(unsigned short yCheckPos = locationY + cleaningRadius; yCheckPos > locationY - cleaningRadius; yCheckPos--) {
             //x² + y² = r² Kreisdarstellung wenn kleiner als r dann löschen
-            short diffX = locationX - xPos;
-            short diffY = locationY - yPos;
+            short diffX = locationX - xCheckPos;
+            short diffY = locationY - yCheckPos;
             if(float((diffX*diffX) + (diffY*diffY)) <= (cleaningRadius*cleaningRadius)) {
-                lookUp = _createUintPosHash(xPos, yPos);
+                lookUp = _createUintPosHash(xCheckPos, yCheckPos);
                 _dropsSmall.remove(lookUp);
             }
         }
@@ -122,8 +121,11 @@ void Raindrops::_spawnDrop() {
 
 void Raindrops::_updateDrops() {
     //qDebug() << "updateDrops";
-    for(unsigned int locationHash : _dropsBig.uniqueKeys()) {
+    QList<unsigned int> keyList = _dropsBig.uniqueKeys();
+    unsigned int lengthOfKeyList = keyList.length();
+    for(unsigned int i = 0; i < lengthOfKeyList; i++) {
 
+        unsigned int locationHash = keyList[i];
         Drop d = _dropsBig.take(locationHash);
 
         //smalldrops an alter Stelle löschen
@@ -132,6 +134,46 @@ void Raindrops::_updateDrops() {
         d.update();
 
         if(!d.killed) {
+            //Auf Kollision prüfen (_dropCombindedMaxRadius um Tropfen herum)
+            /*
+            unsigned int lookUp;
+            for(unsigned short xCheckPos = d.posX - _dropCombindedMaxRadius*2; xCheckPos < d.posX + _dropCombindedMaxRadius*2; xCheckPos++) {
+                for(unsigned short yCheckPos = d.posY + _dropCombindedMaxRadius*2; yCheckPos > d.posY - _dropCombindedMaxRadius*2; yCheckPos--) {
+                    //ATM QUADRATISCHER CHECK
+                    //-------------------
+                    //Circulärer Check
+                    // | | |
+                    // V V V
+                    //x² + y² = r² Kreisdarstellung wenn kleiner als r dann löschen
+                    //short diffX = d.posX - xCheckPos;
+                    //short diffY = d.posY - yCheckPos;
+                    //if(float((diffX*diffX) + (diffY*diffY)) <= (d.radius+1*d.radius+1)) {
+                        lookUp = _createUintPosHash(xCheckPos, yCheckPos);
+                        //Wenn an der Stelle ein Tropfen gefunden wurde:
+                        if(_dropsBig.find(lookUp) != _dropsBig.end()) {
+                            Drop dropToCheck = _dropsBig.value(lookUp);
+                            if(dropToCheck.isNew || dropToCheck.parent == &d) continue; //Gerade erst gespawned
+                            short xDistance = dropToCheck.posX - d.posX;
+                            short yDistance = dropToCheck.posY - d.posY;
+                            short combindedRadii = dropToCheck.radius + d.radius; // - 1; //-1 damit sie näher an einander sein müssen
+                            qDebug() << "x2: " << (xDistance*xDistance);
+                            qDebug() << "y2: " << (yDistance*yDistance);
+                            qDebug() << "r2: " << (combindedRadii*combindedRadii);
+                            qDebug() << ((xDistance*xDistance) + (yDistance*yDistance) < (combindedRadii*combindedRadii));
+                            if((xDistance*xDistance) + (yDistance*yDistance) < (combindedRadii*combindedRadii)) {
+                                //=> können kombiniert werden
+                                _dropsBig.remove(lookUp);
+                                d = d.combineWith(dropToCheck);
+                                //Update Keylist (weil Item gelöscht)
+                                keyList = _dropsBig.uniqueKeys();
+                                lengthOfKeyList = keyList.length();
+                                qDebug() << "Länge der Liste: " << lengthOfKeyList;
+                            }
+                        }
+                    //}
+                }
+            }
+            */
             //Wenn Traildrop gespawnt werden soll
             if(d.willSpawn) {
                 Drop newTrailDrop = d.produceTrail();
@@ -291,6 +333,10 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
     glDepthMask(GL_TRUE);
 
     _spawnDrop();
+    _spawnDroplet();
+    _spawnDroplet();
+    _spawnDroplet();
+    _spawnDroplet();
     _spawnDroplet();
     //testCounter++;
 }

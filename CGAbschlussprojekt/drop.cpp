@@ -3,6 +3,12 @@
 
 Drop::Drop() {
     qDebug() << "Falscher Konstruktoraufruf! --- Programm bricht ab!";
+    qDebug() << "Spam";
+    qDebug() << "Spam";
+    qDebug() << "Spam";
+    qDebug() << "Spam";
+    qDebug() << "Spam";
+    qDebug() << "Spam";
     Q_ASSERT(false);
 }
 
@@ -25,6 +31,7 @@ Drop::Drop(unsigned short const &xPos,
     this->isNew = true;
     this->killed = false;
     this->shrinkage = (float)radius;
+    this->numberOfUpdates = 0;
 }
 
 void Drop::update() {
@@ -61,6 +68,10 @@ void Drop::update() {
      }
     //qDebug() << "Momentum: " << this->momentum;
     if(posY < 50.f) killed = true;
+    numberOfUpdates++;
+    numberOfMovedPixels += size_t(momentum);
+    //Schwellenwert wann auf Kollisionen geprüft wird
+    if(numberOfMovedPixels > this->radius + 30) this->isNew = false;
 }
 
 Drop Drop::produceTrail() {
@@ -70,4 +81,21 @@ Drop Drop::produceTrail() {
     Drop newTrailDrop = Drop(trailPosX, trailPosY, trailSize, this);
     this->shrinkage -= trailSize/8; //Spontan schrumpfen
     return newTrailDrop;
+}
+
+Drop Drop::combineWith(Drop const &other) {
+    //Tropfen vereinen, speedboost geschieht von selbst
+    QVector2D thisPosition = QVector2D(this->posX, this->posY);
+    QVector2D otherPosition = QVector2D(other.posX, other.posY);
+    float diffThisToOther = thisPosition.distanceToPoint(otherPosition);
+    qDebug() << "Unterschied laut Vector: " << diffThisToOther;
+    qDebug() << "Unterschied laut Rechnung: " << (radius + other.radius);
+    Q_ASSERT(diffThisToOther <= float(this->radius + other.radius));
+    QVector2D vecThisToOther = otherPosition -  thisPosition;
+    QVector2D newPos = thisPosition + vecThisToOther * diffThisToOther/2.f;
+
+    //Max CombinedRadius 
+    unsigned short newRadius = ((this->radius + other.radius) < 70) ? round(float(this->radius+other.radius)*0.8) : 70;
+    Drop newDrop = Drop(newPos.x(), newPos.y(), newRadius, nullptr);
+    return newDrop;
 }
