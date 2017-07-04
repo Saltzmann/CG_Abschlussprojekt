@@ -7,8 +7,8 @@
 #include <QtGlobal>
 #include <QDebug>
 
-#define DROP_SHRINK_FACTOR 0.9999f
-#define DROP_SPEED_FACTOR 0.005f
+#define DROP_SHRINK_FACTOR 0.999f
+#define DROP_SPEED_FACTOR 0.001f
 
 class Drop {
 public:
@@ -16,7 +16,9 @@ public:
     unsigned short posX;
     unsigned short posY;
     unsigned short radius;
-    //unsigned short spreadX;
+    unsigned short lastTrailPosX;
+    unsigned short trailSpreadX;
+    unsigned short trailSize;
     //unsigned short spreadY;
     float momentum;
     //unsigned short momentumX;
@@ -26,7 +28,8 @@ public:
     bool  isNew;
     bool  killed;
     float shrinkage;
-    unsigned int trailTimer;
+    int trailTimer;
+    bool willSpawn;
 
 
     //Dummy sollte nie benutzt werden - wird aber von QHash gebraucht

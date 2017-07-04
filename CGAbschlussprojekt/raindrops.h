@@ -9,6 +9,7 @@
 #include <QTimer>
 #include <QPair>
 #include <QObject>
+#include <QList>
 
 #include "drop.h"
 #include "renderableobject.h"
@@ -66,8 +67,7 @@ private:
     unsigned short const _maxR = 30; //40
     unsigned short const _dropletsMinR = 3;
     unsigned short const _dropletsMaxR = 7;
-    float const _trailScaleRangeSmall = 0.2f; //0.2
-    float const _trailScaleRangeBig = 0.5f; //0.5
+    float const _dropletsCleaningRadiusMultiplier = 0.43; //0.43
 
     // A T T R I B U T E
     //Erweiterung von RenderableObject
@@ -78,21 +78,25 @@ private:
 
     QHash<unsigned int, unsigned char> _dropsSmall; //[width][height] => [width*height]
     QHash<unsigned int, Drop> _dropsBig;
+    QList<Drop> _updatedDrops;
 
+    size_t _numberOfBigNonTrailDrops;
     size_t _maxNumberDroplets;
-    size_t _maxNumberDrops;
+    size_t _maxNumberNonTrailDrops;
     size_t _glassWidth;
     size_t _glassHeight;
-    float const _dropletsCleaningRadiusMultiplier = 0.43; //0.43
+
 
     //Update Timer
     QTimer* _updateTimer;
 
     //Methoden
     void _spawnDroplet();
-    void _deleteDroplets(QPoint location, unsigned char const &radius);
+    void _deleteDroplets(unsigned short const &locationX,
+                         unsigned short const &locationY,
+                         unsigned short const &radius);
 
-    void _spawnDrop(Drop* parent = nullptr);
+    void _spawnDrop();
     inline void _updateDrops();
     
     //Helper

@@ -21,13 +21,14 @@ Raindrops::Raindrops(QMatrix4x4 ctm,
     //Optionen setzen
     _glassWidth = 1600;
     _glassHeight = 900;
-    _maxNumberDroplets = 10000;
-    //_maxNumberDroplets = 0;
-    _maxNumberDrops = 100;
-    //_maxNumberDrops = 1;
+    //_maxNumberDroplets = 10000;
+    _maxNumberDroplets = 0;
+    _maxNumberNonTrailDrops = 100;
+    //_maxNumberDrops = 20;
+    _numberOfBigNonTrailDrops = 0;
 
     _dropsSmall.reserve(_maxNumberDroplets);
-    _dropsBig.reserve(_maxNumberDrops);
+    _dropsBig.reserve(_maxNumberNonTrailDrops + 300);
 
     //for(int i = 0; i < _maxNumberDroplets; i++) {
     //    _spawnDroplet();
@@ -83,12 +84,14 @@ void Raindrops::_spawnDroplet() {
     _dropsSmall.insert(lookUp, radius);
 }
 
-void Raindrops::_deleteDroplets(QPoint location, unsigned char const &radius) {
+void Raindrops::_deleteDroplets(unsigned short const &locationX,
+                                unsigned short const &locationY,
+                                unsigned short const &radius) {
     unsigned int lookUp;
     float cleaningRadius = radius * _dropletsCleaningRadiusMultiplier;
     //löschen im Kreis (0.5f damit richtig aufgerundet wird)
-    for(unsigned char xPos = location.x() - cleaningRadius; xPos < location.x() + cleaningRadius + 0.5f; xPos++) {
-        for(unsigned char yPos = location.y() - cleaningRadius; yPos < location.y() + cleaningRadius + 0.5f; yPos++) {
+    for(unsigned char xPos = locationX - cleaningRadius; xPos < locationX + cleaningRadius + 0.5f; xPos++) {
+        for(unsigned char yPos = locationY - cleaningRadius; yPos < locationY + cleaningRadius + 0.5f; yPos++) {
             //x² + y² = r² Kreisdarstellung wenn kleiner als r dann löschen
             if(((xPos*xPos) + (yPos*yPos)) < (cleaningRadius*cleaningRadius)) {
                 lookUp = _createUintPosHash(xPos, yPos);
@@ -98,38 +101,53 @@ void Raindrops::_deleteDroplets(QPoint location, unsigned char const &radius) {
     }
 }
 
-void Raindrops::_spawnDrop(Drop* parent) {
-    if(_dropsBig.size() >= _maxNumberDrops) return;
+void Raindrops::_spawnDrop() {
+    if(_numberOfBigNonTrailDrops >= _maxNumberNonTrailDrops) return;
     //TODO Radius, Momentum,
     unsigned short xPos, yPos, radius;
     //Wenn kein Parent (==nullptr) dann komplett neuer Tropfen
-    if(parent == nullptr) {
-        //75px Rand
-        xPos = 75 + qrand() % (_glassWidth - 150);
-        yPos = 75 + qrand() % (_glassHeight - 150);
-        radius = _minR + (qrand() % (_maxR - _minR));
-    }
-    else { //Ansonsten Werte abhängig von Parent
-        xPos = parent->posX + (qrand() % parent->radius/2);
-        yPos = parent->posY + (qrand() % parent->radius/2) + parent->momentum;
-        //gibt Wert zwischen oberer und unter Grenze aus mit 3 Nachkommastellen bei 0.x 2 bei x.0 usw
-        radius = parent->radius *
-                (_trailScaleRangeSmall + float(qrand() %
-                int((_trailScaleRangeBig - _trailScaleRangeSmall)*1000)) / 1000.f);
-    }
-    Drop newDrop = Drop(xPos, yPos, radius, parent);
+    //75px Rand
+    xPos = 75 + qrand() % (_glassWidth - 150);
+    yPos = 75 + qrand() % (_glassHeight - 150);
+    radius = _minR + (qrand() % (_maxR - _minR));
+    Drop newDrop = Drop(xPos, yPos, radius, nullptr);
     unsigned int hashValue = _createUintPosHash(xPos,yPos);
     _dropsBig.insert(hashValue, newDrop);
+    _numberOfBigNonTrailDrops++;
 }
 
 void Raindrops::_updateDrops() {
+    //qDebug() << "updateDrops";
     for(unsigned int locationHash : _dropsBig.uniqueKeys()) {
+
         Drop d = _dropsBig.take(locationHash);
+
+        //smalldrops an alter Stelle löschen
+        //_deleteDroplets(d.posX, d.posY, d.radius);
+
         d.update();
+
         if(!d.killed) {
-            _dropsBig.insert(_createUintPosHash(d.posX,d.posY), d);
+            //Wenn Traildrop gespawnt werden soll
+            if(d.willSpawn) {
+                Drop newTrailDrop = d.produceTrail();
+                if(newTrailDrop.radius <= 0) continue;
+                _updatedDrops.push_back(newTrailDrop);
+                d.willSpawn = false;
+            }
+            //Wieder einfügen mit neuer Pos
+            _updatedDrops.push_back(d);
+        }
+        else {
+            //Wenn nicht TrailDrop gekillt wurde;
+            if(d.parent == nullptr) _numberOfBigNonTrailDrops--;
         }
     }
+    //Neue Drops hinzufügen
+    for(Drop newD : _updatedDrops) {
+        _dropsBig.insert(_createUintPosHash(newD.posX, newD.posY), newD);
+    }
+    _updatedDrops.clear();
 }
 
 unsigned int Raindrops::_createUintPosHash(unsigned short const &xPos, unsigned short const &yPos) {
