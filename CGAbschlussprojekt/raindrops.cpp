@@ -21,8 +21,9 @@ Raindrops::Raindrops(QMatrix4x4 ctm,
     //Optionen setzen
     _glassWidth = 1600;
     _glassHeight = 900;
-    //_maxNumberDroplets = 10000;
-    _maxNumberDroplets = 0;
+    _maxNumberDroplets = 10000;
+    //_maxNumberDroplets = 1000;
+    //_maxNumberDroplets = 0;
     _maxNumberNonTrailDrops = 100;
     //_maxNumberDrops = 20;
     _numberOfBigNonTrailDrops = 0;
@@ -75,7 +76,6 @@ void Raindrops::_spawnDroplet() {
     do {
         int xPos = 50 + qrand() % (_glassWidth - 100);
         int yPos = 50 + qrand() % (_glassHeight - 100);
-
         lookUp = _createUintPosHash(xPos, yPos);
         //wenn an dieser Stelle breits ein Tröpfchen ist -> erneut versuchen
     } while(_dropsSmall.contains(lookUp));
@@ -88,12 +88,16 @@ void Raindrops::_deleteDroplets(unsigned short const &locationX,
                                 unsigned short const &locationY,
                                 unsigned short const &radius) {
     unsigned int lookUp;
-    float cleaningRadius = radius * _dropletsCleaningRadiusMultiplier;
+    unsigned short cleaningRadius = round(float(radius) * _dropletsCleaningRadiusMultiplier);
     //löschen im Kreis (0.5f damit richtig aufgerundet wird)
-    for(unsigned char xPos = locationX - cleaningRadius; xPos < locationX + cleaningRadius + 0.5f; xPos++) {
-        for(unsigned char yPos = locationY - cleaningRadius; yPos < locationY + cleaningRadius + 0.5f; yPos++) {
+
+    for(unsigned short xPos = locationX - cleaningRadius; xPos < locationX + cleaningRadius; xPos++) {
+
+        for(unsigned short yPos = locationY + cleaningRadius; yPos > locationY - cleaningRadius; yPos--) {
             //x² + y² = r² Kreisdarstellung wenn kleiner als r dann löschen
-            if(((xPos*xPos) + (yPos*yPos)) < (cleaningRadius*cleaningRadius)) {
+            short diffX = locationX - xPos;
+            short diffY = locationY - yPos;
+            if(float((diffX*diffX) + (diffY*diffY)) <= (cleaningRadius*cleaningRadius)) {
                 lookUp = _createUintPosHash(xPos, yPos);
                 _dropsSmall.remove(lookUp);
             }
@@ -106,9 +110,9 @@ void Raindrops::_spawnDrop() {
     //TODO Radius, Momentum,
     unsigned short xPos, yPos, radius;
     //Wenn kein Parent (==nullptr) dann komplett neuer Tropfen
-    //75px Rand
+    //75px Rand // spawn etwas nach oben verschoben
     xPos = 75 + qrand() % (_glassWidth - 150);
-    yPos = 75 + qrand() % (_glassHeight - 150);
+    yPos = 250 + qrand() % (_glassHeight - 300);
     radius = _minR + (qrand() % (_maxR - _minR));
     Drop newDrop = Drop(xPos, yPos, radius, nullptr);
     unsigned int hashValue = _createUintPosHash(xPos,yPos);
@@ -123,7 +127,7 @@ void Raindrops::_updateDrops() {
         Drop d = _dropsBig.take(locationHash);
 
         //smalldrops an alter Stelle löschen
-        //_deleteDroplets(d.posX, d.posY, d.radius);
+        _deleteDroplets(d.posX, d.posY, d.radius);
 
         d.update();
 

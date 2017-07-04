@@ -67,7 +67,7 @@ private:
     unsigned short const _maxR = 30; //40
     unsigned short const _dropletsMinR = 3;
     unsigned short const _dropletsMaxR = 7;
-    float const _dropletsCleaningRadiusMultiplier = 0.43; //0.43
+    float const _dropletsCleaningRadiusMultiplier = 0.8f; //0.43
 
     // A T T R I B U T E
     //Erweiterung von RenderableObject
