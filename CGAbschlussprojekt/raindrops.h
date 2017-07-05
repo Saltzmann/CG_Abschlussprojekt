@@ -69,12 +69,12 @@ private:
     unsigned short const _dropletsMinR = 3;
     unsigned short const _dropletsMaxR = 7;
     unsigned short const _dropCombindedMaxRadius = 70;
-    float const _dropletsCleaningRadiusMultiplier = 0.8f; //0.43
+    float const _dropletsCleaningRadiusMultiplier = 0.8f;
 
     // A T T R I B U T E
     //Erweiterung von RenderableObject
-    //QOpenGLTexture* _refractionBackground;
-    //QOpenGLTexture* _refractionFront;
+    QOpenGLTexture* _dropColorTexture;
+    QOpenGLTexture* _dropAlphaTexture;
 
     unsigned int testCounter = 0;
 
@@ -87,6 +87,9 @@ private:
     size_t _maxNumberNonTrailDrops;
     size_t _glassWidth;
     size_t _glassHeight;
+
+    bool _hasDropAlphaTexture;
+    bool _hasDropColorTexture;
 
 
     //Update Timer
@@ -106,6 +109,8 @@ private:
                                            unsigned short const &yPos);
     inline unsigned short _retrieveXValueFromHash(unsigned int const &hash);
     inline unsigned short _retrieveYValueFromHash(unsigned int const &hash);
+    void _setDropAlphaTexture(QString filename);
+    void _setDropColorTexture(QString filename);
 
 public:
     Raindrops(QMatrix4x4 ctm,
@@ -114,8 +119,10 @@ public:
               QOpenGLShaderProgram* shader,
               QOpenGLShaderProgram* secondShader,
               QVector4D const &baseColor,
-              QString const &mainTextureFileName = "",
-              QString const &secondTextureFileName = "");
+              QString const &refractionBackground = "",
+              QString const &refractionOverlay = "",
+              QString const &dropAlpha = "",
+              QString const &dropColor = "");
 
     //Override - muss sein TODO
     virtual void render(QMatrix4x4 const &parentCTM,

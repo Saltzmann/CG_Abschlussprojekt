@@ -6,8 +6,10 @@ Raindrops::Raindrops(QMatrix4x4 ctm,
                      QOpenGLShaderProgram* shader,
                      QOpenGLShaderProgram* secondShader,
                      QVector4D const &baseColor,
-                     QString const &mainTextureFileName,
-                     QString const &secondTextureFileName)
+                     QString const &refractionBackground,
+                     QString const &refractionOverlay,
+                     QString const &dropAlpha,
+                     QString const &dropColor)
 
                      : RenderableObject (ctm,
                                          model,
@@ -15,8 +17,26 @@ Raindrops::Raindrops(QMatrix4x4 ctm,
                                          shader,
                                          secondShader,
                                          baseColor,
-                                         mainTextureFileName,
-                                         secondTextureFileName) {
+                                         refractionBackground,
+                                         refractionOverlay) {
+
+    //Renderable Object - Erweiterungen
+    _hasDropColorTexture = false;
+    _hasDropAlphaTexture = false;
+
+    if(dropAlpha.length() != 0) {
+        _setDropAlphaTexture(refractionBackground);
+    }
+    else {
+        Q_ASSERT(false);
+    }
+
+    if(dropColor.length() != 0) {
+        _setDropColorTexture(refractionOverlay);
+    }
+    else {
+        Q_ASSERT(false);
+    }
 
     //Optionen setzen
     _glassWidth = 1600;
@@ -48,27 +68,28 @@ Raindrops::Raindrops(QMatrix4x4 ctm,
     _updateTimer->start(1000/60); //Rendern ausgelegt für 60 fps -> daher 60hz updatefrequenz
 }
 
-/*
-void RenderableObject::_setSecondTexture(QString filename) {
-    //(ausgelagerte) Hilfsfunktion zum Setzen der Zweit-Textur
-    _secondTexture = new QOpenGLTexture(QImage(":/textures/" + filename).mirrored());
-    _secondTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-    _secondTexture->setMagnificationFilter(QOpenGLTexture::Linear);
-    Q_ASSERT(_secondTexture->textureId() != 0); //Würde Fehler bedeuten
-    _hasSecondTexture = true;
-    qDebug() << endl << "2. Textur: " << filename << " geladen" << endl << endl;
+void Raindrops::_setDropAlphaTexture(QString filename) {
+    //(ausgelagerte) Hilfsfunktion zum Setzen der DropAlpha-Textur
+    _dropAlphaTexture = new QOpenGLTexture(QImage(":/textures/" + filename).mirrored());
+    _dropAlphaTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    _dropAlphaTexture->setMagnificationFilter(QOpenGLTexture::Linear);
+    _dropAlphaTexture->setWrapMode(QOpenGLTexture::ClampToEdge);
+    Q_ASSERT(_dropAlphaTexture->textureId() != 0); //Würde Fehler bedeuten
+    _hasDropAlphaTexture = true;
+    qDebug() << endl << "DropAlpha-Textur: " << filename << " geladen" << endl << endl;
 }
 
-void RenderableObject::_setSecondTexture(QString filename) {
-    //(ausgelagerte) Hilfsfunktion zum Setzen der Zweit-Textur
-    _secondTexture = new QOpenGLTexture(QImage(":/textures/" + filename).mirrored());
-    _secondTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-    _secondTexture->setMagnificationFilter(QOpenGLTexture::Linear);
-    Q_ASSERT(_secondTexture->textureId() != 0); //Würde Fehler bedeuten
-    _hasSecondTexture = true;
-    qDebug() << endl << "2. Textur: " << filename << " geladen" << endl << endl;
+void Raindrops::_setDropColorTexture(QString filename) {
+    //(ausgelagerte) Hilfsfunktion zum Setzen der DropColor-Textur
+    _dropColorTexture = new QOpenGLTexture(QImage(":/textures/" + filename).mirrored());
+    _dropColorTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    _dropColorTexture->setMagnificationFilter(QOpenGLTexture::Linear);
+    _dropColorTexture->setWrapMode(QOpenGLTexture::ClampToEdge);
+    Q_ASSERT(_dropColorTexture->textureId() != 0); //Würde Fehler bedeuten
+    _hasDropColorTexture = true;
+    qDebug() << endl << "DropColor-Textur: " << filename << " geladen" << endl << endl;
 }
-*/
+
 void Raindrops::_spawnDroplet() {
     if(_dropsSmall.size() >= _maxNumberDroplets) return;
     //50px Rand
@@ -233,9 +254,8 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
 
     //Matrix Locations für den Shader
     int unifProjMatrix = 0;
-    int unifViewMatrix = 1;
-    int unifModelMatrix = 2;
-    int unifColor = 3;
+    int unifViewMatrix = 4;
+    int unifModelMatrix = 8;
 
     //Matrix Berechnungen fertig nun shader konfigurieren
     _shader->bind();
@@ -243,41 +263,42 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
     // Lokalisiere bzw. definiere die Schnittstelle für die Eckpunkte, Normalen und Textur
     int attrVertices = 0;
     int attrNorms = 1;
-    //int attrTexCoords = 2;
+    int attrTexCoords = 2;
 
     // Aktiviere die Verwendung der Attribute-Arrays
     _shader->enableAttributeArray(attrVertices);
     _shader->enableAttributeArray(attrNorms);
-    //if(_model->hasTextureCoords()) {
-    //   _shader->enableAttributeArray(attrTexCoords);
-    //}
+    Q_ASSERT(_model->hasTextureCoords());
+    _shader->enableAttributeArray(attrTexCoords);
 
     // Fülle die Attribute-Buffer mit den korrekten Daten
     size_t model_stride = _model->stride(); //reduziert von 3 auf 1 Aufruf (implizit uint in int ist aktzeptabel - kein Werteverlust)
     _shader->setAttributeBuffer(attrVertices, GL_FLOAT, _model->vertOffset(), 4, model_stride); //VertexPositionen
     _shader->setAttributeBuffer(attrNorms, GL_FLOAT, _model->normOffset(), 4, model_stride); //VertexNormalen
-    //if(_modelHasTextureCoords) {
-    //    _shader->setAttributeBuffer(attrTexCoords, GL_FLOAT, _model->texCoordOffset(), 4, model_stride); //TexturCoordinaten
-    //}
+    _shader->setAttributeBuffer(attrTexCoords, GL_FLOAT, _model->texCoordOffset(), 4, model_stride); //TexturCoordinaten
 
-    //Haupt-Textur (und Zweit-Textur) binden und an shader übergeben
-    //_mainTexture->bind(0);
-    //_shader->setUniformValue("diffuseMap", 0);
+    //Alle Texturen einbinden und an shader übergeben
+    Q_ASSERT(_hasDropAlphaTexture && _hasDropColorTexture && _hasTexture && _hasSecondTexture);
+    _mainTexture->bind(0);
+    _shader->setUniformValue("refractionBackground", 0);
 
-    //if(_hasSecondTexture) {
-    //    _secondTexture->bind(1);
-    //    _shader->setUniformValue("blendMap", 1);
-    //}
+    _secondTexture->bind(1);
+    _shader->setUniformValue("refractionOverlay", 1);
+
+    _dropAlphaTexture->bind(2);
+    _shader->setUniformValue("dropAlpha", 2);
+
+    _dropColorTexture->bind(3);
+    _shader->setUniformValue("dropColor", 3);
 
     //Einstellungen machen
     glDepthMask(GL_FALSE); //z-Buffer auf readonly stellen
     glEnable(GL_BLEND); //Farbmischung aktivieren
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Farbmischmethode festlegen
-    //glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 
     _shader->setUniformValue(unifProjMatrix, projectionMatrix); //projektionsMatrix (const)
     _shader->setUniformValue(unifViewMatrix, viewMatrix); //viewMatrix ("const")
-    _shader->setUniformValue(unifColor, _baseColor);
 
     for(Drop d : _dropsBig.values()) {
         //qDebug() << "XPOS: " << d.posX << " YPOS: " << d.posY << " SHRINK: " << d.shrinkage;
@@ -300,29 +321,19 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
         ctm = combindedCTM; //zurücksetzen
     }
 
-    //Element zeichnen lassen (implizit uint in int ist aktzeptabel - kein Werteverlust)
-    //glDrawElements(GL_TRIANGLES, _model->iboLength(), GL_UNSIGNED_INT, 0);
-
-    //PolygonMode auf default setzen
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
     // Deaktiviere die Verwendung der Attribute-Arrays
     _shader->disableAttributeArray(attrVertices);
     _shader->disableAttributeArray(attrNorms);
-    //if(_modelHasTextureCoords) {
-    //    _shader->disableAttributeArray(attrTexCoords);
-    //}
+    _shader->disableAttributeArray(attrTexCoords);
 
     //Shader lösen
     _shader->release();
 
-    // Löse die Textur aus dem OpenGL-Kontext
-    //if(_hasTexture) {
-    //   _mainTexture->release();
-    //}
-    //if(_hasSecondTexture) {
-    //    _secondTexture->release();
-    //}
+    // Löse die Texturen aus dem OpenGL-Kontext
+    _mainTexture->release();
+    _secondTexture->release();
+    _dropAlphaTexture->release();
+    _dropColorTexture->release();
 
     //VBO und IBO vom Kontext lösen
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -332,6 +343,7 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
     glDisable(GL_BLEND);
     glDepthMask(GL_TRUE);
 
+    //TODO spawnraten später anpassen
     _spawnDrop();
     _spawnDroplet();
     _spawnDroplet();

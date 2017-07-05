@@ -19,6 +19,7 @@
 #define SHADER_DEFAULT 0x0001
 #define SHADER_TEXTURE 0x0002
 #define SHADER_NORMALS 0x0003
+#define SHADER_DROPS   0x0004
 
 
 class RenderableObject : public QObject, public QOpenGLExtraFunctions {

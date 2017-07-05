@@ -10,6 +10,7 @@ CustomOpenGLWidget::CustomOpenGLWidget(QWidget *parent) : QOpenGLWidget(parent){
     _defaultShaderProgram = new QOpenGLShaderProgram();
     _textureShaderProgram = new QOpenGLShaderProgram();
     _normalDrawShaderProgram = new QOpenGLShaderProgram();
+    _dropShaderProgram = new QOpenGLShaderProgram();
 
     //Keyboard und Mouse Input Einstellungen
     setFocusPolicy(Qt::StrongFocus);
@@ -177,15 +178,21 @@ void CustomOpenGLWidget::initializeGL() {
     _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Geometry, ":/shader/normalDraw440.geom");
     _normalDrawShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shader/normalDraw440.frag");
 
+    //drop shader
+    _dropShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shader/drop440.vert");
+    _dropShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shader/drop440.frag");
+
     //Kompiliere und linke die Shader-Programme
     _defaultShaderProgram->link();
     _textureShaderProgram->link();
     _normalDrawShaderProgram->link();
+    _dropShaderProgram->link();
 
     qDebug() << endl << " - - - - - SHADER - COMPILE - INFOS - - - - - ";
     qDebug() << "Default Shader log: " << endl << _defaultShaderProgram->log();
     qDebug() << "Texture Shader log: " << endl << _textureShaderProgram->log();
     qDebug() << "Normal Shader log: " << endl << _normalDrawShaderProgram->log();
+    qDebug() << "Drop Shader log: " << endl << _dropShaderProgram->log();
     qDebug() << endl;
 
     //hauseigene Geometrie erstellen
@@ -294,9 +301,13 @@ void CustomOpenGLWidget::_createRenderables() {
     ctm.translate(-800.f, -450.f, 0.5f);
     RenderableObject* foreground = new Raindrops(ctm,
                                                  _dropsModel,
-                                                 SHADER_TEXTURE,
-                                                 _defaultShaderProgram,
+                                                 SHADER_DROPS,
+                                                 _dropShaderProgram,
                                                  nullptr,
-                                                 QVector4D(1.f, 0.f, 0.f, 1.f));
+                                                 QVector4D(1.f, 0.f, 0.f, 1.f),
+                                                 "drops/drop-alpha.png",
+                                                 "drops/drop-color.png",
+                                                 "background/old_street_800x450.png",
+                                                 "water/texture-fg.png");
     _myRenderables.push_back(foreground);
 }
