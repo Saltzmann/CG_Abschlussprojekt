@@ -27,5 +27,6 @@
         <file>textures/background/old_street_1600x900.png</file>
         <file>textures/background/old_street_200x113.png</file>
         <file>textures/background/old_street_400x225.png</file>
+        <file>textures/background/alternative_1600x900.png</file>
     </qresource>
 </RCC>

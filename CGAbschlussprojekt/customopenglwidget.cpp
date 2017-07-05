@@ -185,7 +185,7 @@ void CustomOpenGLWidget::initializeGL() {
     //Kompiliere und linke die Shader-Programme
     _defaultShaderProgram->link();
     _textureShaderProgram->link();
-    _normalDrawShaderProgram->link();
+    //_normalDrawShaderProgram->link();
     _dropShaderProgram->link();
 
     qDebug() << endl << " - - - - - SHADER - COMPILE - INFOS - - - - - ";
@@ -294,6 +294,7 @@ void CustomOpenGLWidget::_createRenderables() {
                                                         nullptr,
                                                         QVector4D(1.f, 0.f, 0.f, 1.f),
                                                         "background/old_street_800x450.png",
+                                                        //"background/alternative_1600x900.png",
                                                         "water/texture-bg.png");
     _myRenderables.push_back(background);
 
@@ -305,9 +306,11 @@ void CustomOpenGLWidget::_createRenderables() {
                                                  _dropShaderProgram,
                                                  nullptr,
                                                  QVector4D(1.f, 0.f, 0.f, 1.f),
+                                                 "background/old_street_800x450.png",
+                                                 //"background/alternative_1600x900.png",
+                                                 "water/texture-fg.png",
                                                  "drops/drop-alpha.png",
                                                  "drops/drop-color.png",
-                                                 "background/old_street_800x450.png",
-                                                 "water/texture-fg.png");
+                                                 "drops/drop-shine.png");
     _myRenderables.push_back(foreground);
 }

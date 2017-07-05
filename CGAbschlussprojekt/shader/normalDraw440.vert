@@ -1,8 +1,8 @@
 #version 440
 
 layout(location = 0)uniform mat4 projectionMatrix;
-layout(location = 1)uniform mat4 viewMatrix;
-layout(location = 2)uniform mat4 modelMatrix;
+layout(location = 4)uniform mat4 viewMatrix;
+layout(location = 8)uniform mat4 modelMatrix;
 
 layout (location = 0) in vec4 position;
 layout (location = 1) in vec3 normal;

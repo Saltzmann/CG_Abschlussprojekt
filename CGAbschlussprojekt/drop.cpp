@@ -21,16 +21,15 @@ Drop::Drop(unsigned short const &xPos,
     this->posY = yPos;
     this->radius = radius;
     this->momentum = 0;
-    this->trailTimer = 50;
-    this->lastTrailPosX = this->posX;
-    this->trailSpreadX = (unsigned short)((float(this->radius)/5.f) + 0.5f);
+    this->shrinkage = (float)radius;
+    this->trailTimer = Options::trailTimer;
+    this->trailSpreadX = (unsigned short)((float(this->radius)/10.f));
     float sizeFactor = float(15 + (qrand() % 15)) / 100.f;
     this->trailSize = (unsigned short)((float(this->radius) * sizeFactor) + 0.5f); //dirty style rounding
     this->willSpawn = false;
     this->parent = parent;
     this->isNew = true;
-    this->killed = false;
-    this->shrinkage = (float)radius;
+    this->killed = false;    
     this->numberOfUpdates = 0;
 }
 
@@ -48,14 +47,15 @@ void Drop::update() {
         killed = true;
         return;
     }
-    //Trailsize update
+    //Trailsize und Trailspread update
     this->trailSize -= (oldRadius - radius)/2;
+    this->trailSpreadX = (unsigned short)((float(shrinkage)/10.f));
 
     //Dann bewegen
     unsigned short oldPosY = this->posY;
     //dann mit aktualsierter Geschwindigkeit bewegen
-    //MovementChance: je größer desto höher 70 = max combined size
-    float movementChance = float(radius*2.f)/(70.f*2.f);
+    //MovementChance: je größer desto höher
+    float movementChance = float(radius*2.f)/(Options::dropCombindedMaxRadius*2.f);
     movementChance = 1 + qrand() % int(1.f/movementChance);
     if(int(movementChance) != 1) movementChance = 0.f;
     this->posY -= (radius*radius*radius)*DROP_SPEED_FACTOR*int(movementChance);//pow³ radius
@@ -64,10 +64,10 @@ void Drop::update() {
     if(trailTimer < 0) {
         this->willSpawn = true;
         //qDebug() << "=========================================================";
-        trailTimer = 50;
+        trailTimer = Options::trailTimer;
      }
     //qDebug() << "Momentum: " << this->momentum;
-    if(posY < 50.f) killed = true;
+    if(posY < Options::lowerSpawnBorderDrops) killed = true;
     numberOfUpdates++;
     numberOfMovedPixels += size_t(momentum);
     //Schwellenwert wann auf Kollisionen geprüft wird
@@ -75,9 +75,11 @@ void Drop::update() {
 }
 
 Drop Drop::produceTrail() {
-    unsigned short trailPosX = lastTrailPosX - trailSpreadX + (qrand() % (trailSpreadX*2));
-    lastTrailPosX = trailPosX;
-    unsigned short trailPosY = this->posY + (this->radius - 2); //-2 damit es so aussieht als ob es von innen kommt
+    unsigned short trailPosX = posX - trailSpreadX + (qrand() % (trailSpreadX*2+1));
+    unsigned short trailPosY = this->posY + this->radius/3;
+    //qDebug() << "thistrailpos: " << trailPosX;
+    //qDebug() << "thisposx :    " << posX;
+    //qDebug() << "radius:       " << radius;
     Drop newTrailDrop = Drop(trailPosX, trailPosY, trailSize, this);
     this->shrinkage -= trailSize/8; //Spontan schrumpfen
     return newTrailDrop;

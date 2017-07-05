@@ -9,7 +9,8 @@ Raindrops::Raindrops(QMatrix4x4 ctm,
                      QString const &refractionBackground,
                      QString const &refractionOverlay,
                      QString const &dropAlpha,
-                     QString const &dropColor)
+                     QString const &dropColor,
+                     QString const &dropShine)
 
                      : RenderableObject (ctm,
                                          model,
@@ -25,14 +26,21 @@ Raindrops::Raindrops(QMatrix4x4 ctm,
     _hasDropAlphaTexture = false;
 
     if(dropAlpha.length() != 0) {
-        _setDropAlphaTexture(refractionBackground);
+        _setDropAlphaTexture(dropAlpha);
     }
     else {
         Q_ASSERT(false);
     }
 
     if(dropColor.length() != 0) {
-        _setDropColorTexture(refractionOverlay);
+        _setDropColorTexture(dropColor);
+    }
+    else {
+        Q_ASSERT(false);
+    }
+
+    if(dropShine.length() != 0) {
+        _setDropShineTexture(dropShine);
     }
     else {
         Q_ASSERT(false);
@@ -41,15 +49,11 @@ Raindrops::Raindrops(QMatrix4x4 ctm,
     //Optionen setzen
     _glassWidth = 1600;
     _glassHeight = 900;
-    _maxNumberDroplets = 10000;
-    //_maxNumberDroplets = 1000;
-    //_maxNumberDroplets = 0;
-    _maxNumberNonTrailDrops = 100;
     //_maxNumberDrops = 20;
     _numberOfBigNonTrailDrops = 0;
 
-    _dropsSmall.reserve(_maxNumberDroplets);
-    _dropsBig.reserve(_maxNumberNonTrailDrops + 300);
+    _dropsSmall.reserve(Options::maxNumberDroplets);
+    _dropsBig.reserve(Options::maxNumberNonTrailDrops + 300);
 
     //for(int i = 0; i < _maxNumberDroplets; i++) {
     //    _spawnDroplet();
@@ -90,18 +94,29 @@ void Raindrops::_setDropColorTexture(QString filename) {
     qDebug() << endl << "DropColor-Textur: " << filename << " geladen" << endl << endl;
 }
 
+void Raindrops::_setDropShineTexture(QString filename) {
+    //(ausgelagerte) Hilfsfunktion zum Setzen der DropColor-Textur
+    _dropShineTexture = new QOpenGLTexture(QImage(":/textures/" + filename).mirrored());
+    _dropShineTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    _dropShineTexture->setMagnificationFilter(QOpenGLTexture::Linear);
+    _dropShineTexture->setWrapMode(QOpenGLTexture::ClampToEdge);
+    Q_ASSERT(_dropShineTexture->textureId() != 0); //Würde Fehler bedeuten
+    _hasDropShineTexture = true;
+    qDebug() << endl << "DropShine-Textur: " << filename << " geladen" << endl << endl;
+}
+
 void Raindrops::_spawnDroplet() {
-    if(_dropsSmall.size() >= _maxNumberDroplets) return;
+    if(_dropsSmall.size() >= Options::maxNumberDroplets) return;
     //50px Rand
     unsigned int lookUp;
     do {
-        int xPos = 50 + qrand() % (_glassWidth - 100);
-        int yPos = 50 + qrand() % (_glassHeight - 100);
+        int xPos = Options::upperSpawnBorderDroplets + qrand() % (_glassWidth  - Options::lowerSpawnBorderDroplets);
+        int yPos = Options::upperSpawnBorderDroplets + qrand() % (_glassHeight - Options::lowerSpawnBorderDroplets);
         lookUp = _createUintPosHash(xPos, yPos);
         //wenn an dieser Stelle breits ein Tröpfchen ist -> erneut versuchen
     } while(_dropsSmall.contains(lookUp));
 
-    unsigned char radius = _dropletsMinR + (qrand() %  (_dropletsMaxR - _dropletsMinR));
+    unsigned short radius = Options::dropletsMinR + (qrand() %  int(Options::dropletsMaxR - Options::dropletsMinR));
     _dropsSmall.insert(lookUp, radius);
 }
 
@@ -109,7 +124,7 @@ void Raindrops::_deleteDroplets(unsigned short const &locationX,
                                 unsigned short const &locationY,
                                 unsigned short const &radius) {
     unsigned int lookUp;
-    unsigned short cleaningRadius = round(float(radius) * _dropletsCleaningRadiusMultiplier);
+    unsigned short cleaningRadius = round(float(radius) * Options::dropletsCleaningRadiusMultiplier);
     //löschen im Kreis (0.5f damit richtig aufgerundet wird)
 
     for(unsigned short xCheckPos = locationX - cleaningRadius; xCheckPos < locationX + cleaningRadius; xCheckPos++) {
@@ -126,14 +141,14 @@ void Raindrops::_deleteDroplets(unsigned short const &locationX,
 }
 
 void Raindrops::_spawnDrop() {
-    if(_numberOfBigNonTrailDrops >= _maxNumberNonTrailDrops) return;
+    if(_numberOfBigNonTrailDrops >= Options::maxNumberNonTrailDrops) return;
     //TODO Radius, Momentum,
     unsigned short xPos, yPos, radius;
     //Wenn kein Parent (==nullptr) dann komplett neuer Tropfen
     //75px Rand // spawn etwas nach oben verschoben
-    xPos = 75 + qrand() % (_glassWidth - 150);
-    yPos = 250 + qrand() % (_glassHeight - 300);
-    radius = _minR + (qrand() % (_maxR - _minR));
+    xPos = Options::upperSpawnBorderDrops + qrand() % (_glassWidth  - Options::lowerSpawnBorderDrops);
+    yPos = Options::upperSpawnBorderDrops + qrand() % (_glassHeight - Options::lowerSpawnBorderDrops);
+    radius = Options::minR + (qrand() % int(Options::maxR - Options::minR));
     Drop newDrop = Drop(xPos, yPos, radius, nullptr);
     unsigned int hashValue = _createUintPosHash(xPos,yPos);
     _dropsBig.insert(hashValue, newDrop);
@@ -291,6 +306,9 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
     _dropColorTexture->bind(3);
     _shader->setUniformValue("dropColor", 3);
 
+    _dropShineTexture->bind(4);
+    _shader->setUniformValue("dropShine", 4);
+
     //Einstellungen machen
     glDepthMask(GL_FALSE); //z-Buffer auf readonly stellen
     glEnable(GL_BLEND); //Farbmischung aktivieren
@@ -306,6 +324,12 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
         ctm.scale(d.radius);
         ctm.scale(1.0f, 1.5f);
         _shader->setUniformValue(unifModelMatrix, ctm); //modelMatrix (immer abhängig vom gerade zu rendernden RenderableObject)
+        QVector2D dropLocationLowerLeftCorner = QVector2D((float)d.posX - float(d.radius), (float)d.posY - float(d.radius)*1.5f);
+        //qDebug() << "NormDrop - x: " << normalizedDropLocation.x() << " y: " << normalizedDropLocation.y();
+        _shader->setUniformValue("dropLocation", dropLocationLowerLeftCorner);
+        _shader->setUniformValue("planeWidth", _glassWidth);
+        _shader->setUniformValue("planeHeight", _glassHeight);
+        _shader->setUniformValue("dropRadius", (int)d.radius);
         glDrawElements(GL_TRIANGLES, _model->iboLength(), GL_UNSIGNED_INT, 0);
         ctm = combindedCTM; //zurücksetzen
     }
@@ -314,9 +338,15 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
         unsigned short xPos = _retrieveXValueFromHash(locationHash);
         unsigned short yPos = _retrieveYValueFromHash(locationHash);
         ctm.translate(xPos, yPos, 0);
-        ctm.scale(_dropsSmall.value(locationHash));
+        int radius = _dropsSmall.value(locationHash);
+        ctm.scale(radius);
         ctm.scale(1.0f, 1.5f);
         _shader->setUniformValue(unifModelMatrix, ctm); //modelMatrix (immer abhängig vom gerade zu rendernden RenderableObject)
+        QVector2D dropLocationLowerLeftCorner = QVector2D((float) xPos - float(radius), (float) yPos - float(radius)*1.5f);
+        _shader->setUniformValue("dropLocation", dropLocationLowerLeftCorner);
+        _shader->setUniformValue("planeWidth", _glassWidth);
+        _shader->setUniformValue("planeHeight", _glassHeight);
+        _shader->setUniformValue("dropRadius", radius);
         glDrawElements(GL_TRIANGLES, _model->iboLength(), GL_UNSIGNED_INT, 0);
         ctm = combindedCTM; //zurücksetzen
     }
@@ -334,6 +364,7 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
     _secondTexture->release();
     _dropAlphaTexture->release();
     _dropColorTexture->release();
+    _dropShineTexture->release();
 
     //VBO und IBO vom Kontext lösen
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -344,13 +375,9 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
     glDepthMask(GL_TRUE);
 
     //TODO spawnraten später anpassen
-    _spawnDrop();
-    _spawnDroplet();
-    _spawnDroplet();
-    _spawnDroplet();
-    _spawnDroplet();
-    _spawnDroplet();
-    //testCounter++;
+    if(_counter > 300 && _counter % 120 == 0) _spawnDrop();
+    if(_counter % 2) _spawnDroplet();
+    _counter++;
 }
 
 void Raindrops::update() {

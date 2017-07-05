@@ -83,9 +83,9 @@ void RenderableObject::_renderWithDefaultShader(QMatrix4x4 const &parentCTM,
 
     //Matrix Locations für den Shader
     int unifProjMatrix = 0;
-    int unifViewMatrix = 1;
-    int unifModelMatrix = 2;
-    int unifColor = 3;
+    int unifViewMatrix = 4;
+    int unifModelMatrix = 8;
+    int unifColor = 12;
 
     //Matrix Berechnungen fertig nun shader konfigurieren
     _shader->bind();
@@ -150,8 +150,8 @@ void RenderableObject::_renderWithTextureShader(QMatrix4x4 const &parentCTM,
 
     //Matrix Locations für den Shader
     int unifProjMatrix = 0;
-    int unifViewMatrix = 1;
-    int unifModelMatrix = 2;
+    int unifViewMatrix = 4;
+    int unifModelMatrix = 8;
 
     //Matrix Berechnungen fertig nun shader konfigurieren
     _shader->bind();
@@ -244,10 +244,10 @@ void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _model->iboHandle());
 
     //Matrix Locations für den Shader
-    int const unifProjMatrix = 0;
-    int const unifViewMatrix = 1;
-    int const unifModelMatrix = 2;
-    int const unifBaseColor = 3;
+    int unifProjMatrix = 0;
+    int unifViewMatrix = 4;
+    int unifModelMatrix = 8;
+    int unifColor = 12;
     //int const unifNormMatrix = 4;
     //int const unifCounter = 5;
 
@@ -275,7 +275,7 @@ void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
     _shader->setUniformValue(unifProjMatrix, projectionMatrix); //projektionsMatrix (const)
     _shader->setUniformValue(unifViewMatrix, viewMatrix); //viewMatrix ("const")
     _shader->setUniformValue(unifModelMatrix, ctm); //modelMatrix (immer abhängig vom gerade zu rendernden RenderableObject)
-    _shader->setUniformValue(unifBaseColor, _baseColor);
+    _shader->setUniformValue(unifColor, _baseColor);
 
     //PolygonMode auf Lines
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
