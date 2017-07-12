@@ -1,0 +1,3 @@
+https://github.com/Saltzmann/CG_Abschlussprojekt
+
+Hier befindet sich das Git-Repository
