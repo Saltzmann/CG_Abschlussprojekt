@@ -1,5 +1,7 @@
 #version 440
 
+//normalDraw (Debug) Vertex-Shader pass-thru Shader mit output Struct
+
 layout(location = 0)uniform mat4 projectionMatrix;
 layout(location = 4)uniform mat4 viewMatrix;
 layout(location = 8)uniform mat4 modelMatrix;

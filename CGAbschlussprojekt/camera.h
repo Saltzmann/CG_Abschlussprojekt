@@ -22,27 +22,37 @@
 #define UPDATE_RATE 60
 #define INITIAL_CAMERA_OFFSET_Z 500.0f
 #define INITIAL_CAMERA_OFFSET_Y 0.f
-#define INITIAL_SPEED_FACTOR 5.00f //default 0.05
+#define INITIAL_SPEED_FACTOR 5.00f
 #define TICKRATE 1000/UPDATE_RATE
 #define CAMERA_TURN_SPEED 1.f/100.f //default 1/5
 
 class Camera : public QObject {
     Q_OBJECT
 private:
-    QOpenGLWidget* _parent;
+    // A T T R I B U T E
+
+    QOpenGLWidget* _parent; //Referenz für "Callbacks"
+
     //Kameraführungs-Variablen
     float _speedFactor;
     QVector3D _viewOffset;
     QVector3D _viewDirection;
     QVector3D const _upVector;
     QVector3D _rightVector;
-
+    //Mouse-bezogene Attribute
     bool _mouseCaptured;
-
     QPoint _dragStartPos;
+    //Fensterinformationen
     QPoint _windowPos;
     QPoint _midWindowPos;
+    // M E T H O D E N
+    // -
 public:
+    // A T T R I B U T E
+    // -
+
+    // M E T H O D E N
+
     //Konstruktor
     Camera(QOpenGLWidget* parent);
 
@@ -58,7 +68,7 @@ public:
     inline void turn(QVector2D mouseDelta);
     inline void alterSpeed(float modificator);
 
-    //Kontrollfunktionen
+    //Mouse-Kontrollfunktion
     void freeOrCatchMouse();
 
     //Extern aufgerufene Update Funktionen für die Attribute
