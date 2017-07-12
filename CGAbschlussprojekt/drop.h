@@ -9,7 +9,7 @@
 #include <QVector2D>
 
 #define DROP_SHRINK_FACTOR 0.999f
-#define DROP_SPEED_FACTOR 0.00001
+#define DROP_SPEED_FACTOR 0.000025
 
 namespace Options {
     float const minR = 50.f; //10
