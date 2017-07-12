@@ -9,14 +9,13 @@ Drop::Drop() {
     qDebug() << "Spam";
     qDebug() << "Spam";
     qDebug() << "Spam";
-    Q_ASSERT(false);
+    Q_ASSERT(false); //Der Debugger braucht leider länger zum halten als 1 Statement vor dem Abbruch
 }
 
 Drop::Drop(unsigned short const &xPos,
            unsigned short const &yPos,
            unsigned short const &radius,
            Drop *parent) {
-
     this->posX = xPos;
     this->posY = yPos;
     this->radius = radius;
@@ -40,6 +39,7 @@ void Drop::update() {
     this->shrinkage *= DROP_SHRINK_FACTOR;
     //kleine Traildrops sollen schneller schrumpfen
     if(parent != nullptr) this->shrinkage *= DROP_SHRINK_FACTOR;
+    //Alten Radius wegspeichern
     unsigned short oldRadius = this->radius;
     this->radius = (unsigned short)round(shrinkage);
     //qDebug() << "Radius: " << radius;
@@ -55,11 +55,11 @@ void Drop::update() {
     unsigned short oldPosY = this->posY;
     //dann mit aktualsierter Geschwindigkeit bewegen
     //MovementChance: je größer desto höher
-    float movementChance = float(radius*2.f)/(Options::dropCombindedMaxRadius*2.f);
-    movementChance = 1 + qrand() % int(1.f/movementChance);
-    if(int(movementChance) != 1) movementChance = 0.f;
-    this->posY -= (radius*radius*radius)*DROP_SPEED_FACTOR*int(movementChance);//pow³ radius
-    this->momentum = oldPosY - posY;
+    float movementChance = float(radius)/(Options::dropCombindedMaxRadius); //1/x Chance auf Bewegung
+    movementChance = 1 + qrand() % int(1.f/movementChance); //Umwandlung zu Zahlenstrahl mit X Zahlen und daher Chance 1/X genau 1 (lowerLimit) zu treffen
+    if(int(movementChance) != 1) movementChance = 0.f; //wenn 1 nicht getroffen keine Bewegung -> gewollte stückweise Bewegungen
+    this->posY -= (radius*radius*radius)*DROP_SPEED_FACTOR*int(movementChance);//abhängig von Größe³ bewegen
+    this->momentum = oldPosY - posY; //"Geschwindigkeit" errechnen
     if(momentum > 0 && radius > 12) trailTimer -= round(1.5*momentum);
     if(trailTimer < 0) {
         this->willSpawn = true;
@@ -69,22 +69,21 @@ void Drop::update() {
     //qDebug() << "Momentum: " << this->momentum;
     if(posY < Options::lowerSpawnBorderDrops) killed = true;
     numberOfUpdates++;
-    numberOfMovedPixels += size_t(momentum);
+    numberOfMovedUnits += size_t(momentum);
     //Schwellenwert wann auf Kollisionen geprüft wird
-    if(numberOfMovedPixels > this->radius + 30) this->isNew = false;
+    if(numberOfMovedUnits > this->radius + 30) this->isNew = false;
 }
 
 Drop Drop::produceTrail() {
-    unsigned short trailPosX = posX - trailSpreadX + (qrand() % (trailSpreadX*2+1));
-    unsigned short trailPosY = this->posY + this->radius/3;
-    //qDebug() << "thistrailpos: " << trailPosX;
-    //qDebug() << "thisposx :    " << posX;
-    //qDebug() << "radius:       " << radius;
+    unsigned short trailPosX = posX - trailSpreadX + (qrand() % (trailSpreadX*2+1)); //Im Rahmen vom Spread Traildrop setzen
+    unsigned short trailPosY = this->posY + this->radius/3; //knapp im aber über dem parent den Trail setzen
     Drop newTrailDrop = Drop(trailPosX, trailPosY, trailSize, this);
-    this->shrinkage -= trailSize/8; //Spontan schrumpfen
+    this->shrinkage -= trailSize/8; //Spontan schrumpfen, da Masse abgegeben
     return newTrailDrop;
 }
 
+//leider buggy daher nicht genutzt
+/*
 Drop Drop::combineWith(Drop const &other) {
     //Tropfen vereinen, speedboost geschieht von selbst
     QVector2D thisPosition = QVector2D(this->posX, this->posY);
@@ -101,3 +100,4 @@ Drop Drop::combineWith(Drop const &other) {
     Drop newDrop = Drop(newPos.x(), newPos.y(), newRadius, nullptr);
     return newDrop;
 }
+*/

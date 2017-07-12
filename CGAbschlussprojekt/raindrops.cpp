@@ -9,8 +9,7 @@ Raindrops::Raindrops(QMatrix4x4 ctm,
                      QString const &refractionBackground,
                      QString const &refractionOverlay,
                      QString const &dropAlpha,
-                     QString const &dropColor,
-                     QString const &dropShine)
+                     QString const &dropColor)
 
                      : RenderableObject (ctm,
                                          model,
@@ -25,6 +24,7 @@ Raindrops::Raindrops(QMatrix4x4 ctm,
     _hasDropColorTexture = false;
     _hasDropAlphaTexture = false;
 
+    //Wenn angegeben (muss) Alpha-Textur setzen
     if(dropAlpha.length() != 0) {
         _setDropAlphaTexture(dropAlpha);
     }
@@ -32,15 +32,9 @@ Raindrops::Raindrops(QMatrix4x4 ctm,
         Q_ASSERT(false);
     }
 
+    //Wenn angegeben (muss) Color/Refractions-Textur setzen
     if(dropColor.length() != 0) {
         _setDropColorTexture(dropColor);
-    }
-    else {
-        Q_ASSERT(false);
-    }
-
-    if(dropShine.length() != 0) {
-        _setDropShineTexture(dropShine);
     }
     else {
         Q_ASSERT(false);
@@ -49,15 +43,11 @@ Raindrops::Raindrops(QMatrix4x4 ctm,
     //Optionen setzen
     _glassWidth = 1600;
     _glassHeight = 900;
-    //_maxNumberDrops = 20;
     _numberOfBigNonTrailDrops = 0;
 
+    //Speicher in Hashes reservieren, um
     _dropsSmall.reserve(Options::maxNumberDroplets);
     _dropsBig.reserve(Options::maxNumberNonTrailDrops + 300);
-
-    //for(int i = 0; i < _maxNumberDroplets; i++) {
-    //    _spawnDroplet();
-    //}
 
     //Zufallszahlengenerator seeden
     QTime timeObj;
@@ -66,6 +56,7 @@ Raindrops::Raindrops(QMatrix4x4 ctm,
     //qDebug() << "Zeit seit Beginn des Tages in Millisekunden: " << msecs << " (für random seeding)";
     qsrand(msecs);
 
+    //Timer connecten und starten
     _updateTimer = new QTimer(this);
     connect(_updateTimer, SIGNAL(timeout()),
             this, SLOT(update()));
@@ -94,17 +85,6 @@ void Raindrops::_setDropColorTexture(QString filename) {
     qDebug() << endl << "DropColor-Textur: " << filename << " geladen" << endl << endl;
 }
 
-void Raindrops::_setDropShineTexture(QString filename) {
-    //(ausgelagerte) Hilfsfunktion zum Setzen der DropColor-Textur
-    _dropShineTexture = new QOpenGLTexture(QImage(":/textures/" + filename).mirrored());
-    _dropShineTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-    _dropShineTexture->setMagnificationFilter(QOpenGLTexture::Linear);
-    _dropShineTexture->setWrapMode(QOpenGLTexture::ClampToEdge);
-    Q_ASSERT(_dropShineTexture->textureId() != 0); //Würde Fehler bedeuten
-    _hasDropShineTexture = true;
-    qDebug() << endl << "DropShine-Textur: " << filename << " geladen" << endl << endl;
-}
-
 void Raindrops::_spawnDroplet() {
     if(_dropsSmall.size() >= Options::maxNumberDroplets) return;
     //50px Rand
@@ -125,8 +105,8 @@ void Raindrops::_deleteDroplets(unsigned short const &locationX,
                                 unsigned short const &radius) {
     unsigned int lookUp;
     unsigned short cleaningRadius = round(float(radius) * Options::dropletsCleaningRadiusMultiplier);
-    //löschen im Kreis (0.5f damit richtig aufgerundet wird)
 
+    //Umgebung durch iterieren und wenn kleiner als CleaningRadius entfernt dann löschen
     for(unsigned short xCheckPos = locationX - cleaningRadius; xCheckPos < locationX + cleaningRadius; xCheckPos++) {
         for(unsigned short yCheckPos = locationY + cleaningRadius; yCheckPos > locationY - cleaningRadius; yCheckPos--) {
             //x² + y² = r² Kreisdarstellung wenn kleiner als r dann löschen
@@ -142,10 +122,9 @@ void Raindrops::_deleteDroplets(unsigned short const &locationX,
 
 void Raindrops::_spawnDrop() {
     if(_numberOfBigNonTrailDrops >= Options::maxNumberNonTrailDrops) return;
-    //TODO Radius, Momentum,
     unsigned short xPos, yPos, radius;
     //Wenn kein Parent (==nullptr) dann komplett neuer Tropfen
-    //75px Rand // spawn etwas nach oben verschoben
+    //spawn mit Werten von Options beschränkt
     xPos = Options::upperSpawnBorderDrops + qrand() % (_glassWidth  - Options::lowerSpawnBorderDrops);
     yPos = Options::upperSpawnBorderDrops + qrand() % (_glassHeight - Options::lowerSpawnBorderDrops);
     radius = Options::minR + (qrand() % int(Options::maxR - Options::minR));
@@ -170,8 +149,9 @@ void Raindrops::_updateDrops() {
         d.update();
 
         if(!d.killed) {
+            /* Kollisionscheck mit anderen Tropfen - da BUGGY nicht verwendet
+             *
             //Auf Kollision prüfen (_dropCombindedMaxRadius um Tropfen herum)
-            /*
             unsigned int lookUp;
             for(unsigned short xCheckPos = d.posX - _dropCombindedMaxRadius*2; xCheckPos < d.posX + _dropCombindedMaxRadius*2; xCheckPos++) {
                 for(unsigned short yCheckPos = d.posY + _dropCombindedMaxRadius*2; yCheckPos > d.posY - _dropCombindedMaxRadius*2; yCheckPos--) {
@@ -210,6 +190,7 @@ void Raindrops::_updateDrops() {
                 }
             }
             */
+
             //Wenn Traildrop gespawnt werden soll
             if(d.willSpawn) {
                 Drop newTrailDrop = d.produceTrail();
@@ -252,7 +233,7 @@ unsigned short Raindrops::_retrieveYValueFromHash(unsigned int const &hash) {
 void Raindrops::render(QMatrix4x4 const &parentCTM,
                        QMatrix4x4 const &viewMatrix,
                        QMatrix4x4 const &projectionMatrix) {
-    //TODO CTM Matrix Transformationen
+    //NOTE hier kontinuerliche ctm Änderungen
     QMatrix4x4 ctm, combindedCTM;
     combindedCTM = parentCTM * _myCTM;
     ctm = combindedCTM;
@@ -306,9 +287,6 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
     _dropColorTexture->bind(3);
     _shader->setUniformValue("dropColor", 3);
 
-    _dropShineTexture->bind(4);
-    _shader->setUniformValue("dropShine", 4);
-
     //Einstellungen machen
     glDepthMask(GL_FALSE); //z-Buffer auf readonly stellen
     glEnable(GL_BLEND); //Farbmischung aktivieren
@@ -318,6 +296,7 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
     _shader->setUniformValue(unifProjMatrix, projectionMatrix); //projektionsMatrix (const)
     _shader->setUniformValue(unifViewMatrix, viewMatrix); //viewMatrix ("const")
 
+    //Big Drops zeichnen, unabhängige Parameter bei jedem DrawCall neu gesetzt
     for(Drop d : _dropsBig.values()) {
         //qDebug() << "XPOS: " << d.posX << " YPOS: " << d.posY << " SHRINK: " << d.shrinkage;
         ctm.translate(d.posX, d.posY, 0);
@@ -334,6 +313,7 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
         ctm = combindedCTM; //zurücksetzen
     }
 
+    //Small Drops zeichnen, unabhängige Parameter bei jedem DrawCall neu gesetzt
     for(unsigned int locationHash : _dropsSmall.uniqueKeys()) {
         unsigned short xPos = _retrieveXValueFromHash(locationHash);
         unsigned short yPos = _retrieveYValueFromHash(locationHash);
@@ -364,7 +344,6 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
     _secondTexture->release();
     _dropAlphaTexture->release();
     _dropColorTexture->release();
-    _dropShineTexture->release();
 
     //VBO und IBO vom Kontext lösen
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -374,7 +353,7 @@ void Raindrops::render(QMatrix4x4 const &parentCTM,
     glDisable(GL_BLEND);
     glDepthMask(GL_TRUE);
 
-    //TODO spawnraten später anpassen
+    //TODO Spawnraten hier anpassen
     if(_counter > 300 && _counter % 120 == 0) _spawnDrop();
     if(_counter % 2) _spawnDroplet();
     _counter++;

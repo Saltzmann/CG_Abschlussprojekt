@@ -1,5 +1,7 @@
 #version 440
 
+//normalDraw (Debug) Geometry-Shader - Zeichnet Linien auf den Vertex-Normalen
+
 layout (triangles) in;
 layout (line_strip) out;
 layout (max_vertices = 6) out;
@@ -14,12 +16,10 @@ out GS_OUT {
     vec4 color;
 } gs_out;
 
-// Uniform to hold the model-view-projection matrix
 layout(location = 0)uniform mat4 projectionMatrix;
-layout(location = 1)uniform mat4 viewMatrix;
-layout(location = 2)uniform mat4 modelMatrix;
+layout(location = 4)uniform mat4 viewMatrix;
+layout(location = 8)uniform mat4 modelMatrix;
 
-// Uniform to store the length of the visualized normals
 uniform float normal_length;
 
 //umrechnen

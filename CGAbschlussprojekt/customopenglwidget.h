@@ -33,6 +33,8 @@ class CustomOpenGLWidget : public QOpenGLWidget,
                            protected QOpenGLFunctions {
     Q_OBJECT
 protected:
+    // A T T R I B U T E
+
     //OpenGL Context
     QOpenGLContext* _context;
 
@@ -42,8 +44,6 @@ protected:
     //Models
     Model* _planeModel;
     Model* _dropsModel;
-    //Model* _testModel;
-    //...
 
     //Zu rendernde Objekte
     QVector<RenderableObject*> _myRenderables;
@@ -62,14 +62,22 @@ protected:
     //Debug Logger für erweiterte Fehlermeldungen
     QOpenGLDebugLogger* _debugLogger;
 
+    // M E T H O D E N
+
     //Hilfsfunktionen
     void _buildGeometry();
     void _createRenderables();
 public:
+    // A T T R I B U T E
+    // -
+
+    // M E T H O D E N
+
     //Konstruktor
     CustomOpenGLWidget(QWidget *parent);
     //Destruktor (vermutlich nur fürs Gewissen)
     ~CustomOpenGLWidget();
+
     //QT OpenGL Overrides
     void initializeGL();
     void paintGL();

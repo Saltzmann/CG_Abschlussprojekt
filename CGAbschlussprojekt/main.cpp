@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
     //format.setProfile(QSurfaceFormat::CoreProfile); //geht nicht weil qt vbos etc nicht richtig initialisiert für 4.4
     format.setProfile(QSurfaceFormat::CompatibilityProfile);
     format.setRenderableType(QSurfaceFormat::OpenGL);
-    //format.setSwapBehavior(QSurfaceFormat::SingleBuffer);
-    format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+    format.setSwapBehavior(QSurfaceFormat::SingleBuffer);
+    //format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
     //format.setSwapBehavior(QSurfaceFormat::TripleBuffer);
     format.setSwapInterval(0); //"V-Sync" off
     //format.setSwapInterval(1); //"V-Sync" on (damit auch sync mit monitor-frequenz?)

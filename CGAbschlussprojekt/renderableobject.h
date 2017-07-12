@@ -15,7 +15,7 @@
 //externe includes
 #include <model.h>
 
-//Shader-Code defines
+//Shader-Code defines (Bit-Codes)
 #define SHADER_DEFAULT 0x0001
 #define SHADER_TEXTURE 0x0002
 #define SHADER_NORMALS 0x0003
@@ -25,11 +25,12 @@
 class RenderableObject : public QObject, public QOpenGLExtraFunctions {
     Q_OBJECT
 protected:
+    // A T T R I B U T E
+
     //Referenzen bilden 'Render-Konfiguration'
     //Geometrie
     Model* _model;
-    bool _modelHasTextureCoords; //für Performanz nur 1x
-    //QMatrix4x4 _ctm; //später hier sinnvoll?
+    bool _modelHasTextureCoords; //für Performanz, für nur einen Aufruf
 
     //Optik
     int _shaderFlag;
@@ -46,13 +47,14 @@ protected:
     //Bool-Flags ob überhaupt Texturen vorhanden sind
     bool _hasTexture;
     bool _hasSecondTexture;    
-    //bool _hasThirdTexture;
 
     //Abhängige RenderableObjects
     QVector<RenderableObject*> _children;
 
     //Temp. Lösung - statische Objekte -> speichert eigene TransformationsMatrix
     QMatrix4x4 _myCTM;
+
+    // M E T H O D E N
 
     //(ausgelagerte) Hilfsfunktionen - hauptsächlich zur Übersichtlichkeit
     void _setMainTexture(QString filename);
@@ -69,7 +71,12 @@ protected:
                                   QMatrix4x4 const &viewMatrix,
                                   QMatrix4x4 const &projectionMatrix);
 public:
-    //Konstruktor
+    // A T T R I B U T E
+    // -
+
+    // M E T H O D E N
+
+    //Parameter-Konstruktor
     RenderableObject(QMatrix4x4 ctm,
                      Model* model,
                      int shaderTypeFlag,
@@ -91,8 +98,9 @@ public:
     bool hasTexture() const;
     bool hasSecondTexture() const;
     bool hasThirdTexture() const;
+
 public slots:
-    //void update(); //später wahrscheinlich / vielleicht
+    //void update(); //hier in dieser Implementierung nicht benötigt
 };
 
 #endif // RENDERABLEOBJECT_H

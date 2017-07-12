@@ -1,66 +1,59 @@
 #ifndef DROP_H
 #define DROP_H
 
-//Generelle / Vererbungs Includes
-//#include <QObject>
 //Debug Includes
-#include <QtGlobal>
 #include <QDebug>
+//Datenstrukturen Includes
 #include <QVector2D>
+//externe Includes
+#include "options.h"
 
+//BigDrop-Simulation betreffende defines
 #define DROP_SHRINK_FACTOR 0.999f
 #define DROP_SPEED_FACTOR 0.000025
 
-namespace Options {
-    float const minR = 50.f; //10
-    float const maxR = 100.f; //40
-    float const dropletsMinR = 5.f;
-    float const dropletsMaxR = 10.f;
-    float const dropCombindedMaxRadius = 350.f;
-    float const dropletsCleaningRadiusMultiplier = 0.25f;
-    float const trailTimer = 50.f;
-    size_t const maxNumberDroplets = 7500; //7500; //5k-10k
-    size_t const maxNumberNonTrailDrops = 100; //100ish
-    size_t const upperSpawnBorderDrops = 150;
-    size_t const lowerSpawnBorderDrops = 150;
-    size_t const upperSpawnBorderDroplets = 100;
-    size_t const lowerSpawnBorderDroplets = 100;
-}
-
 class Drop {
 public:
-    //Variablen
+    // A T T R I B U T E
+
+    //Positions und Aussehensinformationen
     unsigned short posX;
     unsigned short posY;
     unsigned short radius;
-    unsigned short trailSpreadX;
-    unsigned short trailSize;
-    unsigned int numberOfUpdates;
-    unsigned int numberOfMovedPixels;
-    //unsigned short spreadY;
     float momentum;
-    //unsigned short momentumX;
-    //float lastSpawn;
-    //float ticksToNextSpawn;
-    Drop* parent;
-    bool  isNew;
-    bool  killed;
     float shrinkage;
+
+    //Folgetropfen (Trail) bezogene Informationen
+    Drop* parent; //wenn != nullptr dann selbst Trail
+    bool isNew;
     int trailTimer;
     bool willSpawn;
+    unsigned short trailSpreadX;
+    unsigned short trailSize;
 
+    //Update-Counters
+    unsigned int numberOfUpdates;
+    unsigned int numberOfMovedUnits;
 
-    //Dummy sollte nie benutzt werden - wird aber von QHash gebraucht
+    //Drop wird beim nächsten Updatevorgang gelöscht wenn killed == true
+    bool killed;
+
+    // M E T H O D E N
+
+    //Dummy sollte nie benutzt werden -
+    //wird aber von QHash gebraucht für die Methoden die, falls sie das
+    //gesuchte Element nicht finden den Default-Konstruktor aufrufen
     Drop();
-    //Methoden
+    //Parameterkonstruktor
     Drop(unsigned short const &xPos,
          unsigned short const &yPos,
          unsigned short const &radius,
          Drop* parent);
 
+    // von Extern aufgerufene Update-Funktionen
     void update();
     Drop produceTrail();
-    Drop combineWith(Drop const &other);
+    //Drop combineWith(Drop const &other); //buggy daher nicht genutzt
 };
 
 #endif // DROP_H

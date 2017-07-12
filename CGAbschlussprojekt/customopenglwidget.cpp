@@ -58,17 +58,12 @@ CustomOpenGLWidget::~CustomOpenGLWidget() {
     }
     delete _myCamera;
     delete _planeModel;
-    //delete _backgroundModel;
+    delete _dropsModel;
     delete _defaultShaderProgram;
     delete _fpsTimer;
     delete _debugLogger;
 }
 
-//! initializeGL() -- Kommentare so hole ich nach! eventuell sogar
-/// doxygen / JavaDocs Style
-// param:   /
-// return:  void
-// descr.:  Initializes OpenGL and its states
 void CustomOpenGLWidget::wheelEvent(QWheelEvent* event) {
     //Weiterleitung MouseWheelEvents
     //Wenn Event verarbeitet -> accept sonst ignore
@@ -145,15 +140,10 @@ void CustomOpenGLWidget::initializeGL() {
     }
 
     //OpenGL Flags setzen / Funktionen aktivieren
-    //glEnable(GL_POINT_SMOOTH);
-    //glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_POLYGON_SMOOTH);
-    //glEnable(GL_BLEND);
-    //glBlendFunc()
-    //glBlendEquation()
+    glEnable(GL_POLYGON_SMOOTH); //Antialiasing
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
     glDepthFunc(GL_LEQUAL);
+    glEnable(GL_CULL_FACE);    
 
     //Zum Debuggen - PolygonModes switch
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -185,7 +175,7 @@ void CustomOpenGLWidget::initializeGL() {
     //Kompiliere und linke die Shader-Programme
     _defaultShaderProgram->link();
     _textureShaderProgram->link();
-    //_normalDrawShaderProgram->link();
+    _normalDrawShaderProgram->link();
     _dropShaderProgram->link();
 
     qDebug() << endl << " - - - - - SHADER - COMPILE - INFOS - - - - - ";
@@ -266,24 +256,10 @@ void CustomOpenGLWidget::recieveMouseCaptured(bool captured) {
 void CustomOpenGLWidget::_buildGeometry() {   
     _planeModel = new Model("16to9_rectangle_vertical_tris.obj");
     _dropsModel = new Model("square_vertical_tris.obj");
-    //_testModel = new Model("square_vertical_tris.obj");
 }
 
 void CustomOpenGLWidget::_createRenderables() {
     QMatrix4x4 ctm;
-
-    /*
-    ctm.setToIdentity();
-    ctm.scale(200);
-    ctm.scale(1, 1.5f);
-    RenderableObject* test = new RenderableObject(ctm,
-                                                  _testModel,
-                                                  SHADER_DEFAULT,
-                                                  _defaultShaderProgram,
-                                                  nullptr,
-                                                  QVector4D(1.f, 0.f, 0.f, 1.f));
-    _myRenderables.push_back(test);
-    */
 
     //Plane
     ctm.setToIdentity();
@@ -298,7 +274,7 @@ void CustomOpenGLWidget::_createRenderables() {
                                                         "water/texture-bg.png");
     _myRenderables.push_back(background);
 
-    //Minininimal nach vorne schieben und auf 1600x900 Bild anpassen
+    //Minimal nach vorne schieben und auf 1600x900 Bild anpassen
     ctm.translate(-800.f, -450.f, 0.5f);
     RenderableObject* foreground = new Raindrops(ctm,
                                                  _dropsModel,
@@ -310,7 +286,6 @@ void CustomOpenGLWidget::_createRenderables() {
                                                  //"background/alternative_1600x900.png",
                                                  "water/texture-fg.png",
                                                  "drops/drop-alpha.png",
-                                                 "drops/drop-color.png",
-                                                 "drops/drop-shine.png");
+                                                 "drops/drop-color.png");
     _myRenderables.push_back(foreground);
 }

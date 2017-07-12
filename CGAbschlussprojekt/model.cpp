@@ -1,6 +1,7 @@
 #include "model.h"
 
 Model::Model(QString const &modelFileName) {
+    //Must-have um auf std. OpenGL Funktionen zugreifen zu können...
     initializeOpenGLFunctions();
     //Initiales Model aus Datei laden
     if(modelFileName.length() != 0) {

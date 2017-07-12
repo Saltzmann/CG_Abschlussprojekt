@@ -11,37 +11,47 @@
 #include <QVector>
 #include <QVector2D>
 #include <QVector3D>
-//Geometrie / Vertex / Mesh Includes
-//#include <QOpenGLBuffer>
 //externe includes
 #include <modelloader.h>
 
 class Model : public QObject, public QOpenGLExtraFunctions {
     Q_OBJECT
 private:
-    //Model und Buffer-Object bezogene Date
+    // A T T R I B U T E
+
+    //Bufferdaten
     GLfloat* _vboData;
     GLuint* _indexData;
+    //Bufferlängen
     size_t _vboLength;
     size_t _iboLength;
+    //Buffer-Organisations Infos
     unsigned short _vertOffset;
     unsigned short _normOffset;
     unsigned short _texCoordOffset;
     size_t _stride;
-
+    //Buffer handles
     GLuint _vboHandle;
     GLuint _iboHandle;
 
+    //Bool-Flag, ob Model überhaupt Texturkoordinaten hat
     bool _hasTextureCoords;
 
-    //Bool-Flag ob Model-Laden erfolgreich war
+    //Bool-Flag, ob Model-Laden erfolgreich war
     bool _hasModelLoaded;
+
+    // M E T H O D E N
 
     //(ausgelagerte) Hilfsfunktionen - hauptsächlich zur Übersichtlichkeit
     void _initializeModelData(QString const &modelFileName);
     void _setUpBuffers(QString const &modelFileName);
 public:
-    //Konstruktor
+    // A T T R I B U T E
+    // -
+
+    // M E T H O D E N
+
+    //Parameter-Konstruktor
     Model(QString const &modelFileName = "");
 
     //Lade Funktionen

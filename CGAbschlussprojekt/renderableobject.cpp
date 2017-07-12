@@ -8,7 +8,6 @@ RenderableObject::RenderableObject(QMatrix4x4 ctm,
                                    QVector4D const &baseColor,
                                    QString const &mainTextureFileName,
                                    QString const &secondTextureFileName) {
-                                   //QString const &thirdTextureFileName) {
     //Muss
     initializeOpenGLFunctions();
 
@@ -19,7 +18,6 @@ RenderableObject::RenderableObject(QMatrix4x4 ctm,
     this->_shader = shader;
     _hasTexture = false;
     _hasSecondTexture = false;
-    //_hasThirdTexture = false;
 
     if(secondShader != nullptr) {
         _secondShader = secondShader;
@@ -40,6 +38,7 @@ RenderableObject::RenderableObject(QMatrix4x4 ctm,
     _shaderFlag = shaderTypeFlag;
     _baseColor = baseColor;
 
+    //Rendering Counter, bei Bedarf - aktuell nicht genutzt
     _renderingCounter1 = 0.f;
     _renderingCounter2 = 0.f;
 }
@@ -67,7 +66,7 @@ void RenderableObject::_setSecondTexture(QString filename) {
 void RenderableObject::_renderWithDefaultShader(QMatrix4x4 const &parentCTM,
                                                 QMatrix4x4 const &viewMatrix,
                                                 QMatrix4x4 const &projectionMatrix) {
-    //TODO CTM Matrix Transformationen
+    //NOTE hier kontinuerliche ctm Änderungen
     QMatrix4x4 ctm;
     ctm = parentCTM * _myCTM;
 
@@ -109,14 +108,13 @@ void RenderableObject::_renderWithDefaultShader(QMatrix4x4 const &parentCTM,
     _shader->setUniformValue(unifModelMatrix, ctm); //modelMatrix (immer abhängig vom gerade zu rendernden RenderableObject)
     _shader->setUniformValue(unifColor, _baseColor);
 
-
-    //PolygonMode einstellen
+    //PolygonMode für Debugzwecke einstellen
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     //Element zeichnen lassen (implizit uint in int ist aktzeptabel - kein Werteverlust)
     glDrawElements(GL_TRIANGLES, _model->iboLength(), GL_UNSIGNED_INT, 0);
 
-    //PolygonMode auf default setzen
+    //PolygonMode wieder auf default setzen
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     // Deaktiviere die Verwendung der Attribute-Arrays
@@ -134,7 +132,7 @@ void RenderableObject::_renderWithDefaultShader(QMatrix4x4 const &parentCTM,
 void RenderableObject::_renderWithTextureShader(QMatrix4x4 const &parentCTM,
                                                 QMatrix4x4 const &viewMatrix,
                                                 QMatrix4x4 const &projectionMatrix) {
-    //TODO CTM Matrix Transformationen
+    //NOTE hier kontinuerliche ctm Änderungen
     QMatrix4x4 ctm;
     ctm = parentCTM * _myCTM;
 
@@ -191,13 +189,13 @@ void RenderableObject::_renderWithTextureShader(QMatrix4x4 const &parentCTM,
         _shader->setUniformValue("blendMap", 1);
     }
 
-    //PolygonMode einstellen
+    //PolygonMode für Debugzwecke einstellen
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     //Element zeichnen lassen (implizit uint in int ist aktzeptabel - kein Werteverlust)
     glDrawElements(GL_TRIANGLES, _model->iboLength(), GL_UNSIGNED_INT, 0);
 
-    //PolygonMode auf default setzen
+    //PolygonMode wieder auf default setzen
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     // Deaktiviere die Verwendung der Attribute-Arrays
@@ -226,7 +224,7 @@ void RenderableObject::_renderWithTextureShader(QMatrix4x4 const &parentCTM,
 void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
                                                 QMatrix4x4 const &viewMatrix,
                                                 QMatrix4x4 const &projectionMatrix) {
-    //TODO CTM Matrix Transformationen
+    //NOTE hier kontinuerliche ctm Änderungen
     QMatrix4x4 ctm;
     ctm = parentCTM * _myCTM;
 
@@ -244,12 +242,10 @@ void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _model->iboHandle());
 
     //Matrix Locations für den Shader
-    int unifProjMatrix = 0;
-    int unifViewMatrix = 4;
-    int unifModelMatrix = 8;
-    int unifColor = 12;
-    //int const unifNormMatrix = 4;
-    //int const unifCounter = 5;
+    int const unifProjMatrix = 0;
+    int const unifViewMatrix = 4;
+    int const unifModelMatrix = 8;
+    int const unifColor = 12;
 
     // - - - - - Start Rendering - - - - -
 
@@ -332,6 +328,7 @@ void RenderableObject::_renderWithNormalsShader(QMatrix4x4 const &parentCTM,
     glEnable(GL_CULL_FACE);
 }
 
+//Weiterleitungsfunktion
 void RenderableObject::render(QMatrix4x4 const &parentCTM,
                               QMatrix4x4 const &viewMatrix,
                               QMatrix4x4 const &projectionMatrix) {
